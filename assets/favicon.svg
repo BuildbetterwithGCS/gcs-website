@@ -1,7 +1,22 @@
-<!-- GCS Favicon — matches official logo brand colors -->
+<!-- GCS Favicon — compass symbol only, matches official logo brand colors -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="GCS">
-  <rect width="64" height="64" rx="8" fill="#0f1f3d"/>
-  <text x="32" y="44" text-anchor="middle" font-family="'Arial Black', system-ui, sans-serif" font-size="24" font-weight="900" fill="#ffffff" letter-spacing="1">GCS</text>
-  <!-- Green accent dot matching compass mark center -->
-  <circle cx="32" cy="12" r="4" fill="#7aaa35"/>
+  <title>GCS</title>
+  <!-- NW arc (dark navy) -->
+  <path d="M 10,22 A 23,23 0 0,1 22,10 L 24,16 A 16,16 0 0,0 14,24 Z" fill="#1a2a4a"/>
+  <!-- NE arc (medium steel blue) -->
+  <path d="M 42,10 A 23,23 0 0,1 54,22 L 50,24 A 16,16 0 0,0 40,16 Z" fill="#2e5080"/>
+  <!-- SE arc (medium steel blue) -->
+  <path d="M 54,42 A 23,23 0 0,1 42,54 L 40,48 A 16,16 0 0,0 50,40 Z" fill="#2e5080"/>
+  <!-- SW arc (dark navy) -->
+  <path d="M 22,54 A 23,23 0 0,1 10,42 L 14,40 A 16,16 0 0,0 24,48 Z" fill="#1a2a4a"/>
+  <!-- North diamond (green) -->
+  <polygon points="32,3 36,18 32,22 28,18" fill="#78b829"/>
+  <!-- South diamond (gray) -->
+  <polygon points="32,61 36,46 32,42 28,46" fill="#6b7a87"/>
+  <!-- West arrow (dark navy) -->
+  <polygon points="3,32 18,27 18,37" fill="#1a2a4a"/>
+  <!-- East arrow (steel blue) -->
+  <polygon points="61,32 46,27 46,37" fill="#2e5080"/>
+  <!-- Center circle (olive green) -->
+  <circle cx="32" cy="32" r="9" fill="#5a8a2a"/>
 </svg>
