@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://buildbetterwithgcs.github.io/gcs-website/sitemap.xml
+Sitemap: https://buildbetterwithgcs.com/sitemap.xml

@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>Nexus Map Intelligence | Spatial Operations Demonstration — GCS</title>
+  <meta name="title" content="Nexus Map Intelligence | Spatial Operations Demonstration — GCS" />
+  <meta name="description" content="Interactive demonstration of Nexus Map Intelligence: layered assets, projects, facilities, risk zones, and infrastructure routes rendered without any external map service. Illustrative data." />
+  <meta name="author" content="General Contractor Solutions LLC" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://buildbetterwithgcs.com/map-intelligence/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="GCS — General Contractor Solutions LLC" />
+  <meta property="og:url" content="https://buildbetterwithgcs.com/map-intelligence/" />
+  <meta property="og:title" content="Nexus Map Intelligence | Spatial Operations Demonstration — GCS" />
+  <meta property="og:description" content="Interactive demonstration of Nexus Map Intelligence: layered assets, projects, facilities, risk zones, and infrastructure routes rendered without any external map service. Illustrative data." />
+  <meta property="og:image" content="https://buildbetterwithgcs.com/assets/og-image.png" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Nexus Map Intelligence | Spatial Operations Demonstration — GCS" />
+  <meta name="twitter:description" content="Interactive demonstration of Nexus Map Intelligence: layered assets, projects, facilities, risk zones, and infrastructure routes rendered without any external map service. Illustrative data." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="../assets/favicon.svg" />
+  <meta name="theme-color" content="#0a4d8c" />
+  <noscript><style>.reveal{opacity:1 !important;transform:none !important;}</style></noscript>
+</head>
+<body class="theme-dash">
+
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <!-- ===================== SITE HEADER ===================== -->
+  <header class="site-header" role="banner">
+    <nav class="nav container" aria-label="Primary navigation">
+      <a href="../" class="nav__logo" aria-label="GCS — General Contractor Solutions LLC home">
+        <span class="logo-mark" aria-hidden="true">GCS</span>
+        <span class="logo-text">General Contractor Solutions</span>
+      </a>
+
+      <button class="nav__toggle" type="button" aria-controls="nav-menu" aria-expanded="false" aria-label="Open navigation menu">
+        <span class="hamburger" aria-hidden="true"></span>
+        <span class="hamburger" aria-hidden="true"></span>
+        <span class="hamburger" aria-hidden="true"></span>
+      </button>
+
+      <ul class="nav__links" id="nav-menu" role="list">
+        <li><a href="../about/" class="nav__link">About</a></li>
+        <li><a href="../solutions/" class="nav__link">Solutions</a></li>
+        <li><a href="../industries/" class="nav__link">Industries</a></li>
+        <li><a href="../nexus/" class="nav__link">Nexus Platform</a></li>
+        <li><a href="../genesis/" class="nav__link">Genesis</a></li>
+        <li><a href="../founder-command-center/" class="nav__link">Command Center</a></li>
+        <li><a href="../map-intelligence/" class="nav__link" aria-current="page">Map Intelligence</a></li>
+        <li><a href="../reference/" class="nav__link">Reference</a></li>
+        <li><a href="../founder/" class="nav__link">Founder</a></li>
+        <li><a href="../contact/" class="nav__link">Contact</a></li>
+        <li><a href="../request-demo/" class="nav__link nav__link--cta">Request Demo</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ===================== MAIN ===================== -->
+  <main id="main-content">
+
+    <section class="page-hero page-hero--dash">
+      <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <a href="../">Home</a>
+          <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+          <span aria-current="page">Map Intelligence</span>
+        </nav>
+        <div class="page-hero__inner">
+          <span class="page-hero__eyebrow">Nexus Map Intelligence</span>
+          <h1 class="page-hero__title">Operations, Located.</h1>
+          <p class="page-hero__lead">Condition, criticality, capital work, and risk exposure are inherently spatial. Map Intelligence puts the operating record on the ground &mdash; so that a failing asset, a scheduled project, and a flood corridor are visibly the same problem.</p>
+        <div class="page-hero__actions"><a href="../nexus/" class="btn btn--gold">Nexus Platform</a><a href="../request-demo/" class="btn btn--outline">Request a Demo</a></div>
+        </div>
+      </div>
+    </section>
+    <section class="dash">
+      <div class="container">
+        <div class="demo-banner" role="note">
+          <span class="demo-banner__tag">Illustrative Demonstration Data</span>
+          <span>All map geography, asset locations, project sites, network routes, risk zones, and record details on this page are illustrative demonstration data. The geography is synthetic and does not depict any actual municipality, parcel, or utility network.</span>
+        </div>
+
+        <div class="dash__bar">
+          <div class="status-strip">
+            <span class="status-strip__item"><span class="pulse-dot" aria-hidden="true"></span> Demonstration map &mdash; synthetic geography</span>
+            <span class="status-strip__item">12 located records</span>
+            <span class="status-strip__item">8 layers</span>
+            <span class="status-strip__item">No external map service</span>
+          </div>
+        </div>
+
+        <div class="mapui">
+          <aside class="map-controls" aria-label="Map layers and filters">
+            <section class="panel">
+              <div class="panel__head"><h2 class="panel__title">Layers</h2></div>
+              <div class="panel__body">
+                <ul class="layer-list" role="list">
+              <li>
+                <label class="layer-toggle">
+                  <input type="checkbox" data-layer="assets" checked />
+                  <span class="layer-toggle__text">
+                    <span class="layer-toggle__name">Assets</span>
+                    <span class="layer-toggle__desc">Pump stations, tanks, storage, yards</span>
+                  </span>
+                </label>
+              </li>
+              <li>
+                <label class="layer-toggle">
+                  <input type="checkbox" data-layer="projects" checked />
+                  <span class="layer-toggle__text">
+                    <span class="layer-toggle__name">Projects</span>
+                    <span class="layer-toggle__desc">Active capital work locations</span>
+                  </span>
+                </label>
+              </li>
+              <li>
+                <label class="layer-toggle">
+                  <input type="checkbox" data-layer="facilities" checked />
+                  <span class="layer-toggle__text">
+                    <span class="layer-toggle__name">Facilities</span>
+                    <span class="layer-toggle__desc">Buildings and occupied structures</span>
+                  </span>
+                </label>
+              </li>
+              <li>
+                <label class="layer-toggle">
+                  <input type="checkbox" data-layer="risk" checked />
+                  <span class="layer-toggle__text">
+                    <span class="layer-toggle__name">Risk zones</span>
+                    <span class="layer-toggle__desc">Flood, slope, and exposure areas</span>
+                  </span>
+                </label>
+              </li>
+              <li>
+                <label class="layer-toggle">
+                  <input type="checkbox" data-layer="water" checked />
+                  <span class="layer-toggle__text">
+                    <span class="layer-toggle__name">Water mains</span>
+                    <span class="layer-toggle__desc">Distribution network trunk lines</span>
+                  </span>
+                </label>
+              </li>
+              <li>
+                <label class="layer-toggle">
+                  <input type="checkbox" data-layer="sewer" checked />
+                  <span class="layer-toggle__text">
+                    <span class="layer-toggle__name">Sewer mains</span>
+                    <span class="layer-toggle__desc">Gravity and force main network</span>
+                  </span>
+                </label>
+              </li>
+              <li>
+                <label class="layer-toggle">
+                  <input type="checkbox" data-layer="roads" checked />
+                  <span class="layer-toggle__text">
+                    <span class="layer-toggle__name">Road network</span>
+                    <span class="layer-toggle__desc">Maintained roadway centerlines</span>
+                  </span>
+                </label>
+              </li>
+              <li>
+                <label class="layer-toggle">
+                  <input type="checkbox" data-layer="fiber" />
+                  <span class="layer-toggle__text">
+                    <span class="layer-toggle__name">Fiber routes</span>
+                    <span class="layer-toggle__desc">Communications conduit and fiber</span>
+                  </span>
+                </label>
+              </li>
+                </ul>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel__head"><h2 class="panel__title">Filters</h2></div>
+              <div class="panel__body">
+                <div class="map-filter-group">
+                  <label for="filter-condition">Condition</label>
+                  <select id="filter-condition" class="map-filter" data-filter="condition">
+                    <option value="all">All conditions</option>
+                    <option value="good">Good only</option>
+                    <option value="warn">Fair / attention</option>
+                    <option value="risk">Poor / critical</option>
+                  </select>
+                </div>
+                <div class="map-filter-group">
+                  <label for="filter-category">Category</label>
+                  <select id="filter-category" class="map-filter" data-filter="category">
+                    <option value="all">All categories</option>
+                    <option value="asset">Assets</option>
+                    <option value="project">Projects</option>
+                    <option value="facility">Facilities</option>
+                    <option value="risk">Risk zones</option>
+                  </select>
+                </div>
+                <button type="button" class="btn btn--ghost btn--sm" data-map-reset style="width:100%;margin-top:0.5rem">Reset view</button>
+                <p class="form-hint" style="margin-top:0.75rem">Filters dim non-matching records rather than removing them, so context is never lost.</p>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel__head"><h2 class="panel__title">Legend</h2></div>
+              <div class="panel__body">
+                <ul class="map-legend" role="list">
+                  <li><span class="map-legend__key map-legend__key--asset" aria-hidden="true"></span> Asset</li>
+                  <li><span class="map-legend__key map-legend__key--project" aria-hidden="true"></span> Project</li>
+                  <li><span class="map-legend__key map-legend__key--facility" aria-hidden="true"></span> Facility</li>
+                  <li><span class="map-legend__key map-legend__key--risk" aria-hidden="true"></span> Risk zone</li>
+                  <li><span class="map-legend__key map-legend__key--water" aria-hidden="true"></span> Water main</li>
+                  <li><span class="map-legend__key map-legend__key--sewer" aria-hidden="true"></span> Sewer main</li>
+                  <li><span class="map-legend__key map-legend__key--road" aria-hidden="true"></span> Roadway</li>
+                  <li><span class="map-legend__key map-legend__key--fiber" aria-hidden="true"></span> Fiber route</li>
+                </ul>
+              </div>
+            </section>
+          </aside>
+
+          <div class="map-canvas">
+            <div class="map-stage" role="group" aria-label="Interactive demonstration map with illustrative asset, project, facility, and risk records">
+              <div class="map-stage__grid" aria-hidden="true"></div>
+
+              <svg class="map-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                <g class="map-layer" data-layer-group="zones">
+                  <path class="map-zone map-zone--flood" d="M62,28 L92,22 L96,52 L72,58 L58,44 Z" />
+                  <path class="map-zone map-zone--cap" d="M8,62 L36,58 L42,84 L12,88 Z" />
+                  <path class="map-zone map-zone--asset" d="M28,10 L58,8 L60,26 L30,30 Z" />
+                </g>
+                <g class="map-layer" data-layer-group="roads">
+                  <path class="map-route map-route--road" d="M2,70 C22,66 40,74 58,64 C74,55 86,60 98,54" />
+                  <path class="map-route map-route--road" d="M20,4 C24,26 18,48 26,70 C30,82 28,92 30,98" />
+                  <path class="map-route map-route--road" d="M4,34 C26,30 48,40 70,32 C82,28 90,30 98,26" />
+                </g>
+                <g class="map-layer" data-layer-group="water">
+                  <path class="map-route map-route--water" d="M18,20 C30,28 34,40 44,44 C56,50 62,46 74,40" />
+                  <path class="map-route map-route--water" d="M44,44 C48,54 52,58 58,60 C66,63 70,68 76,74" />
+                </g>
+                <g class="map-layer" data-layer-group="sewer">
+                  <path class="map-route map-route--sewer" d="M26,68 C38,64 50,66 62,58 C72,52 78,50 88,48" />
+                  <path class="map-route map-route--sewer" d="M26,68 C24,56 26,44 26,34" />
+                </g>
+                <g class="map-layer" data-layer-group="fiber" hidden>
+                  <path class="map-route map-route--fiber" d="M6,18 C28,14 46,24 66,18 C80,14 90,16 98,12" />
+                  <path class="map-route map-route--fiber" d="M52,14 C54,34 50,54 54,74" />
+                </g>
+              </svg>
+
+              <div class="map-layer" data-layer-group="assets">
+            <button type="button" class="map-pin" data-pin="p2" data-kind="asset" style="top:34%; left:42%" aria-label="North Pump Station — show details">
+              <span class="map-pin__marker map-pin__marker--asset" aria-hidden="true"></span>
+              <span class="map-pin__label">North Pump Station</span>
+            </button>
+            <button type="button" class="map-pin" data-pin="p3" data-kind="asset" style="top:58%; left:30%" aria-label="Elevated Storage Tank — show details">
+              <span class="map-pin__marker map-pin__marker--asset" aria-hidden="true"></span>
+              <span class="map-pin__label">Elevated Storage Tank</span>
+            </button>
+            <button type="button" class="map-pin" data-pin="p6" data-kind="asset" style="top:26%; left:68%" aria-label="Lift Station 4 — show details">
+              <span class="map-pin__marker map-pin__marker--asset" aria-hidden="true"></span>
+              <span class="map-pin__label">Lift Station 4</span>
+            </button>
+            <button type="button" class="map-pin" data-pin="p9" data-kind="asset" style="top:62%; left:76%" aria-label="Salt Storage &amp; Fleet Yard — show details">
+              <span class="map-pin__marker map-pin__marker--asset" aria-hidden="true"></span>
+              <span class="map-pin__label">Salt Storage &amp; Fleet Yard</span>
+            </button>
+              </div>
+              <div class="map-layer" data-layer-group="projects">
+            <button type="button" class="map-pin" data-pin="p4" data-kind="project" style="top:46%; left:62%" aria-label="Ridge Road Culvert Replacement — show details">
+              <span class="map-pin__marker map-pin__marker--project" aria-hidden="true"></span>
+              <span class="map-pin__label">Ridge Road Culvert Replacement</span>
+            </button>
+            <button type="button" class="map-pin" data-pin="p5" data-kind="project" style="top:68%; left:55%" aria-label="Main Street Resurfacing &mdash; Phase 2 — show details">
+              <span class="map-pin__marker map-pin__marker--project" aria-hidden="true"></span>
+              <span class="map-pin__label">Main Street Resurfacing &mdash; Phase 2</span>
+            </button>
+            <button type="button" class="map-pin" data-pin="p10" data-kind="project" style="top:18%; left:52%" aria-label="Fiber Backbone Extension — show details">
+              <span class="map-pin__marker map-pin__marker--project" aria-hidden="true"></span>
+              <span class="map-pin__label">Fiber Backbone Extension</span>
+            </button>
+              </div>
+              <div class="map-layer" data-layer-group="facilities">
+            <button type="button" class="map-pin" data-pin="p1" data-kind="facility" style="top:22%; left:18%" aria-label="Public Works Facility — show details">
+              <span class="map-pin__marker map-pin__marker--facility" aria-hidden="true"></span>
+              <span class="map-pin__label">Public Works Facility</span>
+            </button>
+            <button type="button" class="map-pin" data-pin="p7" data-kind="facility" style="top:74%; left:22%" aria-label="Municipal Complex — show details">
+              <span class="map-pin__marker map-pin__marker--facility" aria-hidden="true"></span>
+              <span class="map-pin__label">Municipal Complex</span>
+            </button>
+            <button type="button" class="map-pin" data-pin="p11" data-kind="facility" style="top:52%; left:12%" aria-label="Fire Station 2 — show details">
+              <span class="map-pin__marker map-pin__marker--facility" aria-hidden="true"></span>
+              <span class="map-pin__label">Fire Station 2</span>
+            </button>
+              </div>
+              <div class="map-layer" data-layer-group="risk">
+            <button type="button" class="map-pin" data-pin="p8" data-kind="risk" style="top:40%; left:78%" aria-label="Flood-Prone Corridor — show details">
+              <span class="map-pin__marker map-pin__marker--risk" aria-hidden="true"></span>
+              <span class="map-pin__label">Flood-Prone Corridor</span>
+            </button>
+            <button type="button" class="map-pin" data-pin="p12" data-kind="risk" style="top:78%; left:68%" aria-label="Slope Stability Watch Area — show details">
+              <span class="map-pin__marker map-pin__marker--risk" aria-hidden="true"></span>
+              <span class="map-pin__label">Slope Stability Watch Area</span>
+            </button>
+              </div>
+            </div>
+
+            <div class="map-detail" data-map-detail>
+              <div class="map-detail__empty" data-detail-empty>
+                <span class="map-detail__empty-icon" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M16.2 7.8l-2.9 6.4-6.4 2.9 2.9-6.4 6.4-2.9z"/></svg></span>
+                <p><strong>Select a record on the map.</strong> Choose any pin to see its condition, value, work history, and criticality. Use the layer switches to control what is drawn and the filters to focus on a condition band or category.</p>
+              </div>
+          <div class="map-detail__record" data-detail="p1" hidden>
+            <div class="map-detail__head">
+              <h3 class="map-detail__title">Public Works Facility</h3>
+              <span class="chip chip--good">Good</span>
+            </div>
+            <dl class="map-detail__grid">
+              <div class="map-detail__field"><dt>Asset ID</dt><dd>FAC-0101</dd></div>
+              <div class="map-detail__field"><dt>Class</dt><dd>Facility &mdash; operations</dd></div>
+              <div class="map-detail__field"><dt>Condition</dt><dd>Good</dd></div>
+              <div class="map-detail__field"><dt>Year built</dt><dd>2004</dd></div>
+              <div class="map-detail__field"><dt>Replacement value</dt><dd>$4,800,000</dd></div>
+              <div class="map-detail__field"><dt>Open work orders</dt><dd>3</dd></div>
+              <div class="map-detail__field"><dt>Last inspection</dt><dd>Jan 2026</dd></div>
+              <div class="map-detail__field"><dt>Criticality</dt><dd>High</dd></div>
+            </dl>
+          </div>
+          <div class="map-detail__record" data-detail="p2" hidden>
+            <div class="map-detail__head">
+              <h3 class="map-detail__title">North Pump Station</h3>
+              <span class="chip chip--warn">Attention</span>
+            </div>
+            <dl class="map-detail__grid">
+              <div class="map-detail__field"><dt>Asset ID</dt><dd>WTR-0442</dd></div>
+              <div class="map-detail__field"><dt>Class</dt><dd>Water &mdash; pumping</dd></div>
+              <div class="map-detail__field"><dt>Condition</dt><dd>Fair &mdash; declining</dd></div>
+              <div class="map-detail__field"><dt>Year installed</dt><dd>1996</dd></div>
+              <div class="map-detail__field"><dt>Replacement value</dt><dd>$1,150,000</dd></div>
+              <div class="map-detail__field"><dt>Open work orders</dt><dd>7</dd></div>
+              <div class="map-detail__field"><dt>Last inspection</dt><dd>Dec 2025</dd></div>
+              <div class="map-detail__field"><dt>Criticality</dt><dd>Critical &mdash; no redundancy</dd></div>
+            </dl>
+          </div>
+          <div class="map-detail__record" data-detail="p3" hidden>
+            <div class="map-detail__head">
+              <h3 class="map-detail__title">Elevated Storage Tank</h3>
+              <span class="chip chip--good">Good</span>
+            </div>
+            <dl class="map-detail__grid">
+              <div class="map-detail__field"><dt>Asset ID</dt><dd>WTR-0118</dd></div>
+              <div class="map-detail__field"><dt>Class</dt><dd>Water &mdash; storage</dd></div>
+              <div class="map-detail__field"><dt>Condition</dt><dd>Good</dd></div>
+              <div class="map-detail__field"><dt>Year built</dt><dd>1988</dd></div>
+              <div class="map-detail__field"><dt>Replacement value</dt><dd>$2,300,000</dd></div>
+              <div class="map-detail__field"><dt>Open work orders</dt><dd>1</dd></div>
+              <div class="map-detail__field"><dt>Last inspection</dt><dd>Sep 2025</dd></div>
+              <div class="map-detail__field"><dt>Criticality</dt><dd>Critical</dd></div>
+            </dl>
+          </div>
+          <div class="map-detail__record" data-detail="p4" hidden>
+            <div class="map-detail__head">
+              <h3 class="map-detail__title">Ridge Road Culvert Replacement</h3>
+              <span class="chip chip--risk">Critical</span>
+            </div>
+            <dl class="map-detail__grid">
+              <div class="map-detail__field"><dt>Project ID</dt><dd>CP-2411</dd></div>
+              <div class="map-detail__field"><dt>Class</dt><dd>Capital &mdash; infrastructure</dd></div>
+              <div class="map-detail__field"><dt>Status</dt><dd>At risk &mdash; bid over estimate</dd></div>
+              <div class="map-detail__field"><dt>Budget</dt><dd>$1,240,000</dd></div>
+              <div class="map-detail__field"><dt>Committed</dt><dd>62%</dd></div>
+              <div class="map-detail__field"><dt>Target completion</dt><dd>Nov 2026</dd></div>
+              <div class="map-detail__field"><dt>Owner</dt><dd>Engineering</dd></div>
+              <div class="map-detail__field"><dt>Note</dt><dd>Requires contingency decision</dd></div>
+            </dl>
+          </div>
+          <div class="map-detail__record" data-detail="p5" hidden>
+            <div class="map-detail__head">
+              <h3 class="map-detail__title">Main Street Resurfacing &mdash; Phase 2</h3>
+              <span class="chip chip--good">Good</span>
+            </div>
+            <dl class="map-detail__grid">
+              <div class="map-detail__field"><dt>Project ID</dt><dd>CP-2402</dd></div>
+              <div class="map-detail__field"><dt>Class</dt><dd>Capital &mdash; roadway</dd></div>
+              <div class="map-detail__field"><dt>Status</dt><dd>On track</dd></div>
+              <div class="map-detail__field"><dt>Budget</dt><dd>$2,850,000</dd></div>
+              <div class="map-detail__field"><dt>Committed</dt><dd>78%</dd></div>
+              <div class="map-detail__field"><dt>Target completion</dt><dd>Aug 2026</dd></div>
+              <div class="map-detail__field"><dt>Owner</dt><dd>Public Works</dd></div>
+              <div class="map-detail__field"><dt>Note</dt><dd>Paving window confirmed</dd></div>
+            </dl>
+          </div>
+          <div class="map-detail__record" data-detail="p6" hidden>
+            <div class="map-detail__head">
+              <h3 class="map-detail__title">Lift Station 4</h3>
+              <span class="chip chip--risk">Critical</span>
+            </div>
+            <dl class="map-detail__grid">
+              <div class="map-detail__field"><dt>Asset ID</dt><dd>SWR-0207</dd></div>
+              <div class="map-detail__field"><dt>Class</dt><dd>Sewer &mdash; lift station</dd></div>
+              <div class="map-detail__field"><dt>Condition</dt><dd>Poor</dd></div>
+              <div class="map-detail__field"><dt>Year installed</dt><dd>1979</dd></div>
+              <div class="map-detail__field"><dt>Replacement value</dt><dd>$680,000</dd></div>
+              <div class="map-detail__field"><dt>Open work orders</dt><dd>11</dd></div>
+              <div class="map-detail__field"><dt>Last inspection</dt><dd>Feb 2026</dd></div>
+              <div class="map-detail__field"><dt>Criticality</dt><dd>Critical &mdash; three failures in 18 months</dd></div>
+            </dl>
+          </div>
+          <div class="map-detail__record" data-detail="p7" hidden>
+            <div class="map-detail__head">
+              <h3 class="map-detail__title">Municipal Complex</h3>
+              <span class="chip chip--good">Good</span>
+            </div>
+            <dl class="map-detail__grid">
+              <div class="map-detail__field"><dt>Asset ID</dt><dd>FAC-0100</dd></div>
+              <div class="map-detail__field"><dt>Class</dt><dd>Facility &mdash; administrative</dd></div>
+              <div class="map-detail__field"><dt>Condition</dt><dd>Good</dd></div>
+              <div class="map-detail__field"><dt>Year built</dt><dd>1998</dd></div>
+              <div class="map-detail__field"><dt>Replacement value</dt><dd>$9,400,000</dd></div>
+              <div class="map-detail__field"><dt>Open work orders</dt><dd>5</dd></div>
+              <div class="map-detail__field"><dt>Last inspection</dt><dd>Nov 2025</dd></div>
+              <div class="map-detail__field"><dt>Criticality</dt><dd>High</dd></div>
+            </dl>
+          </div>
+          <div class="map-detail__record" data-detail="p8" hidden>
+            <div class="map-detail__head">
+              <h3 class="map-detail__title">Flood-Prone Corridor</h3>
+              <span class="chip chip--risk">Critical</span>
+            </div>
+            <dl class="map-detail__grid">
+              <div class="map-detail__field"><dt>Zone ID</dt><dd>RSK-0031</dd></div>
+              <div class="map-detail__field"><dt>Class</dt><dd>Risk zone &mdash; hydrologic</dd></div>
+              <div class="map-detail__field"><dt>Exposure</dt><dd>14 assets, 2 critical</dd></div>
+              <div class="map-detail__field"><dt>Trigger</dt><dd>Sustained rainfall &gt; 3 in / 24 hr</dd></div>
+              <div class="map-detail__field"><dt>Last activation</dt><dd>Oct 2025</dd></div>
+              <div class="map-detail__field"><dt>Mitigation</dt><dd>Basin retrofit in planning</dd></div>
+              <div class="map-detail__field"><dt>Owner</dt><dd>Engineering</dd></div>
+              <div class="map-detail__field"><dt>Note</dt><dd>Detour route conflicts with CP-2411</dd></div>
+            </dl>
+          </div>
+          <div class="map-detail__record" data-detail="p9" hidden>
+            <div class="map-detail__head">
+              <h3 class="map-detail__title">Salt Storage &amp; Fleet Yard</h3>
+              <span class="chip chip--warn">Attention</span>
+            </div>
+            <dl class="map-detail__grid">
+              <div class="map-detail__field"><dt>Asset ID</dt><dd>FAC-0114</dd></div>
+              <div class="map-detail__field"><dt>Class</dt><dd>Facility &mdash; storage</dd></div>
+              <div class="map-detail__field"><dt>Condition</dt><dd>Fair</dd></div>
+              <div class="map-detail__field"><dt>Year built</dt><dd>1991</dd></div>
+              <div class="map-detail__field"><dt>Replacement value</dt><dd>$1,900,000</dd></div>
+              <div class="map-detail__field"><dt>Open work orders</dt><dd>4</dd></div>
+              <div class="map-detail__field"><dt>Last inspection</dt><dd>Oct 2025</dd></div>
+              <div class="map-detail__field"><dt>Criticality</dt><dd>Seasonal &mdash; high</dd></div>
+            </dl>
+          </div>
+          <div class="map-detail__record" data-detail="p10" hidden>
+            <div class="map-detail__head">
+              <h3 class="map-detail__title">Fiber Backbone Extension</h3>
+              <span class="chip chip--warn">Attention</span>
+            </div>
+            <dl class="map-detail__grid">
+              <div class="map-detail__field"><dt>Project ID</dt><dd>CP-2415</dd></div>
+              <div class="map-detail__field"><dt>Class</dt><dd>Capital &mdash; technology</dd></div>
+              <div class="map-detail__field"><dt>Status</dt><dd>Monitoring &mdash; permit pending</dd></div>
+              <div class="map-detail__field"><dt>Budget</dt><dd>$620,000</dd></div>
+              <div class="map-detail__field"><dt>Committed</dt><dd>31%</dd></div>
+              <div class="map-detail__field"><dt>Target completion</dt><dd>Mar 2027</dd></div>
+              <div class="map-detail__field"><dt>Owner</dt><dd>Administration</dd></div>
+              <div class="map-detail__field"><dt>Note</dt><dd>County right-of-way approval outstanding</dd></div>
+            </dl>
+          </div>
+          <div class="map-detail__record" data-detail="p11" hidden>
+            <div class="map-detail__head">
+              <h3 class="map-detail__title">Fire Station 2</h3>
+              <span class="chip chip--good">Good</span>
+            </div>
+            <dl class="map-detail__grid">
+              <div class="map-detail__field"><dt>Asset ID</dt><dd>FAC-0122</dd></div>
+              <div class="map-detail__field"><dt>Class</dt><dd>Facility &mdash; public safety</dd></div>
+              <div class="map-detail__field"><dt>Condition</dt><dd>Good</dd></div>
+              <div class="map-detail__field"><dt>Year built</dt><dd>2011</dd></div>
+              <div class="map-detail__field"><dt>Replacement value</dt><dd>$3,600,000</dd></div>
+              <div class="map-detail__field"><dt>Open work orders</dt><dd>2</dd></div>
+              <div class="map-detail__field"><dt>Last inspection</dt><dd>Dec 2025</dd></div>
+              <div class="map-detail__field"><dt>Criticality</dt><dd>Critical</dd></div>
+            </dl>
+          </div>
+          <div class="map-detail__record" data-detail="p12" hidden>
+            <div class="map-detail__head">
+              <h3 class="map-detail__title">Slope Stability Watch Area</h3>
+              <span class="chip chip--warn">Attention</span>
+            </div>
+            <dl class="map-detail__grid">
+              <div class="map-detail__field"><dt>Zone ID</dt><dd>RSK-0044</dd></div>
+              <div class="map-detail__field"><dt>Class</dt><dd>Risk zone &mdash; geotechnical</dd></div>
+              <div class="map-detail__field"><dt>Exposure</dt><dd>1 roadway segment, 1 culvert</dd></div>
+              <div class="map-detail__field"><dt>Trigger</dt><dd>Freeze-thaw cycling with saturation</dd></div>
+              <div class="map-detail__field"><dt>Last activation</dt><dd>Mar 2025</dd></div>
+              <div class="map-detail__field"><dt>Mitigation</dt><dd>Monitoring; no capital item programmed</dd></div>
+              <div class="map-detail__field"><dt>Owner</dt><dd>Public Works</dd></div>
+              <div class="map-detail__field"><dt>Note</dt><dd>Candidate for next capital cycle</dd></div>
+            </dl>
+          </div>
+            </div>
+            <p class="map-canvas__note">Illustrative demonstration data. Geography is synthetic and does not depict any actual municipality, parcel, or utility network.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="split">
+          <div>
+            <div class="section-header section-header--left">
+              <span class="section-label">Why Spatial</span>
+              <h2 class="section-title">A Table Cannot Show You Adjacency</h2>
+            </div>
+            <div class="prose prose--wide">
+              <p>A condition register tells you that Lift Station 4 is in poor condition with eleven open work orders. A capital plan tells you that Ridge Road culvert replacement is bid over estimate. A risk register tells you a flood corridor activated last October.</p>
+              <p>None of those documents tells you that all three are within a half mile of each other, that the culvert project's detour route runs through the flood corridor, and that the lift station loses service when that corridor floods. That relationship only becomes visible when the operating record is placed on the ground.</p>
+              <p>This is the practical argument for spatial intelligence in operations, and it has nothing to do with maps being attractive. Adjacency drives sequencing. Two projects on the same corridor should be coordinated; two failures behind the same single point of failure should be treated as one problem; a risk zone that overlaps three critical assets is not the same risk as one that overlaps none.</p>
+              <p>Map Intelligence is a view of the same operating record that drives every other Nexus module &mdash; not a separate system with its own data. An asset's condition changes once, and the map, the dashboard, and the capital model all reflect it.</p>
+            </div>
+          </div>
+          <aside>
+            <div class="card card--flat">
+              <span class="card__eyebrow">Built Without</span>
+              <h3 class="card__title">No external map service</h3>
+              <p class="card__desc">This demonstration renders entirely in the browser with SVG and CSS. There is no third-party tile provider, no map API key, and no request leaving your browser to any mapping service while you use this page.</p>
+              <p class="card__desc">That choice is deliberate for a demonstration. In a client deployment, spatial data is rendered against the client's authoritative geographic base &mdash; typically their existing GIS &mdash; under their data governance terms, rather than pushed to a public service.</p>
+              <ul class="card__list" role="list">
+                <li>No external tiles, keys, or trackers on this page</li>
+                <li>Layer state and selection are local to your browser</li>
+                <li>Synthetic geography &mdash; no real parcels or utilities</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--alt">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label">Capabilities</span>
+          <h2 class="section-title">What Map Intelligence Provides</h2>
+          <p class="section-subtitle">Six spatial capabilities that change how operational and capital decisions get made.</p>
+        </div>
+        <div class="grid grid--3">
+          <article class="card reveal">
+            <span class="card__icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></span>
+            <h3 class="card__title">Layered operating picture</h3>
+            <p class="card__desc">Assets, projects, facilities, risk zones, and network routes drawn as independent layers that can be combined to answer a specific question rather than crowded onto one static map.</p>
+          </article>
+          <article class="card reveal">
+            <span class="card__icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>
+            <h3 class="card__title">Exposure analysis</h3>
+            <p class="card__desc">See which assets fall inside a flood corridor, slope watch area, or service interruption zone &mdash; and how many of those are critical with no redundancy.</p>
+          </article>
+          <article class="card reveal">
+            <span class="card__icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M9 19h5a4 4 0 0 0 0-8H10a4 4 0 0 1 0-8h5"/></svg></span>
+            <h3 class="card__title">Corridor coordination</h3>
+            <p class="card__desc">Identify capital projects, utility work, and maintenance activity competing for the same corridor before they are scheduled into conflict.</p>
+          </article>
+          <article class="card reveal">
+            <span class="card__icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21a9 9 0 1 0-9-9"/><path d="M12 12l5-3"/><circle cx="12" cy="12" r="1.6"/></svg></span>
+            <h3 class="card__title">Condition at a glance</h3>
+            <p class="card__desc">Condition and criticality expressed spatially, so degradation clusters become visible &mdash; which is usually where a systemic cause is hiding.</p>
+          </article>
+          <article class="card reveal">
+            <span class="card__icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 15h3"/></svg></span>
+            <h3 class="card__title">Capital sequencing</h3>
+            <p class="card__desc">Evaluate programmed work geographically to find adjacency savings, avoid tearing up new pavement, and sequence around access constraints.</p>
+          </article>
+          <article class="card reveal">
+            <span class="card__icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></span>
+            <h3 class="card__title">Response readiness</h3>
+            <p class="card__desc">During an event, see which assets are in the affected area, what condition they were in going in, and which access routes are compromised.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--dark">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-label section-label--light">Honest Scope</span>
+          <h2 class="section-title">What This Demonstration Is and Is Not</h2>
+        </div>
+        <div class="grid grid--3">
+          <div class="card card--dark">
+            <span class="card__eyebrow">Represents accurately</span>
+            <h3 class="card__title">The interaction model</h3>
+            <ul class="card__list" role="list">
+              <li>Layer control and visibility management</li>
+              <li>Condition and category filtering with context preserved</li>
+              <li>Record selection returning full operational detail</li>
+              <li>Network routes and zones rendered as distinct layers</li>
+              <li>Status expressed consistently with the rest of Nexus</li>
+            </ul>
+          </div>
+          <div class="card card--dark">
+            <span class="card__eyebrow">Simplified here</span>
+            <h3 class="card__title">The geography</h3>
+            <ul class="card__list" role="list">
+              <li>Synthetic coordinates, not a projected coordinate system</li>
+              <li>A dozen records rather than thousands</li>
+              <li>Illustrative routes rather than surveyed network geometry</li>
+              <li>No basemap, imagery, parcel fabric, or elevation model</li>
+              <li>No measurement, routing, or spatial query tools</li>
+            </ul>
+          </div>
+          <div class="card card--dark">
+            <span class="card__eyebrow">In a deployment</span>
+            <h3 class="card__title">The real implementation</h3>
+            <ul class="card__list" role="list">
+              <li>Rendered against the client's authoritative GIS base</li>
+              <li>Bidirectional link between spatial features and asset records</li>
+              <li>Condition, work order, and capital status driven by live data</li>
+              <li>Access controls consistent with the client's data governance</li>
+              <li>Export to the formats an engineering department already uses</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout callout--dark" style="margin-top:2rem">
+          <span class="callout__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>
+          <div>
+            <p><strong>On GIS.</strong> Most organizations that need this already have GIS, and often have had it for years. The problem is rarely the absence of spatial data &mdash; it is that the spatial layer and the operating record are separate systems that disagree. Map Intelligence is designed to join them, not to replace a working GIS investment.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div class="container cta-band__inner">
+        <div>
+          <h2 class="cta-band__title">See your own operation on the map</h2>
+          <p class="cta-band__text">In a working deployment, this view is populated from your asset register and your existing GIS — not from sample data.</p>
+        </div>
+        <div class="cta-band__actions">
+          <a href="../request-demo/" class="btn btn--gold">Request a Demo</a>
+          <a href="../nexus/" class="btn btn--outline">Explore Nexus</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== SITE FOOTER ===================== -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <a href="../" class="nav__logo" aria-label="GCS home">
+            <span class="logo-mark logo-mark--sm" aria-hidden="true">GCS</span>
+          </a>
+          <div>
+            <div class="footer__company-name">General Contractor Solutions LLC</div>
+            <div class="footer__tagline">Building Better Organizations</div>
+          </div>
+        </div>
+        <nav class="footer__nav footer__nav--wide" aria-label="Footer navigation">
+          <div class="footer__nav-group">
+            <h4 class="footer__nav-heading">Company</h4>
+            <ul role="list">
+              <li><a href="../about/">About GCS</a></li>
+              <li><a href="../founder/">Sam Hurwitz, Founder</a></li>
+              <li><a href="../reference/">Reference Implementations</a></li>
+              <li><a href="../contact/">Contact</a></li>
+            </ul>
+          </div>
+          <div class="footer__nav-group">
+            <h4 class="footer__nav-heading">Capabilities</h4>
+            <ul role="list">
+              <li><a href="../solutions/">Solutions Overview</a></li>
+              <li><a href="../industries/">Industries Served</a></li>
+              <li><a href="../solutions/#operations-intelligence">Operations Intelligence</a></li>
+              <li><a href="../solutions/#capital-planning">Capital Planning</a></li>
+              <li><a href="../solutions/#compliance">Compliance</a></li>
+            </ul>
+          </div>
+          <div class="footer__nav-group">
+            <h4 class="footer__nav-heading">Platform</h4>
+            <ul role="list">
+              <li><a href="../nexus/">Nexus Platform</a></li>
+              <li><a href="../map-intelligence/">Nexus Map Intelligence</a></li>
+              <li><a href="../founder-command-center/">Founder Command Center</a></li>
+              <li><a href="../genesis/">Genesis AI Workforce</a></li>
+            </ul>
+          </div>
+          <div class="footer__nav-group">
+            <h4 class="footer__nav-heading">Engage</h4>
+            <ul role="list">
+              <li><a href="../request-demo/">Request a Demo</a></li>
+              <li><a href="../contact/">Contact GCS</a></li>
+              <li><a href="../responsible-ai/">Responsible AI</a></li>
+              <li><a href="../accessibility/">Accessibility</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <div class="footer__bottom">
+        <p class="footer__copy">&copy; <span id="footer-year">2026</span> General Contractor Solutions LLC. All rights reserved.</p>
+        <nav class="footer__legal" aria-label="Legal and policy links">
+          <a href="../privacy/">Privacy Policy</a>
+          <a href="../terms/">Terms of Service</a>
+          <a href="../accessibility/">Accessibility Statement</a>
+          <a href="../responsible-ai/">Responsible AI</a>
+        </nav>
+      </div>
+      <p class="footer__note">
+        GCS turns operations into intelligence, action, and accountability. Dashboards, maps, queues, and metrics shown
+        anywhere on this site are illustrative demonstrations built to communicate product concepts. They do not represent
+        any client's live data, and no figure on this site should be read as a performance guarantee.
+      </p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>
