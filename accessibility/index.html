@@ -40,24 +40,25 @@
   <header class="site-header" role="banner">
     <nav class="nav container" aria-label="Primary navigation">
       <a href="../" class="nav__logo" aria-label="GCS home">
-        <img src="../assets/gcs-logo.svg" alt="GCS — Build Better Organizations" class="nav__logo-img" width="120" height="90" />
+        <span class="nav__logo-plate">
+          <img src="../assets/gcs-logo.svg" alt="GCS — Building Better Organizations" class="nav__logo-img" width="136" height="48" />
+        </span>
       </a>
-
       <button class="nav__toggle" type="button" aria-controls="nav-menu" aria-expanded="false" aria-label="Open navigation menu">
         <span class="hamburger" aria-hidden="true"></span>
         <span class="hamburger" aria-hidden="true"></span>
         <span class="hamburger" aria-hidden="true"></span>
       </button>
-
       <ul class="nav__links" id="nav-menu" role="list">
-        <li><a href="../about/" class="nav__link">About</a></li>
-        <li><a href="../solutions/" class="nav__link">Solutions</a></li>
-        <li><a href="../industries/" class="nav__link">Industries</a></li>
-        <li><a href="../nexus/" class="nav__link">Nexus Platform</a></li>
-        <li><a href="../genesis/" class="nav__link">Genesis</a></li>
-        <li><a href="../map-intelligence/" class="nav__link">Map Intelligence</a></li>
-        <li><a href="../contact/" class="nav__link">Contact</a></li>
-        <li><a href="../request-demo/" class="nav__link nav__link--cta">Request Demo</a></li>
+          <li><a href="../" class="nav__link">Home</a></li>
+          <li><a href="../solutions/" class="nav__link">Solutions</a></li>
+          <li><a href="../industries/" class="nav__link">Industries</a></li>
+          <li><a href="../nexus/" class="nav__link">Nexus</a></li>
+          <li><a href="../map-intelligence/" class="nav__link">Map Intelligence</a></li>
+          <li><a href="../genesis/" class="nav__link">Genesis</a></li>
+          <li><a href="../about/" class="nav__link">About</a></li>
+          <li><a href="../contact/" class="nav__link">Contact</a></li>
+          <li><a href="../request-demo/" class="nav__link nav__link--cta">Request Demo</a></li>
       </ul>
     </nav>
   </header>
@@ -170,71 +171,37 @@
     </section>
 
   </main>
-
   <!-- ===================== SITE FOOTER ===================== -->
   <footer class="site-footer" role="contentinfo">
     <div class="container">
-      <div class="footer__top">
-        <div class="footer__brand">
-          <a href="../" class="nav__logo" aria-label="GCS home">
-            <img src="../assets/gcs-logo.svg" alt="GCS" class="nav__logo-img nav__logo-img--sm" width="80" height="60" />
-          </a>
-          <div>
-            <div class="footer__company-name">GCS</div>
-            <div class="footer__tagline">Building Better Organizations</div>
+      <div class="footer__grid">
+        <div>
+          <div class="footer__brand">
+            <a href="../" class="nav__logo" aria-label="GCS home">
+              <span class="nav__logo-plate">
+                <img src="../assets/gcs-logo.svg" alt="GCS" class="nav__logo-img nav__logo-img--sm" width="110" height="40" />
+              </span>
+            </a>
+            <div>
+              <div class="footer__company-name">GCS — Building Better Organizations</div>
+              <div class="footer__tagline">Operations Intelligence</div>
+            </div>
+          </div>
+          <p class="footer__subtext" style="margin-top:1rem;max-width:36rem;">GCS helps organizations connect operations, assets, financials, geography, and governed AI into one accountable operating picture.</p>
+        </div>
+        <div>
+          <div class="footer__nav"><a href="../">Home</a> <a href="../solutions/">Solutions</a> <a href="../industries/">Industries</a> <a href="../nexus/">Nexus</a> <a href="../map-intelligence/">Map Intelligence</a> <a href="../genesis/">Genesis</a> <a href="../about/">About</a> <a href="../contact/">Contact</a> <a href="../request-demo/">Request Demo</a></div>
+          <div class="footer__nav" style="margin-top:1rem;">
+            <a href="../privacy/">Privacy</a>
+            <a href="../responsible-ai/">Responsible AI</a>
+            <a href="../contact/">Contact</a>
           </div>
         </div>
-        <nav class="footer__nav footer__nav--wide" aria-label="Footer navigation">
-          <div class="footer__nav-group">
-            <h4 class="footer__nav-heading">Company</h4>
-            <ul role="list">
-              <li><a href="../about/">About GCS</a></li>
-              <li><a href="../contact/">Contact</a></li>
-            </ul>
-          </div>
-          <div class="footer__nav-group">
-            <h4 class="footer__nav-heading">Capabilities</h4>
-            <ul role="list">
-              <li><a href="../solutions/">Solutions Overview</a></li>
-              <li><a href="../industries/">Industries Served</a></li>
-              <li><a href="../solutions/#operations-intelligence">Operations Intelligence</a></li>
-              <li><a href="../solutions/#capital-planning">Capital Planning</a></li>
-              <li><a href="../solutions/#compliance">Compliance</a></li>
-            </ul>
-          </div>
-          <div class="footer__nav-group">
-            <h4 class="footer__nav-heading">Platform</h4>
-            <ul role="list">
-              <li><a href="../nexus/">Nexus Platform</a></li>
-              <li><a href="../map-intelligence/">Nexus Map Intelligence</a></li>
-              <li><a href="../genesis/">Genesis AI Workforce</a></li>
-            </ul>
-          </div>
-          <div class="footer__nav-group">
-            <h4 class="footer__nav-heading">Engage</h4>
-            <ul role="list">
-              <li><a href="../request-demo/">Request a Demo</a></li>
-              <li><a href="../contact/">Contact GCS</a></li>
-              <li><a href="../responsible-ai/">Responsible AI</a></li>
-              <li><a href="../accessibility/">Accessibility</a></li>
-            </ul>
-          </div>
-        </nav>
       </div>
       <div class="footer__bottom">
-        <p class="footer__copy">&copy; <span id="footer-year">2026</span> GCS. All rights reserved.</p>
-        <nav class="footer__legal" aria-label="Legal and policy links">
-          <a href="../privacy/">Privacy Policy</a>
-          <a href="../terms/">Terms of Service</a>
-          <a href="../accessibility/">Accessibility Statement</a>
-          <a href="../responsible-ai/">Responsible AI</a>
-        </nav>
+        <span>&copy; <span id="footer-year"></span> GCS. All rights reserved.</span>
+        <span>Operations intelligence for organizations that run the real world.</span>
       </div>
-      <p class="footer__note">
-        GCS turns operations into intelligence, action, and accountability. Dashboards, maps, queues, and metrics shown
-        anywhere on this site are illustrative demonstrations built to communicate product concepts. They do not represent
-        any client's live data, and no figure on this site should be read as a performance guarantee.
-      </p>
     </div>
   </footer>
 
