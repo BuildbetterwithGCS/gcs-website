@@ -1,42 +1,52 @@
 /* ============================================================
-   GCS — General Contractor Solutions LLC
+   GCS
    Stylesheet: styles.css
    ============================================================ */
 
 /* ---- CSS Custom Properties ---- */
+/* ============================================================
+   GCS — Black Diamond Temporary Brand System
+   Awaiting official approved GCS brand palette.
+   All colors are centralized here for easy substitution.
+   ============================================================ */
+
 :root {
-  /* Brand Colors */
-  --color-primary:       #0a4d8c;   /* deep navy blue */
-  --color-primary-dark:  #063566;
-  --color-primary-light: #1a6abf;
-  --color-accent:        #1e88e5;
-  --color-accent-light:  #42a5f5;
-  --color-gold:          #c9a227;
-  --color-gold-light:    #e8c547;
+  /* --- PRIMARY: Near-Black Background --- */
+  --color-primary:       #1a1a1a;   /* near-black primary */
+  --color-primary-dark:  #0d0d0d;
+  --color-primary-light: #2e2e2e;
 
-  /* Neutrals */
-  --color-ink:           #0d1117;
-  --color-ink-80:        #1c2735;
-  --color-ink-60:        #2e4057;
-  --color-text:          #1a2332;
-  --color-text-muted:    #4a5568;
-  --color-text-subtle:   #718096;
+  /* --- ACCENT: Silver-Gray --- */
+  --color-accent:        #9ca3af;   /* neutral silver-gray accent */
+  --color-accent-light:  #d1d5db;
+
+  /* --- REMOVED: no gold/yellow --- */
+  --color-gold:          #9ca3af;   /* mapped to gray — awaiting official palette */
+  --color-gold-light:    #d1d5db;
+
+  /* --- NEUTRALS --- */
+  --color-ink:           #0a0a0a;
+  --color-ink-80:        #111111;
+  --color-ink-60:        #1c1c1c;
+  --color-text:          #f5f5f5;   /* primary white text */
+  --color-text-muted:    #9ca3af;   /* secondary gray text */
+  --color-text-subtle:   #6b7280;
   --color-surface:       #ffffff;
-  --color-surface-alt:   #f7f9fc;
+  --color-surface-alt:   #f9f9f9;
   --color-surface-card:  #ffffff;
-  --color-border:        #e2e8f0;
-  --color-border-light:  #edf2f7;
+  --color-border:        #e5e7eb;
+  --color-border-light:  #f3f4f6;
 
-  /* Dark Section Colors */
-  --color-dark-bg:       #0d1117;
-  --color-dark-surface:  #151c24;
-  --color-dark-border:   rgba(255,255,255,0.08);
-  --color-dark-text:     #e2e8f0;
-  --color-dark-muted:    #a0aec0;
+  /* --- DARK SECTIONS (primary usage) --- */
+  --color-dark-bg:       #0a0a0a;
+  --color-dark-surface:  #141414;
+  --color-dark-border:   rgba(255,255,255,0.10);
+  --color-dark-text:     #f5f5f5;
+  --color-dark-muted:    #9ca3af;
 
-  /* Accent Section */
-  --color-accent-bg:     #0a3d6b;
-  --color-accent-surface: #0e4a80;
+  /* --- ACCENT SECTIONS --- */
+  --color-accent-bg:     #111111;
+  --color-accent-surface: #1a1a1a;
 
   /* Typography */
   --font-body:    'Inter', system-ui, -apple-system, sans-serif;

@@ -1,5 +1,5 @@
 /**
- * GCS — General Contractor Solutions LLC
+ * GCS
  * main.js — Site interactions
  */
 
