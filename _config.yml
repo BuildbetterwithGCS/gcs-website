@@ -1,8 +1,8 @@
 # GitHub Pages Configuration
-# General Contractor Solutions LLC — GCS Website
+# GCS Website
 
 theme: null
-title: "GCS — General Contractor Solutions LLC"
+title: "GCS — Building Better Organizations"
 description: "GCS turns operations into intelligence, action, and accountability. Building Better Organizations."
 url: "https://buildbetterwithgcs.github.io"
 baseurl: "/gcs-website"
@@ -20,9 +20,9 @@ exclude:
 
 # SEO & metadata
 author:
-  name: "Sam Hurwitz"
+  name: "GCS"
   email: "info@buildbetterwithgcs.com"
 
 # Social
 social:
-  name: "General Contractor Solutions LLC"
+  name: "GCS"
