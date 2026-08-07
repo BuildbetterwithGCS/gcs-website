@@ -60,22 +60,18 @@
 
     <section class="section section--light" style="padding-top:2rem;" aria-labelledby="sandbox-heading">
       <div class="container">
-        <div class="callout callout--navy" style="margin-bottom:1.5rem;" role="note" aria-label="Demonstration notice">
-          <strong style="color:var(--gcs-navy);font-size:0.8125rem;">DEMONSTRATION ENVIRONMENT — SYNTHETIC DATA ONLY.</strong>
-          <span style="font-size:0.8125rem;color:var(--text-muted);"> All organizations, names, figures, and records shown below are entirely fictional and created solely for demonstration purposes. They do not represent real clients, partners, or operational data.</span>
+        <div class="callout callout--navy" style="margin-bottom:1.5rem;border-left:4px solid var(--gcs-navy);" role="note" aria-label="Demonstration notice">
+          <strong style="color:var(--gcs-navy);font-size:0.8125rem;display:block;margin-bottom:0.25rem;">⚠ DEMONSTRATION ENVIRONMENT — SYNTHETIC DATA ONLY</strong>
+          <span style="font-size:0.8125rem;color:var(--text-muted);">All organizations, names, figures, and records shown below are entirely fictional and created solely for demonstration purposes. They do not represent real clients, partners, employees, or operational data. No login required.</span>
         </div>
 
-        <h2 id="sandbox-heading" class="section-title" style="margin-bottom:1.25rem;">Select a demonstration organization</h2>
+        <h2 id="sandbox-heading" class="section-title" style="margin-bottom:0.5rem;">Select a demonstration organization</h2>
+        <p style="font-size:0.9375rem;color:var(--text-muted);margin-bottom:1.5rem;">Each opens a complete fictional organization using clearly labeled synthetic data across every department and function.</p>
         <div class="grid--3" style="margin-bottom:2rem;" id="org-selector">
           <button class="sandbox-org-btn card" type="button" data-org="municipality" style="text-align:left;cursor:pointer;" aria-pressed="false">
-            <span class="card__eyebrow">Government</span>
+            <span class="card__eyebrow">Municipal Government</span>
             <h3 class="card__title">Riverside Sample Municipality</h3>
-            <p class="card__desc">A fictional mid-sized municipal government with public works, utilities, finance, HR, and public safety departments.</p>
-          </button>
-          <button class="sandbox-org-btn card" type="button" data-org="school" style="text-align:left;cursor:pointer;" aria-pressed="false">
-            <span class="card__eyebrow">K–12 Education</span>
-            <h3 class="card__title">Lakewood Sample School District</h3>
-            <p class="card__desc">A fictional school district managing facilities, transportation, finance, HR, and capital projects across multiple campuses.</p>
+            <p class="card__desc">A fictional mid-sized city with public works, utilities, finance, HR, fleet, safety, and public safety departments.</p>
           </button>
           <button class="sandbox-org-btn card" type="button" data-org="manufacturer" style="text-align:left;cursor:pointer;" aria-pressed="false">
             <span class="card__eyebrow">Manufacturing</span>
@@ -85,17 +81,52 @@
           <button class="sandbox-org-btn card" type="button" data-org="hospital" style="text-align:left;cursor:pointer;" aria-pressed="false">
             <span class="card__eyebrow">Healthcare</span>
             <h3 class="card__title">Valley Sample Hospital</h3>
-            <p class="card__desc">A fictional hospital with facilities, compliance, HR, procurement, and patient services operations.</p>
+            <p class="card__desc">A fictional hospital with facilities, compliance, HR, procurement, equipment management, and patient services.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="school" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">School District</span>
+            <h3 class="card__title">Lakewood Sample School District</h3>
+            <p class="card__desc">A fictional district managing facilities, transportation, finance, HR, and capital projects across multiple campuses.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="warehouse" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">Warehousing &amp; Distribution</span>
+            <h3 class="card__title">Crossroads Sample Warehouse</h3>
+            <p class="card__desc">A fictional distribution center with inventory, receiving, shipping, fleet, and supply chain operations.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="construction" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">Construction</span>
+            <h3 class="card__title">Greenfield Sample Construction</h3>
+            <p class="card__desc">A fictional construction firm managing projects, equipment, safety, procurement, and subcontractors.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="airport" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">Airport</span>
+            <h3 class="card__title">Skyport Sample Airport</h3>
+            <p class="card__desc">A fictional regional airport with facilities, fleet, compliance, operations, safety, and capital planning.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="utility" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">Utility</span>
+            <h3 class="card__title">Valley Sample Utility District</h3>
+            <p class="card__desc">A fictional public utility with infrastructure assets, GIS, capital projects, compliance, and field operations.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="corporate" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">Corporate Enterprise</span>
+            <h3 class="card__title">Summit Sample Corporation</h3>
+            <p class="card__desc">A fictional multi-site enterprise with finance, HR, procurement, facilities, fleet, and performance management.</p>
           </button>
           <button class="sandbox-org-btn card" type="button" data-org="nonprofit" style="text-align:left;cursor:pointer;" aria-pressed="false">
             <span class="card__eyebrow">Nonprofit</span>
             <h3 class="card__title">Northside Sample Nonprofit</h3>
-            <p class="card__desc">A fictional nonprofit with grants, fundraising, program delivery, compliance, and donor management needs.</p>
+            <p class="card__desc">A fictional nonprofit with grants, fundraising, program delivery, compliance, and donor management.</p>
           </button>
           <button class="sandbox-org-btn card" type="button" data-org="enterprise" style="text-align:left;cursor:pointer;" aria-pressed="false">
-            <span class="card__eyebrow">Private Enterprise</span>
-            <h3 class="card__title">Summit Sample Company</h3>
-            <p class="card__desc">A fictional private company with finance, HR, logistics, warehousing, procurement, and fleet operations.</p>
+            <span class="card__eyebrow">Professional Services</span>
+            <h3 class="card__title">Meridian Sample Firm</h3>
+            <p class="card__desc">A fictional professional services company with projects, HR, finance, knowledge management, and client delivery.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="pubsafety" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">Public Safety</span>
+            <h3 class="card__title">Metro Sample Public Safety</h3>
+            <p class="card__desc">A fictional public safety agency with fleet, facilities, compliance, safety, emergency management, and HR.</p>
           </button>
         </div>
 
@@ -581,12 +612,60 @@
         'alert-4': 'Major grant application — deadline in 14 days'
       },
       enterprise: {
-        name: 'Summit Sample Company',
+        name: 'Meridian Sample Firm',
         'budget-util': '79.1%', 'open-wo': '118', 'wf-cap': '91%', 'risk-open': '27',
-        'alert-1': 'Warehouse — 3 dock doors require maintenance',
-        'alert-2': 'Fleet — 6 commercial vehicles past PM due',
+        'alert-1': 'Facility lease — 2 locations expiring Q1',
+        'alert-2': 'Fleet — 6 vehicles past PM due',
         'alert-3': 'Logistics — carrier contract renewal upcoming',
         'alert-4': 'ERP integration — Phase 1 testing on schedule'
+      },
+      warehouse: {
+        name: 'Crossroads Sample Warehouse',
+        'budget-util': '82.4%', 'open-wo': '67', 'wf-cap': '96%', 'risk-open': '19',
+        'alert-1': 'Dock door 7 — hydraulic repair required',
+        'alert-2': 'Inventory — 28 SKUs at reorder threshold',
+        'alert-3': 'Safety — forklift certification 4 operators overdue',
+        'alert-4': 'Shipping volume — on track for Q4 target'
+      },
+      construction: {
+        name: 'Greenfield Sample Construction',
+        'budget-util': '68.7%', 'open-wo': '84', 'wf-cap': '88%', 'risk-open': '38',
+        'alert-1': 'Site A — safety inspection due in 3 days',
+        'alert-2': 'Equipment — 3 units scheduled for service',
+        'alert-3': 'Subcontractor — 2 payment approvals pending',
+        'alert-4': 'Project Phase 3 — 5 days ahead of schedule'
+      },
+      airport: {
+        name: 'Skyport Sample Airport',
+        'budget-util': '76.3%', 'open-wo': '203', 'wf-cap': '93%', 'risk-open': '47',
+        'alert-1': 'Runway lighting — 3 fixtures out, repair ordered',
+        'alert-2': 'FAA compliance documentation — 2 items due',
+        'alert-3': 'Ground fleet — 8 vehicles scheduled for PM',
+        'alert-4': 'Capital project — terminal expansion on budget'
+      },
+      utility: {
+        name: 'Valley Sample Utility District',
+        'budget-util': '71.8%', 'open-wo': '178', 'wf-cap': '84%', 'risk-open': '56',
+        'alert-1': 'Water main segment 14-B — critical condition',
+        'alert-2': 'EPA compliance report — due in 10 days',
+        'alert-3': 'Capital project R-7 — permit review pending',
+        'alert-4': 'Asset inspection cycle — 94% complete on schedule'
+      },
+      corporate: {
+        name: 'Summit Sample Corporation',
+        'budget-util': '74.6%', 'open-wo': '156', 'wf-cap': '90%', 'risk-open': '34',
+        'alert-1': 'Facilities — HVAC service for 2 office locations',
+        'alert-2': 'HR — 8 performance reviews overdue',
+        'alert-3': 'Procurement — 3 vendor contracts due for renewal',
+        'alert-4': 'Capital project — new data center on schedule'
+      },
+      pubsafety: {
+        name: 'Metro Sample Public Safety',
+        'budget-util': '80.2%', 'open-wo': '94', 'wf-cap': '86%', 'risk-open': '23',
+        'alert-1': 'Fleet — 5 vehicles past scheduled maintenance',
+        'alert-2': 'Training compliance — 14 certifications expiring',
+        'alert-3': 'Equipment — 3 critical items past inspection',
+        'alert-4': 'Emergency plan review — scheduled next month'
       }
     };
 

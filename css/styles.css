@@ -228,6 +228,216 @@ button { cursor: pointer; background: none; border: none; font: inherit; }
   background: var(--gcs-navy);
   color: var(--text-on-dark);
 }
+.section--soft {
+  background: var(--surface-muted);
+}
+
+/* ============================================================
+   HERO — Tagline lines
+   ============================================================ */
+.hero__taglines {
+  display: flex; justify-content: center; flex-wrap: wrap; gap: 0 1.5rem;
+  font-family: var(--font-heading);
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+  font-weight: 700; color: var(--gcs-navy);
+  margin-bottom: 1.25rem;
+}
+.hero__taglines span {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.hero__taglines span + span::before {
+  content: '·'; color: var(--gcs-green); font-size: 1.2em;
+}
+
+/* ============================================================
+   VALUE PROPS (Homepage)
+   ============================================================ */
+.value-props-grid {
+  display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center;
+}
+.value-prop-item {
+  display: inline-flex; align-items: center; gap: 0.375rem;
+  padding: 0.45rem 1rem;
+  background: var(--surface-white);
+  border: 1px solid var(--surface-border);
+  border-radius: 100px; font-size: 0.875rem; font-weight: 500;
+  color: var(--text-primary); box-shadow: var(--shadow-sm);
+}
+.value-prop-icon { color: var(--gcs-green-dk); font-weight: 700; }
+
+/* ============================================================
+   NEXUS CONNECTIVITY GRAPHIC — Homepage
+   ============================================================ */
+.nexus-connect-section { }
+.nexus-radial-wrapper {
+  position: relative;
+  width: 100%; max-width: 820px;
+  margin: 0 auto 2rem;
+  min-height: 600px;
+}
+.nexus-radial {
+  position: relative;
+  width: 100%;
+  min-height: 600px;
+}
+/* SVG lines layer */
+.nexus-radial__svg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 1;
+}
+/* Center hub */
+.nexus-hub-el {
+  position: absolute;
+  z-index: 3;
+  transform: translate(-50%, -50%);
+  background: var(--gcs-navy);
+  color: #fff;
+  border-radius: var(--radius-xl);
+  padding: 1.25rem 2rem;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(15,31,61,0.22);
+  min-width: 130px;
+  pointer-events: none;
+}
+.nexus-hub-el__gcs {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--gcs-green-lt); margin-bottom: 0.125rem;
+}
+.nexus-hub-el__name {
+  font-family: var(--font-heading); font-size: 1.375rem; font-weight: 800;
+  color: #fff; letter-spacing: 0.02em;
+}
+.nexus-hub-el__sub {
+  font-size: 0.6rem; color: rgba(255,255,255,0.6); letter-spacing: 0.08em;
+  text-transform: uppercase; margin-top: 0.25rem;
+}
+/* Department node buttons */
+.nexus-node-btn {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  padding: 0.3rem 0.7rem;
+  font-size: 0.72rem; font-weight: 600;
+  background: var(--surface-white);
+  border: 1px solid var(--surface-border);
+  border-radius: 100px;
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  line-height: 1.4;
+}
+.nexus-node-btn:hover,
+.nexus-node-btn.active {
+  background: var(--gcs-navy);
+  color: #fff;
+  border-color: var(--gcs-navy);
+  box-shadow: 0 4px 14px rgba(15,31,61,0.18);
+}
+.nexus-node-btn[data-group="leadership"] { border-color: var(--gcs-navy); }
+.nexus-node-btn[data-group="finance"]    { border-color: var(--gcs-blue); }
+.nexus-node-btn[data-group="people"]     { border-color: #3a6b8e; }
+.nexus-node-btn[data-group="compliance"] { border-color: var(--gcs-green-dk); }
+.nexus-node-btn[data-group="operations"] { border-color: var(--gcs-green); }
+.nexus-node-btn[data-group="supply"]     { border-color: #5a8a2a; }
+.nexus-node-btn[data-group="technical"]  { border-color: #4a7a3a; }
+.nexus-node-btn[data-group="intelligence"] { border-color: #3a6a2e; }
+.nexus-node-btn[data-group="projects"]   { border-color: var(--gcs-blue); }
+/* Highlighted SVG lines */
+.nexus-radial__svg line.highlight {
+  stroke: var(--gcs-green) !important;
+  stroke-opacity: 1 !important;
+  stroke-width: 2 !important;
+}
+
+/* Fallback chip grid (shown when radial is too small) */
+.nexus-dept-grid {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;
+  max-width: 860px; margin: 0 auto 2rem;
+  display: none; /* hidden by default — shown if JS disabled or on small screens */
+}
+noscript .nexus-dept-grid { display: flex; }
+
+/* Outcome row */
+.nexus-outcome-row {
+  text-align: center; margin-top: 2rem;
+}
+.nexus-outcome-center {
+  display: flex; flex-direction: column; align-items: center; gap: 1.25rem;
+}
+.nexus-outcome-hub {
+  display: inline-block;
+  background: var(--gcs-navy); color: #fff;
+  border-radius: var(--radius-xl); padding: 1rem 2.5rem;
+  box-shadow: var(--shadow-lg);
+}
+.nexus-outcome-hub__gcs {
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--gcs-green-lt); margin-bottom: 0.125rem;
+}
+.nexus-outcome-hub__name {
+  font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #fff;
+}
+.nexus-outcome-hub__tag {
+  font-size: 0.65rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.125rem;
+}
+.nexus-outcome-pills {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0.625rem;
+}
+
+/* ============================================================
+   INTERACTIVE on SOFT (light) background
+   ============================================================ */
+.section--soft .interactive__step-title {
+  color: var(--text-primary);
+}
+.section--soft .selector-card {
+  background: var(--surface-white);
+  border-color: var(--surface-border);
+  color: var(--text-primary);
+}
+.section--soft .selector-card:hover,
+.section--soft .selector-card[aria-pressed="true"] {
+  background: rgba(122,170,53,0.08);
+  border-color: var(--gcs-green);
+}
+.section--soft .selector-card strong { color: var(--text-primary); }
+.section--soft .selector-card span  { color: var(--text-muted); }
+.section--soft .challenge-button {
+  background: var(--surface-white);
+  border-color: var(--surface-border);
+  color: var(--text-primary);
+}
+.section--soft .challenge-button:hover,
+.section--soft .challenge-button[aria-pressed="true"] {
+  background: rgba(122,170,53,0.08);
+  border-color: var(--gcs-green);
+}
+.section--soft .challenge-button strong { color: var(--text-primary); }
+.section--soft .challenge-button span  { color: var(--text-muted); }
+.section--soft .interactive__summary {
+  background: var(--surface-white);
+  border-color: var(--surface-border);
+}
+.section--soft .interactive__summary p { color: var(--text-secondary); }
+.section--soft .section-title  { color: var(--text-primary); }
+.section--soft .section-subtitle { color: var(--text-muted); }
+.section--soft .section-note   { color: var(--text-subtle); }
+.section--soft .section-label  { color: var(--gcs-green-dk); background: rgba(122,170,53,0.10); border-color: rgba(122,170,53,0.2); }
+.section--soft .workflow-card  { background: var(--surface-white); }
+.section--soft .workflow-card h3 { color: var(--text-primary); }
+.section--soft .workflow-card p  { color: var(--text-muted); }
+
+/* Nexus page process steps on muted */
+.section--muted .process-step {
+  background: var(--surface-white);
+  border-color: var(--surface-border);
+}
+.section--muted .process-step .card__title { color: var(--text-primary); }
+.section--muted .process-step p { color: var(--text-muted); }
+
+
 .section--accent {
   background: linear-gradient(135deg, var(--gcs-navy) 0%, #1a3460 100%);
   color: var(--text-on-dark);
@@ -1117,6 +1327,7 @@ button { cursor: pointer; background: none; border: none; font: inherit; }
   .map-shell { grid-template-columns: 200px 1fr; }
   .dept-panel { grid-template-columns: 1fr; }
   .dash-row--4 { grid-template-columns: repeat(2, 1fr); }
+  .nexus-radial-wrapper { min-height: 500px; }
 }
 
 @media (max-width: 760px) {
@@ -1147,6 +1358,8 @@ button { cursor: pointer; background: none; border: none; font: inherit; }
   .footer__bottom, .hero__actions, .page-hero__actions, .cta-actions, .form-result__actions {
     flex-direction: column; align-items: stretch;
   }
+  .hero__taglines { flex-direction: column; gap: 0.25rem; }
+  .hero__taglines span + span::before { display: none; }
   .btn, .btn--primary, .btn--outline, .btn--ghost, .btn--gold, .btn--secondary, .btn--outline-white { width: 100%; }
 
   .card, .feature-card, .module-card, .workflow-card, .contact-card,

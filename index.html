@@ -61,82 +61,109 @@
     <section class="hero--home">
       <div class="hero__bg-grid" aria-hidden="true"></div>
       <div class="container hero__content">
-        <span class="hero__eyebrow">Enterprise Intelligence &amp; Consulting</span>
+        <span class="hero__eyebrow">Enterprise Operations Intelligence</span>
         <h1 class="hero__title">
           <span class="hero__brand-line">GCS</span>
           Building Better Organizations.
         </h1>
-        <p class="hero__subtitle">One connected intelligence environment for the people, departments, assets, finances, risks, workflows, and decisions that run your organization.</p>
+        <p class="hero__taglines" aria-label="Platform positioning">
+          <span>One Platform.</span>
+          <span>Every Department.</span>
+          <span>Every Industry.</span>
+        </p>
+        <p class="hero__subtitle">GCS connects every department, function, asset, workflow, and decision of your organization into one intelligent operational platform.</p>
         <div class="hero__actions">
           <a href="sandbox/" class="btn btn--primary btn--lg">Explore Nexus — No Login</a>
           <a href="request-demo/" class="btn btn--outline btn--lg">Request a Demo</a>
         </div>
         <div class="hero__metrics">
           <div class="stat-card">
-            <strong>One connected platform</strong>
-            <span>Nexus brings every department, function, and decision into one accountable picture.</span>
+            <strong>Enterprise Operations Intelligence</strong>
+            <span>The platform that connects an organization's existing systems, departments, people, and data into one intelligent operating environment.</span>
           </div>
           <div class="stat-card">
-            <strong>Enterprise-wide intelligence</strong>
-            <span>Finance, HR, Safety, Risk, Facilities, Procurement, Logistics, and more — connected.</span>
+            <strong>Every Department Connected</strong>
+            <span>Finance, HR, Safety, Risk, Facilities, Fleet, Operations, Procurement, Logistics, GIS, Compliance, and more — one platform.</span>
           </div>
           <div class="stat-card">
-            <strong>Advisory + Platform</strong>
-            <span>GCS combines consulting expertise with enterprise software and governed analytics.</span>
+            <strong>Every Industry Served</strong>
+            <span>Government, Healthcare, Manufacturing, Education, Utilities, Transportation, Corporate Enterprise, and more — same platform, different configuration.</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ORGANIZATIONAL CONNECTIVITY -->
-    <section class="section section--muted" aria-labelledby="connect-heading">
+    <!-- ORGANIZATIONAL CONNECTIVITY GRAPHIC -->
+    <section class="section section--muted nexus-connect-section" aria-labelledby="connect-heading">
       <div class="container">
         <div class="section-header section-header--center">
-          <span class="section-label">The GCS Principle</span>
-          <h2 id="connect-heading" class="section-title">The entire organization connects.</h2>
-          <p class="section-subtitle">GCS is not a single-department solution. Every function, team, and decision connects through Nexus — creating one picture from which leadership can see, decide, and act.</p>
+          <span class="section-label">The Nexus Platform</span>
+          <h2 id="connect-heading" class="section-title">Every department connects into one platform.</h2>
+          <p class="section-subtitle">Nexus is the Enterprise Operations Intelligence Platform. Every function of the organization connects — creating one picture from which leadership can see, decide, and act.</p>
         </div>
-        <div class="org-connect">
-          <div class="org-connect__ring">
-            <span class="org-chip"><span class="org-chip__dot"></span>Executive</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Finance</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Accounting</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Budget</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Revenue</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Grants &amp; Funding</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Human Resources</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Workforce</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Safety</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Risk &amp; Compliance</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Facilities</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Maintenance</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Fleet</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Assets</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Capital Planning</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Projects</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Procurement</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Inventory</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Warehouse</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Shipping &amp; Receiving</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Logistics</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Supply Chain</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>GIS / Geography</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Information Technology</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Documents &amp; Knowledge</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Work Orders</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Performance</span>
-            <span class="org-chip"><span class="org-chip__dot"></span>Board Reporting</span>
+
+        <!-- Interactive radial connectivity map — rendered by JS -->
+        <div class="nexus-radial-wrapper" aria-label="Interactive organizational connectivity diagram — all departments connected to Nexus">
+          <div class="nexus-radial" id="nexus-radial">
+            <!-- Populated by nexus-map.js -->
           </div>
-          <div class="org-connect__arrow" aria-hidden="true">CONNECTS THROUGH</div>
-          <div class="org-connect__nexus">
-            <div class="org-connect__nexus-label">GCS</div>
-            <div class="org-connect__nexus-name">NEXUS</div>
-          </div>
-          <div class="org-connect__arrow" aria-hidden="true">PRODUCES</div>
-          <div class="org-connect__outcome">
-            <span class="outcome-pill">Intelligence</span>
-            <span class="outcome-pill">Action</span>
-            <span class="outcome-pill">Accountability</span>
+        </div>
+
+        <!-- Accessible text fallback / supplemental list -->
+        <div class="nexus-dept-grid" aria-label="All departments connected through Nexus">
+          <span class="org-chip"><span class="org-chip__dot"></span>CEO</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Executive Leadership</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Finance</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Accounting</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Payroll</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Human Resources</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Risk</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Safety</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Legal</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Facilities</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Fleet</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Maintenance</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Operations</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Projects</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Purchasing</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Procurement</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Warehousing</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Inventory</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Shipping</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Receiving</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Engineering</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>GIS</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Asset Management</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Capital Planning</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Compliance</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Emergency Management</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Customer Service</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>IT</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Analytics</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Dashboards</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Knowledge</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Documents</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Artificial Intelligence</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Reporting</span>
+          <span class="org-chip"><span class="org-chip__dot"></span>Maps</span>
+        </div>
+
+        <div class="nexus-outcome-row" aria-label="Platform outcomes">
+          <div class="nexus-outcome-center">
+            <div class="nexus-outcome-hub">
+              <div class="nexus-outcome-hub__gcs">GCS</div>
+              <div class="nexus-outcome-hub__name">NEXUS</div>
+              <div class="nexus-outcome-hub__tag">Operations Intelligence Platform</div>
+            </div>
+            <div class="nexus-outcome-arrows" aria-hidden="true"></div>
+            <div class="nexus-outcome-pills">
+              <span class="outcome-pill">Connect Data</span>
+              <span class="outcome-pill">Connect Departments</span>
+              <span class="outcome-pill">Improve Decisions</span>
+              <span class="outcome-pill">Reduce Risk</span>
+              <span class="outcome-pill">Increase Accountability</span>
+              <span class="outcome-pill">Executive Visibility</span>
+            </div>
           </div>
         </div>
       </div>
@@ -269,35 +296,43 @@
     </section>
 
     <!-- HOW GCS WORKS -->
-    <section class="section section--light" aria-labelledby="how-heading">
+    <section class="section section--muted" aria-labelledby="how-heading">
       <div class="container">
         <div class="section-header section-header--center">
-          <span class="section-label">Advisory + Platform</span>
-          <h2 id="how-heading" class="section-title">Consulting and software that work together.</h2>
-          <p class="section-subtitle">GCS does not deploy software before the operating model is understood. Advisory and platform reinforce each other.</p>
+          <span class="section-label">Enterprise Operations Intelligence</span>
+          <h2 id="how-heading" class="section-title">The platform that connects it all.</h2>
+          <p class="section-subtitle">GCS Nexus is the Enterprise Operations Intelligence Layer — connecting your organization's existing systems, departments, people, assets, workflows, and data into one intelligent platform.</p>
         </div>
         <div class="grid--3">
           <article class="card reveal">
             <div class="card__icon">01</div>
-            <h3 class="card__title">Assess &amp; Diagnose</h3>
-            <p class="card__desc">GCS engages with the actual operational context — understanding workflows, gaps, data quality, and organizational structure before anything is configured.</p>
+            <h3 class="card__title">Connect Data</h3>
+            <p class="card__desc">Nexus integrates with existing systems and sources — connecting financial data, operational records, asset information, and workforce data into one trusted picture.</p>
           </article>
           <article class="card reveal">
             <div class="card__icon">02</div>
-            <h3 class="card__title">Design &amp; Organize</h3>
-            <p class="card__desc">Operating models are designed or improved. Data is standardized. Accountability structures are established. The operating picture is built to reflect reality.</p>
+            <h3 class="card__title">Connect Departments</h3>
+            <p class="card__desc">Every department operates in context of the whole organization. Finance connects to Operations. Safety connects to HR. Risk connects to everything. One platform, every function.</p>
           </article>
           <article class="card reveal">
             <div class="card__icon">03</div>
-            <h3 class="card__title">Implement &amp; Sustain</h3>
-            <p class="card__desc">Nexus supports and sustains the improved operating model — connecting departments, automating workflows, surfacing intelligence, and enabling executive accountability.</p>
+            <h3 class="card__title">Improve Decisions</h3>
+            <p class="card__desc">Nexus surfaces intelligence, automates workflows, flags risks, and delivers executive visibility — giving leadership the information needed to act with confidence.</p>
           </article>
+        </div>
+        <div class="value-props-grid" style="margin-top:2rem;">
+          <div class="value-prop-item"><span class="value-prop-icon" aria-hidden="true">✓</span><span>Reduce Risk</span></div>
+          <div class="value-prop-item"><span class="value-prop-icon" aria-hidden="true">✓</span><span>Increase Accountability</span></div>
+          <div class="value-prop-item"><span class="value-prop-icon" aria-hidden="true">✓</span><span>Executive Visibility</span></div>
+          <div class="value-prop-item"><span class="value-prop-icon" aria-hidden="true">✓</span><span>Operational Intelligence</span></div>
+          <div class="value-prop-item"><span class="value-prop-icon" aria-hidden="true">✓</span><span>Connect Existing Software</span></div>
+          <div class="value-prop-item"><span class="value-prop-icon" aria-hidden="true">✓</span><span>Everything Connected</span></div>
         </div>
       </div>
     </section>
 
     <!-- INTERACTIVE SCENARIO -->
-    <section class="section section--dark" aria-labelledby="interactive-heading">
+    <section class="section section--soft" aria-labelledby="interactive-heading">
       <div class="container">
         <div class="section-header section-header--center">
           <span class="section-label section-label--light">Interactive</span>
@@ -409,5 +444,6 @@
 
   <script src="js/main.js"></script>
   <script src="js/interactive.js"></script>
+  <script src="js/nexus-map.js"></script>
 </body>
 </html>
