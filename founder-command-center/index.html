@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>Founder Command Center | Executive Operating View — GCS</title>
+  <meta name="title" content="Founder Command Center | Executive Operating View — GCS" />
+  <meta name="description" content="The internal GCS operating view: mission queue, approvals, department status, repository health, risk summary, and recorded decisions. Illustrative demonstration data." />
+  <meta name="author" content="General Contractor Solutions LLC" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://buildbetterwithgcs.com/founder-command-center/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="GCS — General Contractor Solutions LLC" />
+  <meta property="og:url" content="https://buildbetterwithgcs.com/founder-command-center/" />
+  <meta property="og:title" content="Founder Command Center | Executive Operating View — GCS" />
+  <meta property="og:description" content="The internal GCS operating view: mission queue, approvals, department status, repository health, risk summary, and recorded decisions. Illustrative demonstration data." />
+  <meta property="og:image" content="https://buildbetterwithgcs.com/assets/og-image.png" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Founder Command Center | Executive Operating View — GCS" />
+  <meta name="twitter:description" content="The internal GCS operating view: mission queue, approvals, department status, repository health, risk summary, and recorded decisions. Illustrative demonstration data." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="../assets/favicon.svg" />
+  <meta name="theme-color" content="#0a4d8c" />
+  <noscript><style>.reveal{opacity:1 !important;transform:none !important;}</style></noscript>
+</head>
+<body class="theme-dash">
+
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <!-- ===================== SITE HEADER ===================== -->
+  <header class="site-header" role="banner">
+    <nav class="nav container" aria-label="Primary navigation">
+      <a href="../" class="nav__logo" aria-label="GCS — General Contractor Solutions LLC home">
+        <span class="logo-mark" aria-hidden="true">GCS</span>
+        <span class="logo-text">General Contractor Solutions</span>
+      </a>
+
+      <button class="nav__toggle" type="button" aria-controls="nav-menu" aria-expanded="false" aria-label="Open navigation menu">
+        <span class="hamburger" aria-hidden="true"></span>
+        <span class="hamburger" aria-hidden="true"></span>
+        <span class="hamburger" aria-hidden="true"></span>
+      </button>
+
+      <ul class="nav__links" id="nav-menu" role="list">
+        <li><a href="../about/" class="nav__link">About</a></li>
+        <li><a href="../solutions/" class="nav__link">Solutions</a></li>
+        <li><a href="../industries/" class="nav__link">Industries</a></li>
+        <li><a href="../nexus/" class="nav__link">Nexus Platform</a></li>
+        <li><a href="../genesis/" class="nav__link">Genesis</a></li>
+        <li><a href="../founder-command-center/" class="nav__link" aria-current="page">Command Center</a></li>
+        <li><a href="../map-intelligence/" class="nav__link">Map Intelligence</a></li>
+        <li><a href="../reference/" class="nav__link">Reference</a></li>
+        <li><a href="../founder/" class="nav__link">Founder</a></li>
+        <li><a href="../contact/" class="nav__link">Contact</a></li>
+        <li><a href="../request-demo/" class="nav__link nav__link--cta">Request Demo</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ===================== MAIN ===================== -->
+  <main id="main-content">
+
+    <section class="page-hero page-hero--dash">
+      <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <a href="../">Home</a>
+          <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+          <span aria-current="page">Founder Command Center</span>
+        </nav>
+        <div class="page-hero__inner">
+          <span class="page-hero__eyebrow">Founder Command Center</span>
+          <h1 class="page-hero__title">One Screen. Everything That Needs a Decision.</h1>
+          <p class="page-hero__lead">The internal operating view GCS runs on itself &mdash; missions, approvals, department status, repositories, risk, and decisions in a single place. Published here as a working demonstration of the operating discipline we build for clients.</p>
+        <div class="page-hero__actions"><a href="../nexus/" class="btn btn--gold">See the Nexus Platform</a><a href="../request-demo/" class="btn btn--outline">Request a Demo</a></div>
+        </div>
+      </div>
+    </section>
+    <section class="dash">
+      <div class="container">
+        <div class="demo-banner" role="note">
+          <span class="demo-banner__tag">Illustrative Demonstration Data</span>
+          <span>Every figure, identifier, date, and status indicator on this page is illustrative demonstration data created to show the structure of the Founder Command Center. It is not a live feed of GCS internal operations, and the repository panel is not connected to a build system.</span>
+        </div>
+
+        <div class="dash__bar">
+          <div class="status-strip">
+            <span class="status-strip__item"><span class="pulse-dot" aria-hidden="true"></span> Command Center &mdash; demonstration view</span>
+            <span class="status-strip__item">Reporting period: current</span>
+            <span class="status-strip__item">Operator: Founder</span>
+            <span class="status-strip__item">Scope: internal operations</span>
+          </div>
+        </div>
+
+        <h2 class="section-title" style="font-size:1.375rem;color:#fff;margin:2rem 0 1rem">Executive Dashboard</h2>
+        <div class="kpi-grid">
+          <article class="kpi kpi--gold">
+            <span class="kpi__label">Active Missions</span>
+            <span class="kpi__value">7</span>
+            <span class="kpi__delta kpi__delta--up">&#9650; 2 opened this period</span>
+          </article>
+          <article class="kpi kpi--warn">
+            <span class="kpi__label">Awaiting Approval</span>
+            <span class="kpi__value">4</span>
+            <span class="kpi__delta kpi__delta--flat">&#9679; Oldest: 3 days</span>
+          </article>
+          <article class="kpi">
+            <span class="kpi__label">Departments</span>
+            <span class="kpi__value">6</span>
+            <span class="kpi__delta kpi__delta--flat">&#9679; 4 healthy, 2 attention</span>
+          </article>
+          <article class="kpi">
+            <span class="kpi__label">Repositories</span>
+            <span class="kpi__value">6</span>
+            <span class="kpi__delta kpi__delta--flat">&#9679; 1 needs attention</span>
+          </article>
+          <article class="kpi kpi--risk">
+            <span class="kpi__label">Open Risks</span>
+            <span class="kpi__value">6</span>
+            <span class="kpi__delta kpi__delta--flat">&#9679; 2 high, 3 medium</span>
+          </article>
+          <article class="kpi kpi--good">
+            <span class="kpi__label">Health Index</span>
+            <span class="kpi__value">84</span>
+            <span class="kpi__delta kpi__delta--up">&#9650; 3 pts vs. last period</span>
+          </article>
+        </div>
+
+        <div class="dash__layout" style="margin-top:1.5rem">
+          <div class="dash__main">
+
+            <section class="panel" id="mission-queue">
+              <div class="panel__head">
+                <div>
+                  <h3 class="panel__title">Mission Queue</h3>
+                  <p class="panel__hint">Active initiatives with an owner, a department, and a definition of done.</p>
+                </div>
+                <span class="demo-tag">Illustrative</span>
+              </div>
+              <div class="panel__body panel__body--flush">
+                <div class="dtable-wrap" tabindex="0" role="region" aria-label="Scrollable data table">
+                  <table class="dtable">
+                    <caption>Illustrative demonstration data &mdash; internal mission queue</caption>
+                    <thead>
+                      <tr><th scope="col">ID</th><th scope="col">Mission</th><th scope="col">Department</th><th scope="col">Priority</th><th scope="col">Status</th><th scope="col">Progress</th></tr>
+                    </thead>
+                    <tbody>
+                  <tr>
+                    <td><strong>M-118</strong></td>
+                    <td>Publish reference implementation documentation</td>
+                    <td>Marketing &amp; Positioning</td>
+                    <td><span class="chip chip--risk">High</span></td>
+                    <td>In progress</td>
+                    <td>
+                      <div class="mini-bar mini-bar--good"><span style="width:70%"></span></div>
+                      <span style="font-size:0.6875rem;color:var(--dash-dim)">70%</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>M-121</strong></td>
+                    <td>Complete Nexus asset module condition scoring</td>
+                    <td>Platform Engineering</td>
+                    <td><span class="chip chip--risk">High</span></td>
+                    <td>In progress</td>
+                    <td>
+                      <div class="mini-bar mini-bar--warn"><span style="width:55%"></span></div>
+                      <span style="font-size:0.6875rem;color:var(--dash-dim)">55%</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>M-124</strong></td>
+                    <td>Draft Genesis agent charter template v2</td>
+                    <td>AI Governance</td>
+                    <td><span class="chip chip--warn">Medium</span></td>
+                    <td>In review</td>
+                    <td>
+                      <div class="mini-bar mini-bar--good"><span style="width:85%"></span></div>
+                      <span style="font-size:0.6875rem;color:var(--dash-dim)">85%</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>M-127</strong></td>
+                    <td>Municipal readiness assessment package</td>
+                    <td>Service Design</td>
+                    <td><span class="chip chip--risk">High</span></td>
+                    <td>In progress</td>
+                    <td>
+                      <div class="mini-bar mini-bar--warn"><span style="width:40%"></span></div>
+                      <span style="font-size:0.6875rem;color:var(--dash-dim)">40%</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>M-129</strong></td>
+                    <td>Accessibility audit remediation pass</td>
+                    <td>Platform Engineering</td>
+                    <td><span class="chip chip--warn">Medium</span></td>
+                    <td>Queued</td>
+                    <td>
+                      <div class="mini-bar mini-bar--neutral"><span style="width:0%"></span></div>
+                      <span style="font-size:0.6875rem;color:var(--dash-dim)">0%</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>M-131</strong></td>
+                    <td>Capital planning model &mdash; scenario engine</td>
+                    <td>Platform Engineering</td>
+                    <td><span class="chip chip--warn">Medium</span></td>
+                    <td>In progress</td>
+                    <td>
+                      <div class="mini-bar mini-bar--neutral"><span style="width:25%"></span></div>
+                      <span style="font-size:0.6875rem;color:var(--dash-dim)">25%</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>M-134</strong></td>
+                    <td>Compliance obligation library expansion</td>
+                    <td>Service Design</td>
+                    <td><span class="chip chip--neutral">Low</span></td>
+                    <td>Queued</td>
+                    <td>
+                      <div class="mini-bar mini-bar--neutral"><span style="width:0%"></span></div>
+                      <span style="font-size:0.6875rem;color:var(--dash-dim)">0%</span>
+                    </td>
+                  </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel" id="approvals">
+              <div class="panel__head">
+                <div>
+                  <h3 class="panel__title">Approvals Queue</h3>
+                  <p class="panel__hint">Items that cannot proceed without an explicit decision. Buttons below respond locally in your browser &mdash; nothing is transmitted.</p>
+                </div>
+                <span class="demo-tag">Illustrative</span>
+              </div>
+              <div class="panel__body">
+                <ul class="queue" data-queue role="list">
+            <li class="queue__item">
+              <div class="queue__head">
+                <div>
+                  <span class="queue__id">A-2201</span>
+                  <h4 class="queue__title">Genesis &mdash; Obligation Coordinator scope expansion</h4>
+                </div>
+                <span class="chip chip--warn">Decision required</span>
+              </div>
+              <p class="queue__desc">Requests read access to the contractor certification register in addition to the internal obligation register. Expands notification scope to external vendor contacts, which crosses the internal-recipients boundary in the current charter.</p>
+              <div class="queue__foot">
+                <span class="queue__meta">AI Governance</span>
+                <div class="queue__actions">
+                  <button type="button" class="btn-mini btn-mini--approve" data-queue-action="Approved">Approve</button>
+                  <button type="button" class="btn-mini btn-mini--hold" data-queue-action="Held for review">Hold</button>
+                  <button type="button" class="btn-mini" data-queue-action="Delegated">Delegate</button>
+                </div>
+              </div>
+            </li>
+            <li class="queue__item">
+              <div class="queue__head">
+                <div>
+                  <span class="queue__id">A-2203</span>
+                  <h4 class="queue__title">Publish Nexus map intelligence demonstration</h4>
+                </div>
+                <span class="chip chip--warn">Ready for release</span>
+              </div>
+              <p class="queue__desc">Public-facing interactive demonstration using synthetic geography and illustrative data only. Confirm every data point is labeled as demonstration and no client geography is identifiable.</p>
+              <div class="queue__foot">
+                <span class="queue__meta">Marketing &amp; Positioning</span>
+                <div class="queue__actions">
+                  <button type="button" class="btn-mini btn-mini--approve" data-queue-action="Approved">Approve</button>
+                  <button type="button" class="btn-mini btn-mini--hold" data-queue-action="Held for review">Hold</button>
+                  <button type="button" class="btn-mini" data-queue-action="Delegated">Delegate</button>
+                </div>
+              </div>
+            </li>
+            <li class="queue__item">
+              <div class="queue__head">
+                <div>
+                  <span class="queue__id">A-2205</span>
+                  <h4 class="queue__title">Adopt revised condition scoring methodology</h4>
+                </div>
+                <span class="chip chip--warn">Decision required</span>
+              </div>
+              <p class="queue__desc">Moves from a five-point subjective scale to a weighted composite of age, observed condition, failure history, and criticality. Changes ratings on approximately 340 sample assets and affects capital sequencing output.</p>
+              <div class="queue__foot">
+                <span class="queue__meta">Platform Engineering</span>
+                <div class="queue__actions">
+                  <button type="button" class="btn-mini btn-mini--approve" data-queue-action="Approved">Approve</button>
+                  <button type="button" class="btn-mini btn-mini--hold" data-queue-action="Held for review">Hold</button>
+                  <button type="button" class="btn-mini" data-queue-action="Delegated">Delegate</button>
+                </div>
+              </div>
+            </li>
+            <li class="queue__item">
+              <div class="queue__head">
+                <div>
+                  <span class="queue__id">A-2208</span>
+                  <h4 class="queue__title">Retention schedule for Genesis decision records</h4>
+                </div>
+                <span class="chip chip--warn">Decision required</span>
+              </div>
+              <p class="queue__desc">Proposes seven-year append-only retention aligned to typical public-sector record schedules, with client-configurable extension. Affects storage design and export tooling.</p>
+              <div class="queue__foot">
+                <span class="queue__meta">AI Governance</span>
+                <div class="queue__actions">
+                  <button type="button" class="btn-mini btn-mini--approve" data-queue-action="Approved">Approve</button>
+                  <button type="button" class="btn-mini btn-mini--hold" data-queue-action="Held for review">Hold</button>
+                  <button type="button" class="btn-mini" data-queue-action="Delegated">Delegate</button>
+                </div>
+              </div>
+            </li>
+                </ul>
+              </div>
+            </section>
+
+            <section class="panel" id="active-projects">
+              <div class="panel__head">
+                <div>
+                  <h3 class="panel__title">Active Projects</h3>
+                  <p class="panel__hint">Delivery and build work currently in flight.</p>
+                </div>
+                <span class="demo-tag">Illustrative</span>
+              </div>
+              <div class="panel__body">
+                <div class="chart">
+            <div class="chart__row">
+              <span class="chart__label">Nexus asset module</span>
+              <div class="chart__track"><div class="chart__fill chart__fill--warn" style="width:55%; animation-delay:0ms"></div></div>
+              <span class="chart__value">55%</span>
+            </div>
+            <div class="chart__row">
+              <span class="chart__label">Public site &amp; demonstrations</span>
+              <div class="chart__track"><div class="chart__fill chart__fill--good" style="width:88%; animation-delay:80ms"></div></div>
+              <span class="chart__value">88%</span>
+            </div>
+            <div class="chart__row">
+              <span class="chart__label">Genesis charter framework</span>
+              <div class="chart__track"><div class="chart__fill chart__fill--good" style="width:70%; animation-delay:160ms"></div></div>
+              <span class="chart__value">70%</span>
+            </div>
+            <div class="chart__row">
+              <span class="chart__label">Capital scenario engine</span>
+              <div class="chart__track"><div class="chart__fill chart__fill--risk" style="width:25%; animation-delay:240ms"></div></div>
+              <span class="chart__value">25%</span>
+            </div>
+            <div class="chart__row">
+              <span class="chart__label">Assessment package</span>
+              <div class="chart__track"><div class="chart__fill chart__fill--warn" style="width:40%; animation-delay:320ms"></div></div>
+              <span class="chart__value">40%</span>
+            </div>
+            <div class="chart__row">
+              <span class="chart__label">Map intelligence layers</span>
+              <div class="chart__track"><div class="chart__fill chart__fill--warn" style="width:62%; animation-delay:400ms"></div></div>
+              <span class="chart__value">62%</span>
+            </div>
+            <div class="chart__row">
+              <span class="chart__label">Compliance obligation library</span>
+              <div class="chart__track"><div class="chart__fill chart__fill--risk" style="width:34%; animation-delay:480ms"></div></div>
+              <span class="chart__value">34%</span>
+            </div>
+                </div>
+                <p class="panel__hint" style="margin-top:1rem">Bars show completion against the defined scope for each active workstream in this sample.</p>
+              </div>
+            </section>
+
+            <section class="panel" id="departments">
+              <div class="panel__head">
+                <div>
+                  <h3 class="panel__title">Department Status</h3>
+                  <p class="panel__hint">Six internal functions, their active mission count, and current load.</p>
+                </div>
+                <span class="demo-tag">Illustrative</span>
+              </div>
+              <div class="panel__body panel__body--flush">
+                <div class="dtable-wrap" tabindex="0" role="region" aria-label="Scrollable data table">
+                  <table class="dtable">
+                    <caption>Illustrative demonstration data &mdash; department status</caption>
+                    <thead>
+                      <tr><th scope="col">Department</th><th scope="col">Active</th><th scope="col">Status</th><th scope="col">Load</th></tr>
+                    </thead>
+                    <tbody>
+                  <tr>
+                    <td><strong>Platform Engineering</strong><br /><span style="font-size:0.6875rem;color:var(--dash-dim)">Nexus modules, data model, interface</span></td>
+                    <td>4</td>
+                    <td><span class="chip chip--good">Healthy</span></td>
+                    <td>
+                      <div class="mini-bar mini-bar--good"><span style="width:82%"></span></div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Service Design</strong><br /><span style="font-size:0.6875rem;color:var(--dash-dim)">Assessment methods, deliverable standards</span></td>
+                    <td>3</td>
+                    <td><span class="chip chip--good">Healthy</span></td>
+                    <td>
+                      <div class="mini-bar mini-bar--good"><span style="width:74%"></span></div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>AI Governance</strong><br /><span style="font-size:0.6875rem;color:var(--dash-dim)">Charters, approvals, evaluation, audit</span></td>
+                    <td>2</td>
+                    <td><span class="chip chip--warn">Attention</span></td>
+                    <td>
+                      <div class="mini-bar mini-bar--warn"><span style="width:58%"></span></div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Marketing &amp; Positioning</strong><br /><span style="font-size:0.6875rem;color:var(--dash-dim)">Site, messaging, reference material</span></td>
+                    <td>3</td>
+                    <td><span class="chip chip--good">Healthy</span></td>
+                    <td>
+                      <div class="mini-bar mini-bar--good"><span style="width:88%"></span></div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Client Delivery</strong><br /><span style="font-size:0.6875rem;color:var(--dash-dim)">Engagement execution and support</span></td>
+                    <td>2</td>
+                    <td><span class="chip chip--good">Healthy</span></td>
+                    <td>
+                      <div class="mini-bar mini-bar--good"><span style="width:79%"></span></div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><strong>Operations &amp; Admin</strong><br /><span style="font-size:0.6875rem;color:var(--dash-dim)">Internal process, records, finance</span></td>
+                    <td>1</td>
+                    <td><span class="chip chip--warn">Attention</span></td>
+                    <td>
+                      <div class="mini-bar mini-bar--warn"><span style="width:61%"></span></div>
+                    </td>
+                  </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel" id="repositories">
+              <div class="panel__head">
+                <div>
+                  <h3 class="panel__title">Repository Status</h3>
+                  <p class="panel__hint">Build and branch state across platform repositories. Mock status &mdash; not connected to a live build system.</p>
+                </div>
+                <span class="demo-tag">Mock</span>
+              </div>
+              <div class="panel__body panel__body--flush">
+                <div class="dtable-wrap" tabindex="0" role="region" aria-label="Scrollable data table">
+                  <table class="dtable">
+                    <caption>Illustrative demonstration data &mdash; repository and build status (mock)</caption>
+                    <thead>
+                      <tr><th scope="col">Repository</th><th scope="col">Branch</th><th scope="col">Checks</th><th scope="col">Last commit</th><th scope="col">Open PRs</th></tr>
+                    </thead>
+                    <tbody>
+                  <tr>
+                    <td><strong>gcs-website</strong><br /><span style="font-size:0.6875rem;color:var(--dash-dim)">Public marketing site and platform demonstrations</span></td>
+                    <td><code style="font-size:0.6875rem">main</code></td>
+                    <td><span class="chip chip--good">Passing</span></td>
+                    <td>2 hours ago</td>
+                    <td>&mdash;</td>
+                  </tr>
+                  <tr>
+                    <td><strong>nexus-core</strong><br /><span style="font-size:0.6875rem;color:var(--dash-dim)">Platform data model and services</span></td>
+                    <td><code style="font-size:0.6875rem">main</code></td>
+                    <td><span class="chip chip--good">Passing</span></td>
+                    <td>yesterday</td>
+                    <td>3</td>
+                  </tr>
+                  <tr>
+                    <td><strong>nexus-ui</strong><br /><span style="font-size:0.6875rem;color:var(--dash-dim)">Interface components and dashboards</span></td>
+                    <td><code style="font-size:0.6875rem">develop</code></td>
+                    <td><span class="chip chip--good">Passing</span></td>
+                    <td>yesterday</td>
+                    <td>5</td>
+                  </tr>
+                  <tr>
+                    <td><strong>genesis-agents</strong><br /><span style="font-size:0.6875rem;color:var(--dash-dim)">Agent charters, harnesses, evaluation suites</span></td>
+                    <td><code style="font-size:0.6875rem">develop</code></td>
+                    <td><span class="chip chip--warn">Attention</span></td>
+                    <td>3 days ago</td>
+                    <td>8</td>
+                  </tr>
+                  <tr>
+                    <td><strong>gcs-methods</strong><br /><span style="font-size:0.6875rem;color:var(--dash-dim)">Assessment frameworks and deliverable templates</span></td>
+                    <td><code style="font-size:0.6875rem">main</code></td>
+                    <td><span class="chip chip--good">Passing</span></td>
+                    <td>5 days ago</td>
+                    <td>1</td>
+                  </tr>
+                  <tr>
+                    <td><strong>nexus-map</strong><br /><span style="font-size:0.6875rem;color:var(--dash-dim)">Spatial layer definitions and rendering</span></td>
+                    <td><code style="font-size:0.6875rem">develop</code></td>
+                    <td><span class="chip chip--neutral">Not run</span></td>
+                    <td>6 days ago</td>
+                    <td>2</td>
+                  </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel" id="risk-summary">
+              <div class="panel__head">
+                <div>
+                  <h3 class="panel__title">Risk Summary</h3>
+                  <p class="panel__hint">The risks the founder actually tracks, with the mitigation actually in place.</p>
+                </div>
+                <span class="demo-tag">Illustrative</span>
+              </div>
+              <div class="panel__body">
+                <div class="grid grid--2" style="gap:1rem">
+              <article class="card card--dark">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem">
+                  <h4 class="card__title" style="margin:0">Capability expectation gap</h4>
+                  <span class="chip chip--risk">High</span>
+                </div>
+                <p class="card__eyebrow" style="margin-top:0.5rem">Market</p>
+                <p class="card__desc">Buyers hear &ldquo;AI workforce&rdquo; and assume a finished autonomous product. Mitigation: explicit maturity labels on every agent, published boundaries, and a stated position that Genesis is delivered inside engagements today.</p>
+              </article>
+              <article class="card card--dark">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem">
+                  <h4 class="card__title" style="margin:0">Founder concentration</h4>
+                  <span class="chip chip--risk">High</span>
+                </div>
+                <p class="card__eyebrow" style="margin-top:0.5rem">Structural</p>
+                <p class="card__desc">Direction, approval authority, and technical depth concentrate in one person. Mitigation in progress: written charters, documented methods, and decision records that make the reasoning transferable rather than tacit.</p>
+              </article>
+              <article class="card card--dark">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem">
+                  <h4 class="card__title" style="margin:0">Public-sector procurement cycle</h4>
+                  <span class="chip chip--warn">Medium</span>
+                </div>
+                <p class="card__eyebrow" style="margin-top:0.5rem">Commercial</p>
+                <p class="card__desc">Municipal buying cycles are long and budget-bound. Mitigation: scoped assessment engagements sized to fit existing professional-services authority rather than requiring a capital appropriation.</p>
+              </article>
+              <article class="card card--dark">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem">
+                  <h4 class="card__title" style="margin:0">Data quality at intake</h4>
+                  <span class="chip chip--warn">Medium</span>
+                </div>
+                <p class="card__eyebrow" style="margin-top:0.5rem">Delivery</p>
+                <p class="card__desc">Client asset and work records are frequently incomplete, which limits what any analysis can honestly conclude. Mitigation: intake assessment states data confidence explicitly before any recommendation is made.</p>
+              </article>
+              <article class="card card--dark">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem">
+                  <h4 class="card__title" style="margin:0">Model provider dependency</h4>
+                  <span class="chip chip--warn">Medium</span>
+                </div>
+                <p class="card__eyebrow" style="margin-top:0.5rem">Technical</p>
+                <p class="card__desc">Agent behavior depends partly on third-party model providers whose behavior can change. Mitigation: evaluation suites run on a fixed cadence, and provider arrangements are disclosed to clients.</p>
+              </article>
+              <article class="card card--dark">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem">
+                  <h4 class="card__title" style="margin:0">Scope creep in engagements</h4>
+                  <span class="chip chip--neutral">Low</span>
+                </div>
+                <p class="card__eyebrow" style="margin-top:0.5rem">Delivery</p>
+                <p class="card__desc">Operational assessments surface adjacent problems that clients want addressed immediately. Mitigation: findings outside scope are documented and quoted separately rather than absorbed.</p>
+              </article>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel" id="upcoming">
+              <div class="panel__head">
+                <div>
+                  <h3 class="panel__title">Upcoming Work</h3>
+                  <p class="panel__hint">What is committed next, by horizon.</p>
+                </div>
+                <span class="demo-tag">Illustrative</span>
+              </div>
+              <div class="panel__body panel__body--flush">
+                <div class="dtable-wrap" tabindex="0" role="region" aria-label="Scrollable data table">
+                  <table class="dtable">
+                    <caption>Illustrative demonstration data &mdash; upcoming committed work</caption>
+                    <thead>
+                      <tr><th scope="col">Horizon</th><th scope="col">Work item</th><th scope="col">Department</th></tr>
+                    </thead>
+                    <tbody>
+                  <tr>
+                    <td><span class="chip chip--risk">This week</span></td>
+                    <td><strong>Nexus asset module &mdash; condition scoring merge</strong></td>
+                    <td>Platform Engineering</td>
+                  </tr>
+                  <tr>
+                    <td><span class="chip chip--warn">This week</span></td>
+                    <td><strong>Genesis charter template v2 review</strong></td>
+                    <td>AI Governance</td>
+                  </tr>
+                  <tr>
+                    <td><span class="chip chip--warn">This week</span></td>
+                    <td><strong>Accessibility remediation pass on public site</strong></td>
+                    <td>Platform Engineering</td>
+                  </tr>
+                  <tr>
+                    <td><span class="chip chip--warn">Next week</span></td>
+                    <td><strong>Municipal readiness assessment package draft</strong></td>
+                    <td>Service Design</td>
+                  </tr>
+                  <tr>
+                    <td><span class="chip chip--warn">Next week</span></td>
+                    <td><strong>Capital scenario engine &mdash; first working model</strong></td>
+                    <td>Platform Engineering</td>
+                  </tr>
+                  <tr>
+                    <td><span class="chip chip--neutral">This month</span></td>
+                    <td><strong>Compliance obligation library expansion</strong></td>
+                    <td>Service Design</td>
+                  </tr>
+                  <tr>
+                    <td><span class="chip chip--neutral">This month</span></td>
+                    <td><strong>Decision record export tooling</strong></td>
+                    <td>AI Governance</td>
+                  </tr>
+                  <tr>
+                    <td><span class="chip chip--neutral">This quarter</span></td>
+                    <td><strong>Reference implementation documentation release</strong></td>
+                    <td>Marketing &amp; Positioning</td>
+                  </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+          </div>
+
+          <aside class="dash__aside">
+
+            <section class="panel" id="operational-health">
+              <div class="panel__head"><h3 class="panel__title">Operational Health</h3><span class="demo-tag">Illustrative</span></div>
+              <div class="panel__body">
+                <div class="gauge">
+                  <svg viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="Gauge showing an illustrative composite operational health index of 84 out of 100.">
+                    <circle class="gauge__track" cx="60" cy="60" r="48" />
+                    <circle class="gauge__value gauge__value--good" cx="60" cy="60" r="48" transform="rotate(-90 60 60)" />
+                    <text class="gauge__num" x="60" y="58" text-anchor="middle">84</text>
+                    <text class="gauge__cap" x="60" y="76" text-anchor="middle">HEALTH INDEX</text>
+                  </svg>
+                  <p class="panel__hint">Composite of mission velocity, approval latency, build health, and risk posture.</p>
+                </div>
+                <div class="chart" style="margin-top:1.25rem">
+            <div class="chart__row">
+              <span class="chart__label">Mission velocity</span>
+              <div class="chart__track"><div class="chart__fill chart__fill--good" style="width:78%; animation-delay:0ms"></div></div>
+              <span class="chart__value">78</span>
+            </div>
+            <div class="chart__row">
+              <span class="chart__label">Approval latency</span>
+              <div class="chart__track"><div class="chart__fill chart__fill--warn" style="width:64%; animation-delay:80ms"></div></div>
+              <span class="chart__value">64</span>
+            </div>
+            <div class="chart__row">
+              <span class="chart__label">Build health</span>
+              <div class="chart__track"><div class="chart__fill chart__fill--good" style="width:83%; animation-delay:160ms"></div></div>
+              <span class="chart__value">83</span>
+            </div>
+            <div class="chart__row">
+              <span class="chart__label">Documentation currency</span>
+              <div class="chart__track"><div class="chart__fill chart__fill--good" style="width:71%; animation-delay:240ms"></div></div>
+              <span class="chart__value">71</span>
+            </div>
+            <div class="chart__row">
+              <span class="chart__label">Risk posture</span>
+              <div class="chart__track"><div class="chart__fill chart__fill--warn" style="width:58%; animation-delay:320ms"></div></div>
+              <span class="chart__value">58</span>
+            </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel" id="ai-workforce">
+              <div class="panel__head"><h3 class="panel__title">AI Workforce Overview</h3><span class="demo-tag">Illustrative</span></div>
+              <div class="panel__body">
+                <div class="kpi-grid kpi-grid--tight">
+                  <article class="kpi kpi--gold"><span class="kpi__label">Agents Defined</span><span class="kpi__value">12</span></article>
+                  <article class="kpi"><span class="kpi__label">In Development</span><span class="kpi__value">6</span></article>
+                  <article class="kpi"><span class="kpi__label">Concept Stage</span><span class="kpi__value">6</span></article>
+                  <article class="kpi kpi--warn"><span class="kpi__label">Awaiting Charter</span><span class="kpi__value">2</span></article>
+                </div>
+                <div class="chart" style="margin-top:1.25rem">
+            <div class="chart__row">
+              <span class="chart__label">Charter coverage</span>
+              <div class="chart__track"><div class="chart__fill chart__fill--gold" style="width:83%; animation-delay:0ms"></div></div>
+              <span class="chart__value">10 / 12</span>
+            </div>
+            <div class="chart__row">
+              <span class="chart__label">Evaluation suites written</span>
+              <div class="chart__track"><div class="chart__fill chart__fill--warn" style="width:50%; animation-delay:80ms"></div></div>
+              <span class="chart__value">6 / 12</span>
+            </div>
+            <div class="chart__row">
+              <span class="chart__label">Approval paths defined</span>
+              <div class="chart__track"><div class="chart__fill chart__fill--good" style="width:100%; animation-delay:160ms"></div></div>
+              <span class="chart__value">12 / 12</span>
+            </div>
+                </div>
+                <p class="panel__hint" style="margin-top:1rem">Charter coverage is the share of defined agents with an approved written charter. No agent operates without one.</p>
+                <a href="../genesis/" class="btn btn--ghost btn--sm" style="margin-top:1rem">Genesis Details</a>
+              </div>
+            </section>
+
+            <section class="panel" id="decisions">
+              <div class="panel__head"><h3 class="panel__title">Recent Decisions</h3><span class="demo-tag">Illustrative</span></div>
+              <div class="panel__body">
+                <ul class="feed" role="list">
+            <li class="feed__item">
+              <span class="feed__dot feed__dot--info" aria-hidden="true"></span>
+              <div class="feed__content">
+                <p class="feed__text"><strong>Feb 12</strong> &mdash; Sequence AI Assisted Operations last in the solution model</p>
+                <p class="feed__meta">Applying agents to an undefined process produces confident, unreliable output. Operations Intelligence, Workflow Automation, and Executive Reporting must precede it. This is now a stated constraint in engagement scoping, not a recommendation.</p>
+              </div>
+            </li>
+            <li class="feed__item">
+              <span class="feed__dot feed__dot--info" aria-hidden="true"></span>
+              <div class="feed__content">
+                <p class="feed__text"><strong>Feb 09</strong> &mdash; Publish agent maturity labels on the public site</p>
+                <p class="feed__meta">Every Genesis agent role is now labeled as in development or concept. Presenting designed architecture as available product is the single fastest way to lose credibility with a public-sector buyer.</p>
+              </div>
+            </li>
+            <li class="feed__item">
+              <span class="feed__dot feed__dot--info" aria-hidden="true"></span>
+              <div class="feed__content">
+                <p class="feed__text"><strong>Feb 05</strong> &mdash; No client logos, no metrics without a source</p>
+                <p class="feed__meta">The site will carry no customer logos, no revenue claims, and no measured-outcome percentages that are not directly attributable. Reference material describes approach and expected benefits, clearly labeled.</p>
+              </div>
+            </li>
+            <li class="feed__item">
+              <span class="feed__dot feed__dot--info" aria-hidden="true"></span>
+              <div class="feed__content">
+                <p class="feed__text"><strong>Jan 30</strong> &mdash; Forms remain client-side only, and say so</p>
+                <p class="feed__meta">No form on the site will imply transmission to a server that does not exist. Each form validates in-browser, shows the user a summary, and provides a direct email path.</p>
+              </div>
+            </li>
+            <li class="feed__item">
+              <span class="feed__dot feed__dot--info" aria-hidden="true"></span>
+              <div class="feed__content">
+                <p class="feed__text"><strong>Jan 24</strong> &mdash; Condition scoring must be reproducible</p>
+                <p class="feed__meta">Any condition rating must be reconstructible from its inputs. A score no one can explain is worse than no score, because it carries unearned authority into a capital decision.</p>
+              </div>
+            </li>
+                </ul>
+                <p class="panel__hint" style="margin-top:0.75rem">Each decision is recorded with its reasoning, so it can be revisited on evidence rather than re-litigated on memory.</p>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel__head"><h3 class="panel__title">Explore Further</h3></div>
+              <div class="panel__body">
+                <ul class="anchor-list" role="list">
+                  <li><a href="../nexus/">Nexus Platform demonstration</a></li>
+                  <li><a href="../map-intelligence/">Map Intelligence demonstration</a></li>
+                  <li><a href="../genesis/">Genesis AI Workforce</a></li>
+                  <li><a href="../reference/">Reference implementations</a></li>
+                  <li><a href="../responsible-ai/">Responsible AI statement</a></li>
+                </ul>
+              </div>
+            </section>
+
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="split">
+          <div>
+            <div class="section-header section-header--left">
+              <span class="section-label">Why This Is Public</span>
+              <h2 class="section-title">We Run the Discipline We Sell</h2>
+            </div>
+            <div class="prose prose--wide">
+              <p>Most firms that sell operational discipline do not practice it internally. Work is tracked in whatever tool each person prefers, decisions live in email, priorities shift without a record, and nobody can answer why a choice was made six months ago.</p>
+              <p>GCS runs on the structure shown above. Every initiative has an owner, a department, and a definition of done. Every consequential decision passes an approval gate and is recorded with its reasoning. Every agent has a written charter. Every risk has a named mitigation rather than an acknowledgment.</p>
+              <p>Publishing it serves two purposes. First, it is the most honest demonstration we can offer: this is the operating model, applied to us, before we ask anyone to apply it to themselves. Second, it makes the claim falsifiable. A firm that publishes its own risk register &mdash; including founder concentration and market expectation gaps &mdash; is making a statement that a capability list cannot make.</p>
+              <p>The data on this page is illustrative. The structure is not.</p>
+            </div>
+          </div>
+          <aside>
+            <div class="card card--flat">
+              <span class="card__eyebrow">Reading This Page</span>
+              <h3 class="card__title">What is real and what is not</h3>
+              <ul class="card__list" role="list">
+                <li><strong>Real:</strong> the categories, the queue structure, the approval-gate model, the risks named, and the reasoning attached to each recorded decision.</li>
+                <li><strong>Illustrative:</strong> every number, identifier, date, progress bar, and status chip. These represent plausible values, not live internal metrics.</li>
+                <li><strong>Mock:</strong> the repository status panel is not connected to a live build system.</li>
+                <li><strong>Local only:</strong> the approve, hold, and delegate buttons change this page in your browser and transmit nothing.</li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div class="container cta-band__inner">
+        <div>
+          <h2 class="cta-band__title">Want this view of your own operation?</h2>
+          <p class="cta-band__text">The Command Center pattern is not exclusive to GCS. It is what Nexus produces for an organization once its operating record is structured and current.</p>
+        </div>
+        <div class="cta-band__actions">
+          <a href="../request-demo/" class="btn btn--gold">Request a Demo</a>
+          <a href="../nexus/" class="btn btn--outline">Explore Nexus</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== SITE FOOTER ===================== -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <a href="../" class="nav__logo" aria-label="GCS home">
+            <span class="logo-mark logo-mark--sm" aria-hidden="true">GCS</span>
+          </a>
+          <div>
+            <div class="footer__company-name">General Contractor Solutions LLC</div>
+            <div class="footer__tagline">Building Better Organizations</div>
+          </div>
+        </div>
+        <nav class="footer__nav footer__nav--wide" aria-label="Footer navigation">
+          <div class="footer__nav-group">
+            <h4 class="footer__nav-heading">Company</h4>
+            <ul role="list">
+              <li><a href="../about/">About GCS</a></li>
+              <li><a href="../founder/">Sam Hurwitz, Founder</a></li>
+              <li><a href="../reference/">Reference Implementations</a></li>
+              <li><a href="../contact/">Contact</a></li>
+            </ul>
+          </div>
+          <div class="footer__nav-group">
+            <h4 class="footer__nav-heading">Capabilities</h4>
+            <ul role="list">
+              <li><a href="../solutions/">Solutions Overview</a></li>
+              <li><a href="../industries/">Industries Served</a></li>
+              <li><a href="../solutions/#operations-intelligence">Operations Intelligence</a></li>
+              <li><a href="../solutions/#capital-planning">Capital Planning</a></li>
+              <li><a href="../solutions/#compliance">Compliance</a></li>
+            </ul>
+          </div>
+          <div class="footer__nav-group">
+            <h4 class="footer__nav-heading">Platform</h4>
+            <ul role="list">
+              <li><a href="../nexus/">Nexus Platform</a></li>
+              <li><a href="../map-intelligence/">Nexus Map Intelligence</a></li>
+              <li><a href="../founder-command-center/">Founder Command Center</a></li>
+              <li><a href="../genesis/">Genesis AI Workforce</a></li>
+            </ul>
+          </div>
+          <div class="footer__nav-group">
+            <h4 class="footer__nav-heading">Engage</h4>
+            <ul role="list">
+              <li><a href="../request-demo/">Request a Demo</a></li>
+              <li><a href="../contact/">Contact GCS</a></li>
+              <li><a href="../responsible-ai/">Responsible AI</a></li>
+              <li><a href="../accessibility/">Accessibility</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+      <div class="footer__bottom">
+        <p class="footer__copy">&copy; <span id="footer-year">2026</span> General Contractor Solutions LLC. All rights reserved.</p>
+        <nav class="footer__legal" aria-label="Legal and policy links">
+          <a href="../privacy/">Privacy Policy</a>
+          <a href="../terms/">Terms of Service</a>
+          <a href="../accessibility/">Accessibility Statement</a>
+          <a href="../responsible-ai/">Responsible AI</a>
+        </nav>
+      </div>
+      <p class="footer__note">
+        GCS turns operations into intelligence, action, and accountability. Dashboards, maps, queues, and metrics shown
+        anywhere on this site are illustrative demonstrations built to communicate product concepts. They do not represent
+        any client's live data, and no figure on this site should be read as a performance guarantee.
+      </p>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>
