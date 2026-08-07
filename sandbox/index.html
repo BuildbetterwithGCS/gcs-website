@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexus Sandbox | GCS — Explore the Platform</title>
+  <meta name="description" content="Explore the GCS Nexus platform with no login, no account, and no email required. Synthetic demonstration environment." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://buildbetterwithgcs.com/sandbox/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#ffffff" />
+  <noscript><style>.reveal{opacity:1!important;transform:none!important;}</style></noscript>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header" role="banner">
+    <nav class="nav container" aria-label="Primary navigation">
+      <a href="../" class="nav__logo" aria-label="GCS home">
+        <span class="nav__logo-plate">
+          <img src="../assets/gcs-logo.svg" alt="GCS — Building Better Organizations" class="nav__logo-img" width="160" height="56" />
+        </span>
+      </a>
+      <button class="nav__toggle" type="button" aria-controls="nav-menu" aria-expanded="false" aria-label="Open navigation menu">
+        <span class="hamburger" aria-hidden="true"></span>
+        <span class="hamburger" aria-hidden="true"></span>
+        <span class="hamburger" aria-hidden="true"></span>
+      </button>
+      <ul class="nav__links" id="nav-menu" role="list">
+        <li><a href="../" class="nav__link">Home</a></li>
+        <li><a href="../nexus/" class="nav__link">Platform</a></li>
+        <li><a href="../departments/" class="nav__link">Departments</a></li>
+        <li><a href="../industries/" class="nav__link">Industries</a></li>
+        <li><a href="../map-intelligence/" class="nav__link">Map Intelligence</a></li>
+        <li><a href="../sandbox/" class="nav__link nav__link--sandbox" aria-current="page">Explore Nexus</a></li>
+        <li><a href="../about/" class="nav__link">About</a></li>
+        <li><a href="../contact/" class="nav__link">Contact</a></li>
+        <li><a href="../request-demo/" class="nav__link nav__link--cta">Request Demo</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <section class="page-hero">
+      <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <a href="../">Home</a><span>/</span><span aria-current="page">Explore Nexus</span>
+        </nav>
+        <div class="page-hero__inner">
+          <span class="page-hero__eyebrow">Public Demonstration Environment</span>
+          <h1 class="page-hero__title">Explore the Nexus Platform</h1>
+          <p class="page-hero__lead">No login. No account. No email required. Select a fictional organization and explore the connected intelligence environment across every department and function.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--light" style="padding-top:2rem;" aria-labelledby="sandbox-heading">
+      <div class="container">
+        <div class="callout callout--navy" style="margin-bottom:1.5rem;border-left:4px solid var(--gcs-navy);" role="note" aria-label="Demonstration notice">
+          <strong style="color:var(--gcs-navy);font-size:0.8125rem;display:block;margin-bottom:0.25rem;">⚠ DEMONSTRATION ENVIRONMENT — SYNTHETIC DATA ONLY</strong>
+          <span style="font-size:0.8125rem;color:var(--text-muted);">All organizations, names, figures, and records shown below are entirely fictional and created solely for demonstration purposes. They do not represent real clients, partners, employees, or operational data. No login required.</span>
+        </div>
+
+        <h2 id="sandbox-heading" class="section-title" style="margin-bottom:0.5rem;">Select a demonstration organization</h2>
+        <p style="font-size:0.9375rem;color:var(--text-muted);margin-bottom:1.5rem;">Each opens a complete fictional organization using clearly labeled synthetic data across every department and function.</p>
+        <div class="grid--3" style="margin-bottom:2rem;" id="org-selector">
+          <button class="sandbox-org-btn card" type="button" data-org="municipality" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">Municipal Government</span>
+            <h3 class="card__title">Riverside Sample Municipality</h3>
+            <p class="card__desc">A fictional mid-sized city with public works, utilities, finance, HR, fleet, safety, and public safety departments.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="manufacturer" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">Manufacturing</span>
+            <h3 class="card__title">Meridian Sample Manufacturing</h3>
+            <p class="card__desc">A fictional manufacturer with production, inventory, supply chain, maintenance, and safety operations.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="hospital" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">Healthcare</span>
+            <h3 class="card__title">Valley Sample Hospital</h3>
+            <p class="card__desc">A fictional hospital with facilities, compliance, HR, procurement, equipment management, and patient services.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="school" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">School District</span>
+            <h3 class="card__title">Lakewood Sample School District</h3>
+            <p class="card__desc">A fictional district managing facilities, transportation, finance, HR, and capital projects across multiple campuses.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="warehouse" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">Warehousing &amp; Distribution</span>
+            <h3 class="card__title">Crossroads Sample Warehouse</h3>
+            <p class="card__desc">A fictional distribution center with inventory, receiving, shipping, fleet, and supply chain operations.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="construction" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">Construction</span>
+            <h3 class="card__title">Greenfield Sample Construction</h3>
+            <p class="card__desc">A fictional construction firm managing projects, equipment, safety, procurement, and subcontractors.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="airport" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">Airport</span>
+            <h3 class="card__title">Skyport Sample Airport</h3>
+            <p class="card__desc">A fictional regional airport with facilities, fleet, compliance, operations, safety, and capital planning.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="utility" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">Utility</span>
+            <h3 class="card__title">Valley Sample Utility District</h3>
+            <p class="card__desc">A fictional public utility with infrastructure assets, GIS, capital projects, compliance, and field operations.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="corporate" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">Corporate Enterprise</span>
+            <h3 class="card__title">Summit Sample Corporation</h3>
+            <p class="card__desc">A fictional multi-site enterprise with finance, HR, procurement, facilities, fleet, and performance management.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="nonprofit" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">Nonprofit</span>
+            <h3 class="card__title">Northside Sample Nonprofit</h3>
+            <p class="card__desc">A fictional nonprofit with grants, fundraising, program delivery, compliance, and donor management.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="enterprise" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">Professional Services</span>
+            <h3 class="card__title">Meridian Sample Firm</h3>
+            <p class="card__desc">A fictional professional services company with projects, HR, finance, knowledge management, and client delivery.</p>
+          </button>
+          <button class="sandbox-org-btn card" type="button" data-org="pubsafety" style="text-align:left;cursor:pointer;" aria-pressed="false">
+            <span class="card__eyebrow">Public Safety</span>
+            <h3 class="card__title">Metro Sample Public Safety</h3>
+            <p class="card__desc">A fictional public safety agency with fleet, facilities, compliance, safety, emergency management, and HR.</p>
+          </button>
+        </div>
+
+        <!-- SANDBOX ENVIRONMENT (hidden until org selected) -->
+        <div id="sandbox-env" hidden>
+          <div class="sandbox-wrap">
+            <!-- Sandbox header -->
+            <div class="sandbox-header">
+              <div style="display:flex;align-items:center;gap:0.875rem;flex-wrap:wrap;">
+                <span class="sandbox-label">DEMONSTRATION ENVIRONMENT — SYNTHETIC DATA</span>
+                <span id="sandbox-org-name" style="font-size:0.9375rem;font-weight:600;color:#fff;"></span>
+              </div>
+              <button id="sandbox-change-org" type="button" class="btn btn--sm" style="background:rgba(255,255,255,0.12);color:#fff;border-color:rgba(255,255,255,0.25);font-size:0.8rem;">Change Organization</button>
+            </div>
+            <!-- Sandbox navigation -->
+            <nav class="sandbox-nav" aria-label="Nexus module navigation">
+              <button class="sandbox-nav-btn active" type="button" data-view="executive">Executive</button>
+              <button class="sandbox-nav-btn" type="button" data-view="finance">Finance</button>
+              <button class="sandbox-nav-btn" type="button" data-view="hr">HR &amp; Workforce</button>
+              <button class="sandbox-nav-btn" type="button" data-view="safety">Safety</button>
+              <button class="sandbox-nav-btn" type="button" data-view="risk">Risk &amp; Compliance</button>
+              <button class="sandbox-nav-btn" type="button" data-view="facilities">Facilities</button>
+              <button class="sandbox-nav-btn" type="button" data-view="fleet">Fleet &amp; Assets</button>
+              <button class="sandbox-nav-btn" type="button" data-view="projects">Projects</button>
+              <button class="sandbox-nav-btn" type="button" data-view="procurement">Procurement</button>
+              <button class="sandbox-nav-btn" type="button" data-view="logistics">Logistics</button>
+              <button class="sandbox-nav-btn" type="button" data-view="reports">Reports</button>
+            </nav>
+            <!-- Sandbox views -->
+            <div class="sandbox-body">
+
+              <!-- EXECUTIVE -->
+              <div class="sandbox-view active" data-view="executive">
+                <div class="dash-row dash-row--4">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Budget Utilization</div><div class="dash-kpi__val" data-org-val="budget-util">73.2%</div><div class="dash-kpi__delta dash-kpi__delta--up">FY on track</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Open Work Orders</div><div class="dash-kpi__val" data-org-val="open-wo">142</div><div class="dash-kpi__delta dash-kpi__delta--warn">18 past due</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Workforce Capacity</div><div class="dash-kpi__val" data-org-val="wf-cap">87%</div><div class="dash-kpi__delta dash-kpi__delta--up">Within target</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Risk Items Open</div><div class="dash-kpi__val" data-org-val="risk-open">31</div><div class="dash-kpi__delta dash-kpi__delta--warn">4 high priority</div></div>
+                </div>
+                <div class="dash-row dash-row--3" style="margin-top:0.75rem;">
+                  <div class="dash-chart">
+                    <div class="dash-chart__title">Revenue vs. Plan — Monthly (YTD)</div>
+                    <div class="dash-chart__bars">
+                      <div class="dash-bar dash-bar--navy" style="height:60%"></div><div class="dash-bar" style="height:68%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:65%"></div><div class="dash-bar" style="height:78%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:70%"></div><div class="dash-bar" style="height:85%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:72%"></div><div class="dash-bar" style="height:91%"></div>
+                    </div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">Executive Alerts</div>
+                    <div class="dash-list__row"><span data-org-val="alert-1">Facility condition — 3 buildings critical</span><span class="dash-badge dash-badge--warn">HIGH</span></div>
+                    <div class="dash-list__row"><span data-org-val="alert-2">HR compliance filing due in 5 days</span><span class="dash-badge dash-badge--pend">UPCOMING</span></div>
+                    <div class="dash-list__row"><span data-org-val="alert-3">Procurement — 2 contracts expiring</span><span class="dash-badge dash-badge--info">REVIEW</span></div>
+                    <div class="dash-list__row"><span data-org-val="alert-4">Capital project Phase 2 — on schedule</span><span class="dash-badge dash-badge--ok">OK</span></div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">Department Health</div>
+                    <div class="dash-list__row"><span>Finance</span><span class="dash-badge dash-badge--ok">ON TRACK</span></div>
+                    <div class="dash-list__row"><span>HR &amp; Workforce</span><span class="dash-badge dash-badge--ok">ON TRACK</span></div>
+                    <div class="dash-list__row"><span>Facilities</span><span class="dash-badge dash-badge--warn">ATTENTION</span></div>
+                    <div class="dash-list__row"><span>Safety</span><span class="dash-badge dash-badge--ok">ON TRACK</span></div>
+                    <div class="dash-list__row"><span>Risk &amp; Compliance</span><span class="dash-badge dash-badge--pend">REVIEW</span></div>
+                    <div class="dash-list__row"><span>Procurement</span><span class="dash-badge dash-badge--ok">ON TRACK</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- FINANCE -->
+              <div class="sandbox-view" data-view="finance">
+                <div class="dash-row dash-row--4">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Total Budget</div><div class="dash-kpi__val">$48.2M</div><div class="dash-kpi__delta dash-kpi__delta--up">FY approved</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Spent YTD</div><div class="dash-kpi__val">$35.3M</div><div class="dash-kpi__delta dash-kpi__delta--up">73.2% — on track</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Revenue Collected</div><div class="dash-kpi__val">$41.8M</div><div class="dash-kpi__delta dash-kpi__delta--up">↑ 6.4% vs prior yr</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">AP Outstanding</div><div class="dash-kpi__val">$2.1M</div><div class="dash-kpi__delta dash-kpi__delta--warn">14 invoices &gt;30 days</div></div>
+                </div>
+                <div class="dash-row dash-row--2" style="margin-top:0.75rem;">
+                  <div class="dash-list">
+                    <div class="dash-list__title">Budget by Department</div>
+                    <div class="dash-list__row"><span>Operations</span><span class="dash-badge dash-badge--ok">71% used</span></div>
+                    <div class="dash-list__row"><span>Facilities</span><span class="dash-badge dash-badge--warn">88% used</span></div>
+                    <div class="dash-list__row"><span>HR &amp; Workforce</span><span class="dash-badge dash-badge--ok">64% used</span></div>
+                    <div class="dash-list__row"><span>Capital Projects</span><span class="dash-badge dash-badge--ok">55% used</span></div>
+                    <div class="dash-list__row"><span>Technology</span><span class="dash-badge dash-badge--ok">69% used</span></div>
+                    <div class="dash-list__row"><span>Safety &amp; Risk</span><span class="dash-badge dash-badge--ok">72% used</span></div>
+                  </div>
+                  <div class="dash-chart">
+                    <div class="dash-chart__title">Expenditure Trend — Rolling 8 Months</div>
+                    <div class="dash-chart__bars">
+                      <div class="dash-bar dash-bar--navy" style="height:55%"></div>
+                      <div class="dash-bar" style="height:60%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:58%"></div>
+                      <div class="dash-bar" style="height:65%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:70%"></div>
+                      <div class="dash-bar" style="height:74%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:80%"></div>
+                      <div class="dash-bar" style="height:73%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- HR -->
+              <div class="sandbox-view" data-view="hr">
+                <div class="dash-row dash-row--4">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Total Headcount</div><div class="dash-kpi__val">384</div><div class="dash-kpi__delta dash-kpi__delta--up">+12 since last quarter</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Open Positions</div><div class="dash-kpi__val">27</div><div class="dash-kpi__delta dash-kpi__delta--warn">9 critical roles</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Turnover Rate</div><div class="dash-kpi__val">8.4%</div><div class="dash-kpi__delta dash-kpi__delta--up">↓ Below benchmark</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Training Compliance</div><div class="dash-kpi__val">91%</div><div class="dash-kpi__delta dash-kpi__delta--warn">32 overdue certifications</div></div>
+                </div>
+                <div class="dash-row dash-row--2" style="margin-top:0.75rem;">
+                  <div class="dash-list">
+                    <div class="dash-list__title">Workforce Items</div>
+                    <div class="dash-list__row"><span>Annual reviews — 8 outstanding</span><span class="dash-badge dash-badge--pend">DUE SOON</span></div>
+                    <div class="dash-list__row"><span>OSHA training renewal — 12 staff</span><span class="dash-badge dash-badge--warn">OVERDUE</span></div>
+                    <div class="dash-list__row"><span>Benefits enrollment — open window</span><span class="dash-badge dash-badge--info">ACTIVE</span></div>
+                    <div class="dash-list__row"><span>New hire onboarding — 5 in progress</span><span class="dash-badge dash-badge--ok">ON TRACK</span></div>
+                    <div class="dash-list__row"><span>Succession planning — exec roles</span><span class="dash-badge dash-badge--info">IN REVIEW</span></div>
+                  </div>
+                  <div class="dash-chart">
+                    <div class="dash-chart__title">Headcount by Department</div>
+                    <div class="dash-chart__bars">
+                      <div class="dash-bar dash-bar--navy" style="height:90%"></div>
+                      <div class="dash-bar" style="height:70%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:50%"></div>
+                      <div class="dash-bar" style="height:65%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:80%"></div>
+                      <div class="dash-bar" style="height:45%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:60%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SAFETY -->
+              <div class="sandbox-view" data-view="safety">
+                <div class="dash-row dash-row--4">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Incidents YTD</div><div class="dash-kpi__val">7</div><div class="dash-kpi__delta dash-kpi__delta--up">↓ Down from 12 prior yr</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Near Misses</div><div class="dash-kpi__val">14</div><div class="dash-kpi__delta dash-kpi__delta--warn">3 unresolved</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Days Without Incident</div><div class="dash-kpi__val">47</div><div class="dash-kpi__delta dash-kpi__delta--up">Goal: 90 days</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Safety Audits Due</div><div class="dash-kpi__val">5</div><div class="dash-kpi__delta dash-kpi__delta--pend">Next 30 days</div></div>
+                </div>
+                <div class="dash-row dash-row--2" style="margin-top:0.75rem;">
+                  <div class="dash-list">
+                    <div class="dash-list__title">Open Safety Items</div>
+                    <div class="dash-list__row"><span>Equipment guard failure — Bldg 3</span><span class="dash-badge dash-badge--warn">OPEN</span></div>
+                    <div class="dash-list__row"><span>Hazmat storage review overdue</span><span class="dash-badge dash-badge--warn">OVERDUE</span></div>
+                    <div class="dash-list__row"><span>Emergency drill scheduled — Q4</span><span class="dash-badge dash-badge--info">SCHEDULED</span></div>
+                    <div class="dash-list__row"><span>Fire system inspection — cleared</span><span class="dash-badge dash-badge--ok">COMPLETE</span></div>
+                    <div class="dash-list__row"><span>PPE restocking — 3 departments</span><span class="dash-badge dash-badge--pend">PENDING</span></div>
+                  </div>
+                  <div class="dash-chart">
+                    <div class="dash-chart__title">Incidents by Month (Rolling 12)</div>
+                    <div class="dash-chart__bars">
+                      <div class="dash-bar dash-bar--navy" style="height:80%"></div>
+                      <div class="dash-bar" style="height:60%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:70%"></div>
+                      <div class="dash-bar" style="height:50%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:40%"></div>
+                      <div class="dash-bar" style="height:30%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:25%"></div>
+                      <div class="dash-bar" style="height:20%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:15%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RISK & COMPLIANCE -->
+              <div class="sandbox-view" data-view="risk">
+                <div class="dash-row dash-row--4">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Open Risk Items</div><div class="dash-kpi__val">31</div><div class="dash-kpi__delta dash-kpi__delta--warn">4 high priority</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Compliance Obligations</div><div class="dash-kpi__val">88</div><div class="dash-kpi__delta dash-kpi__delta--up">91% met</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Upcoming Deadlines</div><div class="dash-kpi__val">12</div><div class="dash-kpi__delta dash-kpi__delta--warn">3 within 7 days</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Audits Scheduled</div><div class="dash-kpi__val">4</div><div class="dash-kpi__delta dash-kpi__delta--info">Next 60 days</div></div>
+                </div>
+                <div class="dash-row dash-row--2" style="margin-top:0.75rem;">
+                  <div class="dash-list">
+                    <div class="dash-list__title">Risk Register — Top Items</div>
+                    <div class="dash-list__row"><span>Infrastructure failure — Water main</span><span class="dash-badge dash-badge--warn">HIGH</span></div>
+                    <div class="dash-list__row"><span>Data privacy compliance gap</span><span class="dash-badge dash-badge--warn">HIGH</span></div>
+                    <div class="dash-list__row"><span>Vendor contract — single source risk</span><span class="dash-badge dash-badge--info">MEDIUM</span></div>
+                    <div class="dash-list__row"><span>Budget variance — Facilities dept</span><span class="dash-badge dash-badge--pend">MONITORING</span></div>
+                    <div class="dash-list__row"><span>Cybersecurity training completion</span><span class="dash-badge dash-badge--pend">IN PROGRESS</span></div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">Compliance Calendar</div>
+                    <div class="dash-list__row"><span>Annual financial audit</span><span class="dash-badge dash-badge--info">DEC 15</span></div>
+                    <div class="dash-list__row"><span>OSHA 300 log submission</span><span class="dash-badge dash-badge--warn">DUE IN 5 DAYS</span></div>
+                    <div class="dash-list__row"><span>EPA reporting period</span><span class="dash-badge dash-badge--pend">JAN 31</span></div>
+                    <div class="dash-list__row"><span>HR compliance filings</span><span class="dash-badge dash-badge--pend">FEB 1</span></div>
+                    <div class="dash-list__row"><span>Insurance renewal</span><span class="dash-badge dash-badge--ok">FILED</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- FACILITIES -->
+              <div class="sandbox-view" data-view="facilities">
+                <div class="dash-row dash-row--4">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Total Facilities</div><div class="dash-kpi__val">23</div><div class="dash-kpi__delta">Buildings managed</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Work Orders Open</div><div class="dash-kpi__val">142</div><div class="dash-kpi__delta dash-kpi__delta--warn">18 past due</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Avg Condition Score</div><div class="dash-kpi__val">74 / 100</div><div class="dash-kpi__delta dash-kpi__delta--warn">3 buildings critical</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">PM Compliance</div><div class="dash-kpi__val">81%</div><div class="dash-kpi__delta dash-kpi__delta--warn">Target: 90%</div></div>
+                </div>
+                <div class="dash-row dash-row--2" style="margin-top:0.75rem;">
+                  <div class="dash-list">
+                    <div class="dash-list__title">Facilities Requiring Action</div>
+                    <div class="dash-list__row"><span>Building 4 — Roof replacement needed</span><span class="dash-badge dash-badge--warn">CRITICAL</span></div>
+                    <div class="dash-list__row"><span>Building 11 — HVAC system aging</span><span class="dash-badge dash-badge--warn">HIGH</span></div>
+                    <div class="dash-list__row"><span>Admin Complex — ADA compliance review</span><span class="dash-badge dash-badge--pend">SCHEDULED</span></div>
+                    <div class="dash-list__row"><span>Maintenance Center — Electrical upgrade</span><span class="dash-badge dash-badge--info">IN PLANNING</span></div>
+                    <div class="dash-list__row"><span>Annex B — Inspection complete</span><span class="dash-badge dash-badge--ok">OK</span></div>
+                  </div>
+                  <div class="dash-chart">
+                    <div class="dash-chart__title">Work Order Volume — Last 6 Months</div>
+                    <div class="dash-chart__bars">
+                      <div class="dash-bar dash-bar--navy" style="height:75%"></div>
+                      <div class="dash-bar" style="height:80%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:70%"></div>
+                      <div class="dash-bar" style="height:85%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:65%"></div>
+                      <div class="dash-bar" style="height:90%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- FLEET & ASSETS -->
+              <div class="sandbox-view" data-view="fleet">
+                <div class="dash-row dash-row--4">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Fleet Units</div><div class="dash-kpi__val">87</div><div class="dash-kpi__delta">Active fleet</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Units Serviceable</div><div class="dash-kpi__val">79</div><div class="dash-kpi__delta dash-kpi__delta--warn">8 down / maintenance</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">PM Due (30 days)</div><div class="dash-kpi__val">22</div><div class="dash-kpi__delta dash-kpi__delta--warn">6 overdue</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Avg Asset Age</div><div class="dash-kpi__val">7.4 yrs</div><div class="dash-kpi__delta dash-kpi__delta--warn">Above replacement threshold</div></div>
+                </div>
+                <div class="dash-row dash-row--2" style="margin-top:0.75rem;">
+                  <div class="dash-list">
+                    <div class="dash-list__title">Fleet Alerts</div>
+                    <div class="dash-list__row"><span>Unit A-14 — Maintenance past due</span><span class="dash-badge dash-badge--warn">OVERDUE</span></div>
+                    <div class="dash-list__row"><span>Unit B-07 — Inspection failed</span><span class="dash-badge dash-badge--warn">FAILED</span></div>
+                    <div class="dash-list__row"><span>Unit C-23 — Oil change scheduled</span><span class="dash-badge dash-badge--pend">SCHEDULED</span></div>
+                    <div class="dash-list__row"><span>Vehicles D-01–D-04 — Annual review</span><span class="dash-badge dash-badge--info">DUE NEXT MONTH</span></div>
+                    <div class="dash-list__row"><span>5 vehicles — Replacement recommended</span><span class="dash-badge dash-badge--info">IN PLANNING</span></div>
+                  </div>
+                  <div class="dash-chart">
+                    <div class="dash-chart__title">Fleet Utilization by Category</div>
+                    <div class="dash-chart__bars">
+                      <div class="dash-bar dash-bar--navy" style="height:95%"></div>
+                      <div class="dash-bar" style="height:80%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:70%"></div>
+                      <div class="dash-bar" style="height:60%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:85%"></div>
+                      <div class="dash-bar" style="height:50%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PROJECTS -->
+              <div class="sandbox-view" data-view="projects">
+                <div class="dash-row dash-row--4">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Active Projects</div><div class="dash-kpi__val">24</div><div class="dash-kpi__delta">Capital &amp; operational</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">On Schedule</div><div class="dash-kpi__val">18</div><div class="dash-kpi__delta dash-kpi__delta--up">75% on track</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Behind Schedule</div><div class="dash-kpi__val">4</div><div class="dash-kpi__delta dash-kpi__delta--warn">Require attention</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Total Budget</div><div class="dash-kpi__val">$12.4M</div><div class="dash-kpi__delta dash-kpi__delta--up">Committed capital</div></div>
+                </div>
+                <div class="dash-row dash-row--2" style="margin-top:0.75rem;">
+                  <div class="dash-list">
+                    <div class="dash-list__title">Project Status</div>
+                    <div class="dash-list__row"><span>Water main replacement — Phase 2</span><span class="dash-badge dash-badge--ok">ON TRACK</span></div>
+                    <div class="dash-list__row"><span>Community center renovation</span><span class="dash-badge dash-badge--warn">DELAYED</span></div>
+                    <div class="dash-list__row"><span>Technology infrastructure upgrade</span><span class="dash-badge dash-badge--ok">ON TRACK</span></div>
+                    <div class="dash-list__row"><span>Park district improvements</span><span class="dash-badge dash-badge--warn">OVER BUDGET</span></div>
+                    <div class="dash-list__row"><span>Fleet garage expansion</span><span class="dash-badge dash-badge--pend">IN DESIGN</span></div>
+                    <div class="dash-list__row"><span>Admin system modernization</span><span class="dash-badge dash-badge--info">PLANNING</span></div>
+                  </div>
+                  <div class="dash-chart">
+                    <div class="dash-chart__title">Capital Spend vs. Schedule (Cumulative)</div>
+                    <div class="dash-chart__bars">
+                      <div class="dash-bar dash-bar--navy" style="height:10%"></div>
+                      <div class="dash-bar" style="height:15%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:25%"></div>
+                      <div class="dash-bar" style="height:35%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:50%"></div>
+                      <div class="dash-bar" style="height:60%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:72%"></div>
+                      <div class="dash-bar" style="height:80%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PROCUREMENT -->
+              <div class="sandbox-view" data-view="procurement">
+                <div class="dash-row dash-row--4">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Active POs</div><div class="dash-kpi__val">68</div><div class="dash-kpi__delta">Open purchase orders</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Spend YTD</div><div class="dash-kpi__val">$8.7M</div><div class="dash-kpi__delta dash-kpi__delta--up">Within approved budget</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Vendor Contracts</div><div class="dash-kpi__val">142</div><div class="dash-kpi__delta dash-kpi__delta--warn">12 expiring this quarter</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">RFPs In Progress</div><div class="dash-kpi__val">5</div><div class="dash-kpi__delta">Active solicitations</div></div>
+                </div>
+                <div class="dash-row dash-row--2" style="margin-top:0.75rem;">
+                  <div class="dash-list">
+                    <div class="dash-list__title">Procurement Items</div>
+                    <div class="dash-list__row"><span>Janitorial services contract renewal</span><span class="dash-badge dash-badge--warn">EXPIRING SOON</span></div>
+                    <div class="dash-list__row"><span>Fleet parts — RFP response due</span><span class="dash-badge dash-badge--pend">DUE IN 3 DAYS</span></div>
+                    <div class="dash-list__row"><span>IT equipment — bulk order approved</span><span class="dash-badge dash-badge--ok">ORDERED</span></div>
+                    <div class="dash-list__row"><span>Safety supplies — reorder triggered</span><span class="dash-badge dash-badge--info">IN PROCESS</span></div>
+                    <div class="dash-list__row"><span>Fuel contract — multi-year renewal</span><span class="dash-badge dash-badge--info">IN NEGOTIATION</span></div>
+                  </div>
+                  <div class="dash-chart">
+                    <div class="dash-chart__title">Spend by Category (YTD)</div>
+                    <div class="dash-chart__bars">
+                      <div class="dash-bar dash-bar--navy" style="height:90%"></div>
+                      <div class="dash-bar" style="height:70%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:55%"></div>
+                      <div class="dash-bar" style="height:80%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:40%"></div>
+                      <div class="dash-bar" style="height:60%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- LOGISTICS -->
+              <div class="sandbox-view" data-view="logistics">
+                <div class="dash-row dash-row--4">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Inventory Items</div><div class="dash-kpi__val">4,281</div><div class="dash-kpi__delta">SKUs managed</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Low Stock Alerts</div><div class="dash-kpi__val">38</div><div class="dash-kpi__delta dash-kpi__delta--warn">12 critical items</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Pending Shipments</div><div class="dash-kpi__val">14</div><div class="dash-kpi__delta">Inbound orders</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Outbound Transfers</div><div class="dash-kpi__val">7</div><div class="dash-kpi__delta">Department deliveries</div></div>
+                </div>
+                <div class="dash-row dash-row--2" style="margin-top:0.75rem;">
+                  <div class="dash-list">
+                    <div class="dash-list__title">Warehouse &amp; Supply Chain Items</div>
+                    <div class="dash-list__row"><span>Critical spare — Pump assembly reorder</span><span class="dash-badge dash-badge--warn">LOW STOCK</span></div>
+                    <div class="dash-list__row"><span>Inbound shipment — PO-2847 arriving</span><span class="dash-badge dash-badge--info">IN TRANSIT</span></div>
+                    <div class="dash-list__row"><span>Annual inventory audit — scheduled</span><span class="dash-badge dash-badge--pend">NOV 30</span></div>
+                    <div class="dash-list__row"><span>Fleet parts restocked — Dept A</span><span class="dash-badge dash-badge--ok">RECEIVED</span></div>
+                    <div class="dash-list__row"><span>Safety equipment — full count verified</span><span class="dash-badge dash-badge--ok">VERIFIED</span></div>
+                  </div>
+                  <div class="dash-chart">
+                    <div class="dash-chart__title">Inventory Turns — Rolling 6 Months</div>
+                    <div class="dash-chart__bars">
+                      <div class="dash-bar dash-bar--navy" style="height:60%"></div>
+                      <div class="dash-bar" style="height:65%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:70%"></div>
+                      <div class="dash-bar" style="height:68%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:72%"></div>
+                      <div class="dash-bar" style="height:75%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- REPORTS -->
+              <div class="sandbox-view" data-view="reports">
+                <div class="dash-row dash-row--3">
+                  <div class="dash-list">
+                    <div class="dash-list__title">Executive Reports Available</div>
+                    <div class="dash-list__row"><span>Monthly Executive Summary</span><span class="dash-badge dash-badge--ok">READY</span></div>
+                    <div class="dash-list__row"><span>Budget vs. Actual — YTD</span><span class="dash-badge dash-badge--ok">READY</span></div>
+                    <div class="dash-list__row"><span>Board Presentation — Q4</span><span class="dash-badge dash-badge--pend">IN DRAFT</span></div>
+                    <div class="dash-list__row"><span>Capital Project Status Report</span><span class="dash-badge dash-badge--ok">READY</span></div>
+                    <div class="dash-list__row"><span>Workforce &amp; Headcount Summary</span><span class="dash-badge dash-badge--ok">READY</span></div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">Operational Reports</div>
+                    <div class="dash-list__row"><span>Facilities Condition Report</span><span class="dash-badge dash-badge--ok">READY</span></div>
+                    <div class="dash-list__row"><span>Fleet Utilization &amp; Maintenance</span><span class="dash-badge dash-badge--ok">READY</span></div>
+                    <div class="dash-list__row"><span>Safety Incidents &amp; Near Misses</span><span class="dash-badge dash-badge--ok">READY</span></div>
+                    <div class="dash-list__row"><span>Risk Register Summary</span><span class="dash-badge dash-badge--ok">READY</span></div>
+                    <div class="dash-list__row"><span>Procurement Spend Analysis</span><span class="dash-badge dash-badge--ok">READY</span></div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">Compliance &amp; Regulatory</div>
+                    <div class="dash-list__row"><span>Annual Compliance Filing Pack</span><span class="dash-badge dash-badge--pend">IN PREP</span></div>
+                    <div class="dash-list__row"><span>OSHA 300 Annual Summary</span><span class="dash-badge dash-badge--warn">DUE IN 5 DAYS</span></div>
+                    <div class="dash-list__row"><span>Environmental Reporting</span><span class="dash-badge dash-badge--pend">NEXT CYCLE</span></div>
+                    <div class="dash-list__row"><span>Audit Support Package</span><span class="dash-badge dash-badge--info">IN PROGRESS</span></div>
+                    <div class="dash-list__row"><span>Grant Performance Report</span><span class="dash-badge dash-badge--ok">SUBMITTED</span></div>
+                  </div>
+                </div>
+              </div>
+
+            </div><!-- /sandbox-body -->
+          </div><!-- /sandbox-wrap -->
+        </div><!-- /sandbox-env -->
+
+        <!-- CTA below sandbox -->
+        <div class="cta-band" style="margin-top:2.5rem;">
+          <span class="eyebrow">Ready for the real thing?</span>
+          <h2>Request a guided demonstration</h2>
+          <p>See Nexus configured for your specific organization, industry, and operational challenges.</p>
+          <div class="cta-actions">
+            <a href="../request-demo/" class="btn btn--primary">Request a Demo</a>
+            <a href="../contact/" class="btn btn--outline">Contact GCS</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <div class="footer__brand">
+            <a href="../" aria-label="GCS home">
+              <img src="../assets/gcs-logo.svg" alt="GCS" class="nav__logo-img nav__logo-img--sm" width="120" height="44" />
+            </a>
+          </div>
+          <div class="footer__company-name" style="margin-top:0.5rem;">GCS — Building Better Organizations.</div>
+          <p class="footer__subtext" style="margin-top:0.5rem;">GCS connects the entire organization into one intelligence, action, and accountability environment.</p>
+        </div>
+        <div>
+          <div class="footer__nav">
+            <a href="../nexus/">Platform</a>
+            <a href="../departments/">Departments</a>
+            <a href="../industries/">Industries</a>
+            <a href="../sandbox/">Sandbox</a>
+            <a href="../map-intelligence/">Map Intelligence</a>
+            <a href="../about/">About</a>
+            <a href="../contact/">Contact</a>
+            <a href="../request-demo/">Request Demo</a>
+          </div>
+          <div class="footer__nav" style="margin-top:0.75rem;">
+            <a href="../privacy/">Privacy</a>
+            <a href="../responsible-ai/">Responsible AI</a>
+            <a href="../accessibility/">Accessibility</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>&copy; <span id="footer-year"></span> GCS. All rights reserved.</span>
+        <span>Building Better Organizations.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+  // Sandbox interactivity
+  (function() {
+    var orgData = {
+      municipality: {
+        name: 'Riverside Sample Municipality',
+        'budget-util': '73.2%', 'open-wo': '142', 'wf-cap': '87%', 'risk-open': '31',
+        'alert-1': 'Water main condition — 2 segments critical',
+        'alert-2': 'HR compliance filing due in 5 days',
+        'alert-3': 'Procurement — 2 vendor contracts expiring',
+        'alert-4': 'Capital project Phase 2 — on schedule'
+      },
+      school: {
+        name: 'Lakewood Sample School District',
+        'budget-util': '68.5%', 'open-wo': '97', 'wf-cap': '92%', 'risk-open': '18',
+        'alert-1': 'Campus B roof — repair required before winter',
+        'alert-2': 'Bus fleet — 4 units past inspection date',
+        'alert-3': 'Grants — 3 reporting deadlines this month',
+        'alert-4': 'Capital plan — gymnasium project on schedule'
+      },
+      manufacturer: {
+        name: 'Meridian Sample Manufacturing',
+        'budget-util': '81.3%', 'open-wo': '213', 'wf-cap': '94%', 'risk-open': '44',
+        'alert-1': 'Production Line 3 — unplanned downtime risk',
+        'alert-2': 'ISO 9001 audit — scheduled next month',
+        'alert-3': 'Supplier — single source risk for 3 components',
+        'alert-4': 'Inventory reorder point reached — 12 SKUs'
+      },
+      hospital: {
+        name: 'Valley Sample Hospital',
+        'budget-util': '77.8%', 'open-wo': '184', 'wf-cap': '89%', 'risk-open': '52',
+        'alert-1': 'HVAC system — biomedical area requires PM',
+        'alert-2': 'Joint Commission documentation — 3 items pending',
+        'alert-3': 'OR equipment — maintenance overdue on 2 units',
+        'alert-4': 'Capital project — imaging wing expansion on track'
+      },
+      nonprofit: {
+        name: 'Northside Sample Nonprofit',
+        'budget-util': '61.2%', 'open-wo': '34', 'wf-cap': '78%', 'risk-open': '14',
+        'alert-1': 'Grant reporting — 2 reports due end of month',
+        'alert-2': 'Board meeting — financial summary needed',
+        'alert-3': 'Donor database — 45 records need updating',
+        'alert-4': 'Major grant application — deadline in 14 days'
+      },
+      enterprise: {
+        name: 'Meridian Sample Firm',
+        'budget-util': '79.1%', 'open-wo': '118', 'wf-cap': '91%', 'risk-open': '27',
+        'alert-1': 'Facility lease — 2 locations expiring Q1',
+        'alert-2': 'Fleet — 6 vehicles past PM due',
+        'alert-3': 'Logistics — carrier contract renewal upcoming',
+        'alert-4': 'ERP integration — Phase 1 testing on schedule'
+      },
+      warehouse: {
+        name: 'Crossroads Sample Warehouse',
+        'budget-util': '82.4%', 'open-wo': '67', 'wf-cap': '96%', 'risk-open': '19',
+        'alert-1': 'Dock door 7 — hydraulic repair required',
+        'alert-2': 'Inventory — 28 SKUs at reorder threshold',
+        'alert-3': 'Safety — forklift certification 4 operators overdue',
+        'alert-4': 'Shipping volume — on track for Q4 target'
+      },
+      construction: {
+        name: 'Greenfield Sample Construction',
+        'budget-util': '68.7%', 'open-wo': '84', 'wf-cap': '88%', 'risk-open': '38',
+        'alert-1': 'Site A — safety inspection due in 3 days',
+        'alert-2': 'Equipment — 3 units scheduled for service',
+        'alert-3': 'Subcontractor — 2 payment approvals pending',
+        'alert-4': 'Project Phase 3 — 5 days ahead of schedule'
+      },
+      airport: {
+        name: 'Skyport Sample Airport',
+        'budget-util': '76.3%', 'open-wo': '203', 'wf-cap': '93%', 'risk-open': '47',
+        'alert-1': 'Runway lighting — 3 fixtures out, repair ordered',
+        'alert-2': 'FAA compliance documentation — 2 items due',
+        'alert-3': 'Ground fleet — 8 vehicles scheduled for PM',
+        'alert-4': 'Capital project — terminal expansion on budget'
+      },
+      utility: {
+        name: 'Valley Sample Utility District',
+        'budget-util': '71.8%', 'open-wo': '178', 'wf-cap': '84%', 'risk-open': '56',
+        'alert-1': 'Water main segment 14-B — critical condition',
+        'alert-2': 'EPA compliance report — due in 10 days',
+        'alert-3': 'Capital project R-7 — permit review pending',
+        'alert-4': 'Asset inspection cycle — 94% complete on schedule'
+      },
+      corporate: {
+        name: 'Summit Sample Corporation',
+        'budget-util': '74.6%', 'open-wo': '156', 'wf-cap': '90%', 'risk-open': '34',
+        'alert-1': 'Facilities — HVAC service for 2 office locations',
+        'alert-2': 'HR — 8 performance reviews overdue',
+        'alert-3': 'Procurement — 3 vendor contracts due for renewal',
+        'alert-4': 'Capital project — new data center on schedule'
+      },
+      pubsafety: {
+        name: 'Metro Sample Public Safety',
+        'budget-util': '80.2%', 'open-wo': '94', 'wf-cap': '86%', 'risk-open': '23',
+        'alert-1': 'Fleet — 5 vehicles past scheduled maintenance',
+        'alert-2': 'Training compliance — 14 certifications expiring',
+        'alert-3': 'Equipment — 3 critical items past inspection',
+        'alert-4': 'Emergency plan review — scheduled next month'
+      }
+    };
+
+    var orgBtns = document.querySelectorAll('.sandbox-org-btn');
+    var sandboxEnv = document.getElementById('sandbox-env');
+    var orgSelector = document.getElementById('org-selector');
+    var orgNameEl = document.getElementById('sandbox-org-name');
+    var changeBtn = document.getElementById('sandbox-change-org');
+    var navBtns = document.querySelectorAll('.sandbox-nav-btn');
+    var views = document.querySelectorAll('.sandbox-view');
+
+    function selectOrg(orgKey) {
+      var data = orgData[orgKey] || orgData.municipality;
+      // Update org name
+      if (orgNameEl) orgNameEl.textContent = data.name;
+      // Update dynamic values
+      document.querySelectorAll('[data-org-val]').forEach(function(el) {
+        var key = el.getAttribute('data-org-val');
+        if (data[key]) el.textContent = data[key];
+      });
+      // Show sandbox
+      if (orgSelector) orgSelector.style.display = 'none';
+      if (sandboxEnv) sandboxEnv.removeAttribute('hidden');
+      // Mark org btn
+      orgBtns.forEach(function(b) { b.setAttribute('aria-pressed', b.getAttribute('data-org') === orgKey ? 'true' : 'false'); });
+      // Activate executive view
+      showView('executive');
+    }
+
+    function showView(viewKey) {
+      navBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-view') === viewKey); });
+      views.forEach(function(v) { v.classList.toggle('active', v.getAttribute('data-view') === viewKey); });
+    }
+
+    orgBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() { selectOrg(btn.getAttribute('data-org')); });
+    });
+
+    navBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() { showView(btn.getAttribute('data-view')); });
+    });
+
+    if (changeBtn) {
+      changeBtn.addEventListener('click', function() {
+        if (orgSelector) orgSelector.style.display = '';
+        if (sandboxEnv) sandboxEnv.setAttribute('hidden', '');
+      });
+    }
+  })();
+  </script>
+</body>
+</html>
