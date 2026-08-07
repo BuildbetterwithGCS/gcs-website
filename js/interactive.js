@@ -121,27 +121,47 @@
     if (!selectedIndustry || !selectedChallenge || !workflowTarget) return;
     var industry = industries[selectedIndustry];
     var challengeLabel = selectedChallengeLabel.textContent;
+    workflowTarget.replaceChildren();
 
-    workflowTarget.innerHTML = workflowTemplate.map(function (item) {
-      return [
-        '<article class="workflow-card reveal is-visible">',
-        '  <div class="workflow-card__stage">',
-        '    <h3>' + item[0] + '</h3>',
-        '    <span class="badge badge--synthetic">SYNTHETIC DATA</span>',
-        '  </div>',
-        '  <p>' + item[1](industry, selectedChallenge, challengeLabel) + '</p>',
-        '</article>'
-      ].join('');
-    }).join('');
+    workflowTemplate.forEach(function (item) {
+      var article = document.createElement('article');
+      article.className = 'workflow-card reveal is-visible';
+
+      var stage = document.createElement('div');
+      stage.className = 'workflow-card__stage';
+
+      var heading = document.createElement('h3');
+      heading.textContent = item[0];
+
+      var badge = document.createElement('span');
+      badge.className = 'badge badge--synthetic';
+      badge.textContent = 'SYNTHETIC DATA';
+
+      var body = document.createElement('p');
+      body.textContent = item[1](industry, selectedChallenge, challengeLabel);
+
+      stage.appendChild(heading);
+      stage.appendChild(badge);
+      article.appendChild(stage);
+      article.appendChild(body);
+      workflowTarget.appendChild(article);
+    });
   }
 
   function updateSummary() {
     if (!summary) return;
-    summary.innerHTML = [
-      '<span class="badge">Industry: ' + industries[selectedIndustry].name + '</span>',
-      '<span class="badge">Challenge: ' + selectedChallengeLabel.textContent + '</span>',
-      '<span class="badge badge--synthetic">Synthetic workflow preview</span>'
-    ].join('');
+    summary.replaceChildren();
+
+    [
+      { className: 'badge', text: 'Industry: ' + industries[selectedIndustry].name },
+      { className: 'badge', text: 'Challenge: ' + selectedChallengeLabel.textContent },
+      { className: 'badge badge--synthetic', text: 'Synthetic workflow preview' }
+    ].forEach(function (item) {
+      var badge = document.createElement('span');
+      badge.className = item.className;
+      badge.textContent = item.text;
+      summary.appendChild(badge);
+    });
   }
 
   industryButtons.forEach(function (button) {
