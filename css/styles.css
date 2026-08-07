@@ -460,13 +460,30 @@ button {
   letter-spacing: -0.02em;
 }
 
+.hero__brand-name {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
 .hero__subheading {
   font-size: clamp(1.0625rem, 2vw, 1.25rem);
   line-height: 1.65;
-  color: rgba(255,255,255,0.72);
+  color: rgba(255,255,255,0.85);
   max-width: 580px;
   margin-inline: auto;
-  margin-bottom: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.hero__supporting {
+  font-size: 1.125rem;
+  color: var(--color-dark-muted);
+  max-width: 42rem;
+  margin-top: 1rem;
+  line-height: 1.7;
 }
 
 .hero__subheading strong {
