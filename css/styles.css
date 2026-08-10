@@ -99,8 +99,9 @@ body {
   background-color: var(--surface-white);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Prevent first-letter rendering artifacts caused by font-smoothing conflicts */
-  text-rendering: optimizeSpeed;
+  /* optimizeLegibility enables consistent sub-pixel antialiasing for every glyph,
+     including the first character of each block — critical for Sora→Inter transitions */
+  text-rendering: optimizeLegibility;
 }
 img, svg { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
@@ -720,9 +721,11 @@ noscript .nexus-dept-grid { display: flex; }
   font-size: clamp(1.75rem, 3.5vw, 2.5rem);
   font-weight: 700; color: var(--text-primary);
   line-height: 1.2; margin-bottom: 0.875rem;
-  /* Prevent heading text from overflowing its container */
   overflow-wrap: break-word; word-break: break-word;
   max-width: 100%;
+  /* Establish a paint boundary so the heading's Sora rasterization cannot
+     bleed into the Inter paragraph that follows */
+  contain: paint;
 }
 .page-hero--dash .page-hero__title { color: #fff; }
 .page-hero__lead {
@@ -730,6 +733,16 @@ noscript .nexus-dept-grid { display: flex; }
      first character of the following paragraph rendered in Inter */
   font-family: var(--font-body);
   font-size: 1.0625rem; color: var(--text-muted); line-height: 1.7; max-width: 620px;
+}
+/* Lock first-letter to the element's own colour/font so Chrome's text-paint
+   state from the preceding Sora heading cannot composite over character #1.
+   -webkit-text-fill-color: currentColor cancels any inherited transparent fill. */
+.page-hero__lead::first-letter {
+  color: inherit;
+  -webkit-text-fill-color: currentColor;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
 }
 .page-hero--dash .page-hero__lead { color: rgba(255,255,255,0.80); }
 .page-hero__actions { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem; }
