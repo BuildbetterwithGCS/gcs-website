@@ -5,13 +5,13 @@
 
 /* ---- CSS Custom Properties ---- */
 :root {
-  /* BRAND COLORS — from approved GCS logo */
-  --gcs-navy:        #0f1f3d;
-  --gcs-blue:        #2e4a7a;
-  --gcs-green:       #7aaa35;
-  --gcs-green-dk:    #5a8a2a;
-  --gcs-green-lt:    #a3c85a;
-  --gcs-slate:       #6b7a87;
+  /* BRAND COLORS — canonical GCS brand standard v1.1 */
+  --gcs-navy:        #00122B;
+  --gcs-blue:        #335475;
+  --gcs-green:       #68981C;
+  --gcs-green-dk:    #4d720f;
+  --gcs-green-lt:    #8ab83a;
+  --gcs-slate:       #646465;
 
   /* SURFACE COLORS — light/white first */
   --surface-white:   #ffffff;
@@ -21,19 +21,19 @@
   --surface-border-lt: #f0f2f5;
 
   /* TYPOGRAPHY */
-  --text-primary:    #0f1f3d;   /* navy */
+  --text-primary:    #00122B;   /* navy */
   --text-secondary:  #374151;
   --text-muted:      #6b7280;
   --text-subtle:     #9ca3af;
   --text-on-dark:    #f5f5f5;
 
   /* SEMANTIC */
-  --color-primary:   #7aaa35;   /* GCS green — primary action */
-  --color-primary-dk:#5a8a2a;
-  --color-primary-lt:#a3c85a;
-  --color-secondary: #0f1f3d;   /* navy — supporting */
-  --color-accent:    #7aaa35;
-  --color-accent-light: #a3c85a;
+  --color-primary:   #68981C;   /* GCS green — primary action */
+  --color-primary-dk:#4d720f;
+  --color-primary-lt:#8ab83a;
+  --color-secondary: #00122B;   /* navy — supporting */
+  --color-accent:    #68981C;
+  --color-accent-light: #8ab83a;
 
   /* Legacy compat */
   --color-brand-navy:    #0f1f3d;
