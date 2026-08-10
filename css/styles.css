@@ -1198,6 +1198,7 @@ noscript .nexus-dept-grid { display: flex; }
 .form-hint { color: var(--gcs-slate); font-size: 0.8125rem; }
 .form-optional { color: var(--gcs-slate); font-size: 0.8125rem; }
 .form-disclosure { display: grid; grid-template-columns: auto 1fr; gap: 0.85rem; }
+.form-privacy-note { margin-top: 0.75rem; font-size: 0.8125rem; color: var(--gcs-slate); }
 .form-summary {
   white-space: pre-wrap; background: var(--surface-white);
   color: var(--text-primary); border: 1px solid var(--surface-border);
@@ -1362,8 +1363,8 @@ noscript .nexus-dept-grid { display: flex; }
   .hero__taglines { flex-direction: column; gap: 0.25rem; }
   .hero__taglines span + span::before { display: none; }
   .btn, .btn--primary, .btn--outline, .btn--ghost, .btn--gold, .btn--secondary, .btn--outline-white { width: 100%; }
-  .nav__logo-img { height: 40px; max-width: 148px; }
-  .nav__logo-img--sm { height: 36px; max-width: 132px; }
+  .nav__logo-img { height: 48px; max-width: 180px; }
+  .nav__logo-img--sm { height: 44px; max-width: 160px; }
 
   .card, .feature-card, .module-card, .workflow-card, .contact-card,
   .form-card, .demo-panel, .surface-panel, .callout, .interactive__panel,
@@ -1371,6 +1372,9 @@ noscript .nexus-dept-grid { display: flex; }
 
   .founder-card { flex-direction: column; }
   .tab-nav { overflow-x: auto; flex-wrap: nowrap; }
+  .form-card { padding: 1.5rem; }
+  .form-card__lead, .page-hero__lead { text-align: left; }
+  .form-group--full textarea, .form-group--full input { width: 100%; }
 }
 
 /* ============================================================
