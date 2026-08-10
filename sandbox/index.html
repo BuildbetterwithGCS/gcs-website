@@ -154,6 +154,12 @@
               <button class="sandbox-nav-btn" type="button" data-view="projects">Projects</button>
               <button class="sandbox-nav-btn" type="button" data-view="procurement">Procurement</button>
               <button class="sandbox-nav-btn" type="button" data-view="logistics">Logistics</button>
+              <button class="sandbox-nav-btn" type="button" data-view="levy">Levy &amp; Funding</button>
+              <button class="sandbox-nav-btn" type="button" data-view="fundraising">Fundraising</button>
+              <button class="sandbox-nav-btn" type="button" data-view="grants">Grants</button>
+              <button class="sandbox-nav-btn" type="button" data-view="revenue">Revenue vs Cost</button>
+              <button class="sandbox-nav-btn" type="button" data-view="capital">Capital Planning</button>
+              <button class="sandbox-nav-btn" type="button" data-view="exec-roi">Executive ROI</button>
               <button class="sandbox-nav-btn" type="button" data-view="reports">Reports</button>
             </nav>
             <!-- Sandbox views -->
@@ -179,9 +185,18 @@
                   </div>
                   <div class="dash-list">
                     <div class="dash-list__title">Executive Alerts</div>
-                    <div class="dash-list__row"><span data-org-val="alert-1">Facility condition — 3 buildings critical</span><span class="dash-badge dash-badge--warn">HIGH</span></div>
-                    <div class="dash-list__row"><span data-org-val="alert-2">HR compliance filing due in 5 days</span><span class="dash-badge dash-badge--pend">UPCOMING</span></div>
-                    <div class="dash-list__row"><span data-org-val="alert-3">Procurement — 2 contracts expiring</span><span class="dash-badge dash-badge--info">REVIEW</span></div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span data-org-val="alert-1">Facility condition — 3 buildings critical</span><span class="dash-badge dash-badge--warn">HIGH</span></div>
+                      <div class="dash-expand-detail">Buildings A, C, and F — roof condition scores below 35/100. Recommended action: emergency repair fund allocation $180K. Capital plan update required by Dec 15.</div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span data-org-val="alert-2">HR compliance filing due in 5 days</span><span class="dash-badge dash-badge--pend">UPCOMING</span></div>
+                      <div class="dash-expand-detail">OSHA 300 annual summary filing. HR coordinator assigned. All incident records verified. Submission requires director signature by Nov 25. No issues anticipated.</div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span data-org-val="alert-3">Procurement — 2 contracts expiring</span><span class="dash-badge dash-badge--info">REVIEW</span></div>
+                      <div class="dash-expand-detail">Janitorial ($142K/yr) expiring Mar 31. Fuel contract ($380K/yr) expiring Apr 15. Both in renewal process. Recommend confirming vendor continuity by Dec 1.</div>
+                    </div>
                     <div class="dash-list__row"><span data-org-val="alert-4">Capital project Phase 2 — on schedule</span><span class="dash-badge dash-badge--ok">OK</span></div>
                   </div>
                   <div class="dash-list">
@@ -426,16 +441,39 @@
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Active POs</div><div class="dash-kpi__val">68</div><div class="dash-kpi__delta">Open purchase orders</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Spend YTD</div><div class="dash-kpi__val">$8.7M</div><div class="dash-kpi__delta dash-kpi__delta--up">Within approved budget</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Vendor Contracts</div><div class="dash-kpi__val">142</div><div class="dash-kpi__delta dash-kpi__delta--warn">12 expiring this quarter</div></div>
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">RFPs In Progress</div><div class="dash-kpi__val">5</div><div class="dash-kpi__delta">Active solicitations</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Open Solicitations</div><div class="dash-kpi__val">5</div><div class="dash-kpi__delta">Active RFPs/Bids</div></div>
                 </div>
-                <div class="dash-row dash-row--2" style="margin-top:0.75rem;">
+                <div class="dash-row dash-row--3" style="margin-top:0.75rem;">
                   <div class="dash-list">
-                    <div class="dash-list__title">Procurement Items</div>
-                    <div class="dash-list__row"><span>Janitorial services contract renewal</span><span class="dash-badge dash-badge--warn">EXPIRING SOON</span></div>
-                    <div class="dash-list__row"><span>Fleet parts — RFP response due</span><span class="dash-badge dash-badge--pend">DUE IN 3 DAYS</span></div>
-                    <div class="dash-list__row"><span>IT equipment — bulk order approved</span><span class="dash-badge dash-badge--ok">ORDERED</span></div>
-                    <div class="dash-list__row"><span>Safety supplies — reorder triggered</span><span class="dash-badge dash-badge--info">IN PROCESS</span></div>
+                    <div class="dash-list__title">Bid &amp; Solicitation Status</div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>Janitorial services — RFP in evaluation</span><span class="dash-badge dash-badge--warn">3 BIDS RECEIVED</span></div>
+                      <div class="dash-expand-detail">Bids received: $142K, $168K, $188K/yr. Lowest bid under scope review. Award decision pending committee review. Current contract expires Mar 31.</div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>Fleet parts — RFP response due</span><span class="dash-badge dash-badge--pend">DUE IN 3 DAYS</span></div>
+                      <div class="dash-expand-detail">Three vendors invited. Current contract: $620K/yr. Estimated savings opportunity: 8–12%. Evaluation criteria: price 40%, quality 35%, delivery 25%.</div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>IT equipment — bulk order approved</span><span class="dash-badge dash-badge--ok">ORDERED</span></div>
+                      <div class="dash-expand-detail">PO #4821 — 48 workstations, 12 displays. Vendor: Tech Supply Co. Total: $94,800. Expected delivery: Nov 18. W-9 on file. Insurance verified.</div>
+                    </div>
                     <div class="dash-list__row"><span>Fuel contract — multi-year renewal</span><span class="dash-badge dash-badge--info">IN NEGOTIATION</span></div>
+                    <div class="dash-list__row"><span>Safety supplies — reorder triggered</span><span class="dash-badge dash-badge--info">IN PROCESS</span></div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">Vendor Intelligence</div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>Supplier A — Primary Infrastructure</span><span class="dash-badge dash-badge--ok">PREFERRED</span></div>
+                      <div class="dash-expand-detail">Performance: 94/100. On-time delivery: 97%. Insurance current. W-9 on file. Contract value: $1.4M. Renewal due: Jun 2025. No open disputes.</div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>Supplier B — Sole Source Risk</span><span class="dash-badge dash-badge--warn">REVIEW</span></div>
+                      <div class="dash-expand-detail">Single-source dependency for 3 critical components. No alternate qualified. Mitigation: identify 1–2 secondary vendors by Q1. Risk: supply disruption.</div>
+                    </div>
+                    <div class="dash-list__row"><span>Local Vendor Tracking</span><span class="dash-badge dash-badge--info">18 / 142 Contracts</span></div>
+                    <div class="dash-list__row"><span>Upcoming Contract Renewals (90 days)</span><span class="dash-badge dash-badge--pend">12 Contracts</span></div>
+                    <div class="dash-list__row"><span>Procurement Cycle Time (avg.)</span><span class="dash-badge dash-badge--ok">24 Days</span></div>
                   </div>
                   <div class="dash-chart">
                     <div class="dash-chart__title">Spend by Category (YTD)</div>
@@ -508,6 +546,267 @@
                     <div class="dash-list__row"><span>Environmental Reporting</span><span class="dash-badge dash-badge--pend">NEXT CYCLE</span></div>
                     <div class="dash-list__row"><span>Audit Support Package</span><span class="dash-badge dash-badge--info">IN PROGRESS</span></div>
                     <div class="dash-list__row"><span>Grant Performance Report</span><span class="dash-badge dash-badge--ok">SUBMITTED</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- LEVY / PUBLIC FUNDING -->
+              <div class="sandbox-view" data-view="levy">
+                <div class="dash-row dash-row--4">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Current Levy Revenue</div><div class="dash-kpi__val">$4.2M</div><div class="dash-kpi__delta dash-kpi__delta--up">Annual collection</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Proposed Levy Revenue</div><div class="dash-kpi__val">$5.8M</div><div class="dash-kpi__delta dash-kpi__delta--up">Renewal scenario</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Funding Gap</div><div class="dash-kpi__val">$1.6M</div><div class="dash-kpi__delta dash-kpi__delta--warn">Current vs. need</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Levy Expiration</div><div class="dash-kpi__val">Dec 2026</div><div class="dash-kpi__delta dash-kpi__delta--warn">Action required</div></div>
+                </div>
+                <div class="dash-row dash-row--3" style="margin-top:0.75rem;">
+                  <div class="dash-list">
+                    <div class="dash-list__title">Scenario Comparison — Decision Support</div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>Maintain Current Level</span><span class="dash-badge dash-badge--warn">$1.6M Gap Remains</span></div>
+                      <div class="dash-expand-detail">At current revenue, 3 capital projects cannot proceed. Infrastructure backlog grows $400K/yr. Service level reductions likely in Yr 3 without intervention.</div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>Renewal Scenario (same rate)</span><span class="dash-badge dash-badge--info">Covers 68% of Need</span></div>
+                      <div class="dash-expand-detail">Renewing at 2.1 mills for 5 years generates $21.4M. Funds roads and HVAC. Leaves facility capital and equipment gaps. Recommended minimum action.</div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>Replacement Scenario (+0.3 mills)</span><span class="dash-badge dash-badge--ok">Covers 91% of Need</span></div>
+                      <div class="dash-expand-detail">Rate increases to 2.4 mills. Annual household cost: ~$216/yr (+$27). Funds all priority capital items. Minor gap in discretionary projects. Recommended scenario.</div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>Increase Scenario (+0.8 mills)</span><span class="dash-badge dash-badge--ok">Fully Funded</span></div>
+                      <div class="dash-expand-detail">Rate rises to 2.9 mills. Annual household cost: ~$261/yr. Covers all capital and operating needs for 5 years, plus $720K reserve. Strongest financial position.</div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>No-Levy Scenario</span><span class="dash-badge dash-badge--warn">$4.2M Shortfall</span></div>
+                      <div class="dash-expand-detail">Loss of levy funding requires immediate service reduction or emergency borrowing. 6 capital projects deferred. Infrastructure risk score rises to HIGH within 18 months.</div>
+                    </div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">Millage &amp; Household Impact</div>
+                    <div class="dash-list__row"><span>Current Millage Rate</span><span class="dash-badge dash-badge--info">2.1 Mills</span></div>
+                    <div class="dash-list__row"><span>Proposed Rate (Renewal)</span><span class="dash-badge dash-badge--info">2.1 Mills</span></div>
+                    <div class="dash-list__row"><span>Annual Cost / Avg. Household</span><span class="dash-badge dash-badge--info">~$189 / yr</span></div>
+                    <div class="dash-list__row"><span>Revenue Projection (5-yr)</span><span class="dash-badge dash-badge--ok">$21.4M</span></div>
+                    <div class="dash-list__row"><span>Years of Coverage</span><span class="dash-badge dash-badge--ok">5 Years</span></div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">Capital Need Supported</div>
+                    <div class="dash-list__row"><span>Infrastructure Maintenance</span><span class="dash-badge dash-badge--ok">Funded</span></div>
+                    <div class="dash-list__row"><span>Road Resurfacing Program</span><span class="dash-badge dash-badge--ok">Funded</span></div>
+                    <div class="dash-list__row"><span>Building Envelope Repairs</span><span class="dash-badge dash-badge--warn">Partially Funded</span></div>
+                    <div class="dash-list__row"><span>Equipment Replacement Cycle</span><span class="dash-badge dash-badge--warn">Partially Funded</span></div>
+                    <div class="dash-list__row"><span>New Community Facility</span><span class="dash-badge dash-badge--pend">Unfunded</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- FUNDRAISING -->
+              <div class="sandbox-view" data-view="fundraising">
+                <div class="dash-row dash-row--4">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Annual Goal</div><div class="dash-kpi__val">$2.5M</div><div class="dash-kpi__delta">Fiscal year target</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Raised to Date</div><div class="dash-kpi__val">$1.64M</div><div class="dash-kpi__delta dash-kpi__delta--up">65.7% of goal</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Remaining Gap</div><div class="dash-kpi__val">$860K</div><div class="dash-kpi__delta dash-kpi__delta--warn">5 months remain</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Donor Retention</div><div class="dash-kpi__val">71%</div><div class="dash-kpi__delta dash-kpi__delta--up">↑ from 64% prior yr</div></div>
+                </div>
+                <div class="dash-row dash-row--3" style="margin-top:0.75rem;">
+                  <div class="dash-list">
+                    <div class="dash-list__title">Campaign Performance</div>
+                    <div class="dash-list__row"><span>Annual Fund Campaign</span><span class="dash-badge dash-badge--ok">68% of Goal</span></div>
+                    <div class="dash-list__row"><span>Major Gifts Pipeline</span><span class="dash-badge dash-badge--info">$420K Identified</span></div>
+                    <div class="dash-list__row"><span>Corporate Sponsorships</span><span class="dash-badge dash-badge--ok">$180K Secured</span></div>
+                    <div class="dash-list__row"><span>Event Revenue (Spring Gala)</span><span class="dash-badge dash-badge--ok">$95K Net</span></div>
+                    <div class="dash-list__row"><span>Online / Digital Giving</span><span class="dash-badge dash-badge--pend">$62K YTD</span></div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">Donor Pipeline</div>
+                    <div class="dash-list__row"><span>Prospects Identified</span><span class="dash-badge dash-badge--info">142</span></div>
+                    <div class="dash-list__row"><span>In Cultivation</span><span class="dash-badge dash-badge--pend">38</span></div>
+                    <div class="dash-list__row"><span>Ask Pending</span><span class="dash-badge dash-badge--warn">14</span></div>
+                    <div class="dash-list__row"><span>Pledges Active</span><span class="dash-badge dash-badge--ok">29</span></div>
+                    <div class="dash-list__row"><span>Pledge Conversion Rate</span><span class="dash-badge dash-badge--ok">84%</span></div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">Funding Sources</div>
+                    <div class="dash-list__row"><span>Restricted Funds</span><span class="dash-badge dash-badge--info">$980K</span></div>
+                    <div class="dash-list__row"><span>Unrestricted Funds</span><span class="dash-badge dash-badge--ok">$660K</span></div>
+                    <div class="dash-list__row"><span>Cost to Raise a Dollar</span><span class="dash-badge dash-badge--ok">$0.18</span></div>
+                    <div class="dash-list__row"><span>Grant Revenue (YTD)</span><span class="dash-badge dash-badge--ok">$340K</span></div>
+                    <div class="dash-list__row"><span>Upcoming Opportunities</span><span class="dash-badge dash-badge--pend">7 Identified</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- GRANTS -->
+              <div class="sandbox-view" data-view="grants">
+                <div class="dash-row dash-row--4">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Grants Identified</div><div class="dash-kpi__val">34</div><div class="dash-kpi__delta">Pipeline total</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Total Awarded (YTD)</div><div class="dash-kpi__val">$1.27M</div><div class="dash-kpi__delta dash-kpi__delta--up">6 grants active</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Applications In Progress</div><div class="dash-kpi__val">8</div><div class="dash-kpi__delta dash-kpi__delta--warn">3 due this month</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Match Requirement</div><div class="dash-kpi__val">$218K</div><div class="dash-kpi__delta dash-kpi__delta--warn">Confirm funding source</div></div>
+                </div>
+                <div class="dash-row dash-row--3" style="margin-top:0.75rem;">
+                  <div class="dash-list">
+                    <div class="dash-list__title">Grant Pipeline Status</div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>Infrastructure Improvement Grant</span><span class="dash-badge dash-badge--ok">AWARDED — $480K</span></div>
+                      <div class="dash-expand-detail">Federal infrastructure grant. Performance period: 24 months. Match required: $96K (20%). Q3 report submitted. Next reporting deadline: Mar 1. Project on track.</div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>Community Services Program</span><span class="dash-badge dash-badge--ok">AWARDED — $215K</span></div>
+                      <div class="dash-expand-detail">State community development grant. No match required. 2 program deliverables completed. Final report due Jun 30. Budget 73% expended on schedule.</div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>Workforce Development Grant</span><span class="dash-badge dash-badge--info">SUBMITTED</span></div>
+                      <div class="dash-expand-detail">$125K requested. Award decision expected Dec 15. Supports 40 training slots over 12 months. Letters of support from 3 employers attached. Competitive pool: 22 applicants.</div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>Capital Equipment Replacement</span><span class="dash-badge dash-badge--pend">IN PROGRESS</span></div>
+                      <div class="dash-expand-detail">$310K requested. Application 60% complete. Budget narrative and equipment specs still needed. Internal deadline: Nov 20. Submission deadline: Dec 1.</div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>Environmental Remediation</span><span class="dash-badge dash-badge--warn">DUE IN 8 DAYS</span></div>
+                      <div class="dash-expand-detail">$240K EPA grant. Application 85% complete. Final site assessment attachment pending from engineering. Coordinator assigned. Escalation flagged.</div>
+                    </div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">Compliance &amp; Reporting</div>
+                    <div class="dash-list__row"><span>Q3 Performance Report — Grant A</span><span class="dash-badge dash-badge--ok">SUBMITTED</span></div>
+                    <div class="dash-list__row"><span>Q4 Financial Report — Grant B</span><span class="dash-badge dash-badge--warn">DUE NOV 30</span></div>
+                    <div class="dash-list__row"><span>Annual Audit — Grant C</span><span class="dash-badge dash-badge--pend">SCHEDULED</span></div>
+                    <div class="dash-list__row"><span>Closeout Report — Grant D</span><span class="dash-badge dash-badge--ok">COMPLETE</span></div>
+                    <div class="dash-list__row"><span>Grant ROI (Admin Cost)</span><span class="dash-badge dash-badge--ok">$0.09 / $1 Awarded</span></div>
+                  </div>
+                  <div class="dash-chart">
+                    <div class="dash-chart__title">Grant Awards — Rolling 8 Months</div>
+                    <div class="dash-chart__bars">
+                      <div class="dash-bar dash-bar--navy" style="height:20%"></div>
+                      <div class="dash-bar" style="height:35%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:60%"></div>
+                      <div class="dash-bar" style="height:45%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:80%"></div>
+                      <div class="dash-bar" style="height:70%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:90%"></div>
+                      <div class="dash-bar" style="height:75%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- REVENUE vs COST -->
+              <div class="sandbox-view" data-view="revenue">
+                <div class="dash-row dash-row--4">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Total Revenue / Funding</div><div class="dash-kpi__val">$41.8M</div><div class="dash-kpi__delta dash-kpi__delta--up">↑ 6.4% vs prior yr</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Total Operating Cost</div><div class="dash-kpi__val">$39.6M</div><div class="dash-kpi__delta dash-kpi__delta--up">↑ 3.1% vs prior yr</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Net Operating Result</div><div class="dash-kpi__val">+$2.2M</div><div class="dash-kpi__delta dash-kpi__delta--up">Surplus — above plan</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Forecasted Year-End</div><div class="dash-kpi__val">+$1.8M</div><div class="dash-kpi__delta dash-kpi__delta--up">Surplus projected</div></div>
+                </div>
+                <div class="dash-row dash-row--3" style="margin-top:0.75rem;">
+                  <div class="dash-chart">
+                    <div class="dash-chart__title">Revenue vs. Expenditure — Monthly (YTD)</div>
+                    <div class="dash-chart__bars">
+                      <div class="dash-bar dash-bar--navy" style="height:62%"></div><div class="dash-bar" style="height:58%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:70%"></div><div class="dash-bar" style="height:63%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:78%"></div><div class="dash-bar" style="height:72%"></div>
+                      <div class="dash-bar dash-bar--navy" style="height:82%"></div><div class="dash-bar" style="height:75%"></div>
+                    </div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">Budget Variance by Category</div>
+                    <div class="dash-list__row"><span>Revenue vs. Budget</span><span class="dash-badge dash-badge--ok">↑ +2.3% Favorable</span></div>
+                    <div class="dash-list__row"><span>Personnel Cost vs. Budget</span><span class="dash-badge dash-badge--ok">↓ 1.1% Under</span></div>
+                    <div class="dash-list__row"><span>Facilities / Capital Cost</span><span class="dash-badge dash-badge--warn">↑ +4.8% Over</span></div>
+                    <div class="dash-list__row"><span>Procurement / Vendor Spend</span><span class="dash-badge dash-badge--ok">↓ 0.8% Under</span></div>
+                    <div class="dash-list__row"><span>Technology Investment</span><span class="dash-badge dash-badge--ok">On Budget</span></div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">Financial Performance Indicators</div>
+                    <div class="dash-list__row"><span>Savings Identified (YTD)</span><span class="dash-badge dash-badge--ok">$318K</span></div>
+                    <div class="dash-list__row"><span>Savings Realized (YTD)</span><span class="dash-badge dash-badge--ok">$204K</span></div>
+                    <div class="dash-list__row"><span>Cost Avoidance</span><span class="dash-badge dash-badge--ok">$87K</span></div>
+                    <div class="dash-list__row"><span>Break-Even Point (Monthly)</span><span class="dash-badge dash-badge--info">$3.3M / Month</span></div>
+                    <div class="dash-list__row"><span>Funding Gap (Unfunded Needs)</span><span class="dash-badge dash-badge--warn">$1.1M</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CAPITAL PLANNING -->
+              <div class="sandbox-view" data-view="capital">
+                <div class="dash-row dash-row--4">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Total Capital Need</div><div class="dash-kpi__val">$18.4M</div><div class="dash-kpi__delta dash-kpi__delta--warn">5-Year Identified</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Available Funding</div><div class="dash-kpi__val">$12.1M</div><div class="dash-kpi__delta dash-kpi__delta--warn">Debt + Cash + Grants</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Funding Gap</div><div class="dash-kpi__val">$6.3M</div><div class="dash-kpi__delta dash-kpi__delta--warn">Requires resolution</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Deferred Capital</div><div class="dash-kpi__val">$4.8M</div><div class="dash-kpi__delta dash-kpi__delta--warn">Risk of deferral</div></div>
+                </div>
+                <div class="dash-row dash-row--3" style="margin-top:0.75rem;">
+                  <div class="dash-list">
+                    <div class="dash-list__title">Priority Capital Projects</div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>HVAC System Replacement — Admin</span><span class="dash-badge dash-badge--warn">HIGH — $1.2M</span></div>
+                      <div class="dash-expand-detail">System age: 24 years. Condition score: 28/100. Failure risk: HIGH. Lead time for equipment: 16 weeks. Funding source identified: reserves $400K + grant pending $800K. Design scope needed.</div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>Road Resurfacing — Phase 3</span><span class="dash-badge dash-badge--warn">HIGH — $2.1M</span></div>
+                      <div class="dash-expand-detail">3.8 lane-miles. PCI average: 42 (Poor). Deterioration will require full reconstruction at ~4× cost if deferred past 2026. Levy funding scenario covers 60% of cost.</div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                      <div class="dash-expand-header"><span>Fleet Replacement Cycle (5 units)</span><span class="dash-badge dash-badge--info">MEDIUM — $640K</span></div>
+                      <div class="dash-expand-detail">Units 14, 17, 22, 31, 38. Average age: 11.4 years. Maintenance cost per unit: 3× standard. Lease vs. purchase analysis in progress. Delivery lead time: 26–32 weeks.</div>
+                    </div>
+                    <div class="dash-list__row"><span>Security System Upgrade</span><span class="dash-badge dash-badge--info">MEDIUM — $320K</span></div>
+                    <div class="dash-list__row"><span>Parking Structure Assessment</span><span class="dash-badge dash-badge--pend">LOW — $180K</span></div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">Funding Mix (5-Year Plan)</div>
+                    <div class="dash-list__row"><span>Cash / Reserves</span><span class="dash-badge dash-badge--ok">$3.8M — 20.7%</span></div>
+                    <div class="dash-list__row"><span>Debt / Bonds</span><span class="dash-badge dash-badge--info">$5.2M — 28.3%</span></div>
+                    <div class="dash-list__row"><span>Grants Applied / Pending</span><span class="dash-badge dash-badge--pend">$2.1M — 11.4%</span></div>
+                    <div class="dash-list__row"><span>Levy / Special Assessment</span><span class="dash-badge dash-badge--pend">$1.0M — 5.4%</span></div>
+                    <div class="dash-list__row"><span>Unfunded Gap</span><span class="dash-badge dash-badge--warn">$6.3M — 34.2%</span></div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">Asset Condition &amp; Risk</div>
+                    <div class="dash-list__row"><span>Buildings — Avg. Condition Score</span><span class="dash-badge dash-badge--warn">62 / 100</span></div>
+                    <div class="dash-list__row"><span>Infrastructure — Avg. Score</span><span class="dash-badge dash-badge--warn">58 / 100</span></div>
+                    <div class="dash-list__row"><span>Fleet — Avg. Age</span><span class="dash-badge dash-badge--info">7.4 Years</span></div>
+                    <div class="dash-list__row"><span>Equipment — Past Replacement Year</span><span class="dash-badge dash-badge--warn">14 Units</span></div>
+                    <div class="dash-list__row"><span>High Deferral Risk Items</span><span class="dash-badge dash-badge--warn">6 Assets</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- EXECUTIVE ROI -->
+              <div class="sandbox-view" data-view="exec-roi">
+                <div class="dash-row dash-row--4">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Total Operating Spend</div><div class="dash-kpi__val">$39.6M</div><div class="dash-kpi__delta">YTD Committed</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Savings Realized</div><div class="dash-kpi__val">$204K</div><div class="dash-kpi__delta dash-kpi__delta--up">↑ YTD Captured</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Risk Exposure</div><div class="dash-kpi__val">$1.8M</div><div class="dash-kpi__delta dash-kpi__delta--warn">Open Risk Items</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Forecasted Position</div><div class="dash-kpi__val">+$1.8M</div><div class="dash-kpi__delta dash-kpi__delta--up">Year-End Surplus</div></div>
+                </div>
+                <div class="dash-row dash-row--3" style="margin-top:0.75rem;">
+                  <div class="dash-list">
+                    <div class="dash-list__title">Value Scorecard</div>
+                    <div class="dash-list__row"><span>Savings Identified</span><span class="dash-badge dash-badge--ok">$318K</span></div>
+                    <div class="dash-list__row"><span>Savings Realized</span><span class="dash-badge dash-badge--ok">$204K</span></div>
+                    <div class="dash-list__row"><span>Cost Avoidance</span><span class="dash-badge dash-badge--ok">$87K</span></div>
+                    <div class="dash-list__row"><span>Revenue Opportunity Identified</span><span class="dash-badge dash-badge--info">$540K</span></div>
+                    <div class="dash-list__row"><span>Productivity Gain (Est.)</span><span class="dash-badge dash-badge--ok">+14% Capacity</span></div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">ROI by Investment Area</div>
+                    <div class="dash-list__row"><span>Technology Platform ROI</span><span class="dash-badge dash-badge--ok">4.2x</span></div>
+                    <div class="dash-list__row"><span>Capital Project Return</span><span class="dash-badge dash-badge--ok">3.1x (10-yr)</span></div>
+                    <div class="dash-list__row"><span>Contract Optimization ROI</span><span class="dash-badge dash-badge--ok">$1.80 / $1</span></div>
+                    <div class="dash-list__row"><span>Workforce Capacity Utilization</span><span class="dash-badge dash-badge--ok">87% — Healthy</span></div>
+                    <div class="dash-list__row"><span>Risk-Adjusted Return</span><span class="dash-badge dash-badge--info">In Review</span></div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">Financial Position Summary</div>
+                    <div class="dash-list__row"><span>Current Financial Position</span><span class="dash-badge dash-badge--ok">+$2.2M Surplus</span></div>
+                    <div class="dash-list__row"><span>Forecasted Year-End</span><span class="dash-badge dash-badge--ok">+$1.8M</span></div>
+                    <div class="dash-list__row"><span>Budget Variance</span><span class="dash-badge dash-badge--ok">+0.9% Favorable</span></div>
+                    <div class="dash-list__row"><span>Unfunded Capital Need</span><span class="dash-badge dash-badge--warn">$6.3M</span></div>
+                    <div class="dash-list__row"><span>Funding Gap (Operations)</span><span class="dash-badge dash-badge--ok">No Gap Projected</span></div>
                   </div>
                 </div>
               </div>
@@ -715,6 +1014,22 @@
         if (sandboxEnv) sandboxEnv.setAttribute('hidden', '');
       });
     }
+
+    // Expandable drill-down rows
+    document.addEventListener('click', function(e) {
+      var row = e.target.closest('.dash-expand-row');
+      if (!row) return;
+      var expanded = row.getAttribute('aria-expanded') === 'true';
+      row.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      var row = e.target.closest('.dash-expand-row');
+      if (!row) return;
+      e.preventDefault();
+      var expanded = row.getAttribute('aria-expanded') === 'true';
+      row.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+    });
   })();
   </script>
 </body>
