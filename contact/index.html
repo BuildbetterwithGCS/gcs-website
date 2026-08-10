@@ -7,7 +7,7 @@
 
   <title>Contact GCS</title>
   <meta name="title" content="Contact GCS" />
-  <meta name="description" content="GCS — Build Better Organizations. Email info@buildbetterwithgcs.com or use the client-side contact form to prepare an inquiry about operations intelligence." />
+  <meta name="description" content="GCS — Build Better Organizations. Contact GCS to describe your operational challenge and learn where to start." />
   <meta name="author" content="GCS" />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://buildbetterwithgcs.com/contact/" />
@@ -16,7 +16,7 @@
   <meta property="og:site_name" content="GCS" />
   <meta property="og:url" content="https://buildbetterwithgcs.com/contact/" />
   <meta property="og:title" content="Contact GCS" />
-  <meta property="og:description" content="GCS — Build Better Organizations. Email info@buildbetterwithgcs.com or use the client-side contact form to prepare an inquiry about operations intelligence." />
+  <meta property="og:description" content="GCS — Build Better Organizations. Contact GCS to describe your operational challenge and learn where to start." />
   <meta property="og:image" content="https://buildbetterwithgcs.com/assets/og-image.png" />
 
   <meta name="twitter:card" content="summary_large_image" />
@@ -75,8 +75,8 @@
         </nav>
         <div class="page-hero__inner">
           <span class="page-hero__eyebrow">Contact</span>
-          <h1 class="page-hero__title">Start With the Actual Problem.</h1>
-          <p class="page-hero__lead">Whether you are evaluating a platform, scoping an assessment, or simply trying to describe something that is not working, the conversation begins the same way &mdash; with what is actually happening in your operation.</p>
+          <h1 class="page-hero__title">Let&rsquo;s Build Better</h1>
+          <p class="page-hero__lead">Tell us what you are trying to accomplish, what is getting in the way, and where your organization needs greater visibility, coordination, or accountability.</p>
         </div>
       </div>
     </section>
@@ -85,18 +85,23 @@
         <div class="split">
           <div>
             <div class="form-card">
-              <h2 class="form-card__title">Send a message</h2>
-              <p class="form-card__lead">Fields marked with an asterisk are required.</p>
+              <h2 class="form-card__title">Contact GCS</h2>
+              <p class="form-card__lead">You do not need to have the solution figured out. Describe the operational challenge in your own words and GCS can help identify where to start.</p>
 
-              <form id="contact-form" data-honest-form data-form-kind="General inquiry" novalidate>
+              <form id="contact-form" data-contact-form novalidate>
                 <div class="form-grid">
                 <div class="form-group">
-                  <label for="contact-name">Full name <span aria-hidden="true">*</span></label>
+                  <label for="contact-name">Name <span aria-hidden="true">*</span></label>
                   <input type="text" id="contact-name" name="name" autocomplete="name" required aria-describedby="contact-name-error" />
                   <p class="form-error" id="contact-name-error" role="alert"></p>
                 </div>
                 <div class="form-group">
-                  <label for="contact-email">Work email <span aria-hidden="true">*</span></label>
+                  <label for="contact-org">Organization <span aria-hidden="true">*</span></label>
+                  <input type="text" id="contact-org" name="organization" autocomplete="organization" required aria-describedby="contact-org-error" />
+                  <p class="form-error" id="contact-org-error" role="alert"></p>
+                </div>
+                <div class="form-group">
+                  <label for="contact-email">Email <span aria-hidden="true">*</span></label>
                   <input type="email" id="contact-email" name="email" autocomplete="email" required aria-describedby="contact-email-error" />
                   <p class="form-error" id="contact-email-error" role="alert"></p>
                 </div>
@@ -105,65 +110,46 @@
                   <input type="tel" id="contact-phone" name="phone" autocomplete="tel" />
                 </div>
                 <div class="form-group">
-                  <label for="contact-org">Organization <span aria-hidden="true">*</span></label>
-                  <input type="text" id="contact-org" name="organization" autocomplete="organization" required aria-describedby="contact-org-error" />
-                  <p class="form-error" id="contact-org-error" role="alert"></p>
+                  <label for="contact-industry">Industry <span aria-hidden="true">*</span></label>
+                  <input type="text" id="contact-industry" name="industry" required aria-describedby="contact-industry-error" />
+                  <p class="form-error" id="contact-industry-error" role="alert"></p>
                 </div>
                 <div class="form-group">
-                  <label for="contact-role">Role or title <span class="form-optional">(optional)</span></label>
-                  <input type="text" id="contact-role" name="role" autocomplete="organization-title" />
-                </div>
-                <div class="form-group">
-                  <label for="contact-type">Organization type <span aria-hidden="true">*</span></label>
-                  <select id="contact-type" name="orgType" required aria-describedby="contact-type-error">
+                  <label for="contact-interest">Area of Interest <span aria-hidden="true">*</span></label>
+                  <select id="contact-interest" name="interest" required aria-describedby="contact-interest-error">
                     <option value="">Select one&hellip;</option>
-                    <option value="Municipality / City / Township / Borough">Municipality / City / Township / Borough</option>
-                    <option value="County government">County government</option>
-                    <option value="School district or higher education">School district or higher education</option>
-                    <option value="Healthcare organization">Healthcare organization</option>
-                    <option value="Manufacturing or industrial">Manufacturing or industrial</option>
-                    <option value="Commercial real estate">Commercial real estate</option>
-                    <option value="Property management">Property management</option>
-                    <option value="Data center or critical facility">Data center or critical facility</option>
-                    <option value="Nonprofit organization">Nonprofit organization</option>
-                    <option value="Utility or authority">Utility or authority</option>
+                    <option value="Operations">Operations</option>
+                    <option value="Executive Leadership">Executive Leadership</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Human Resources">Human Resources</option>
+                    <option value="Facilities">Facilities</option>
+                    <option value="Safety &amp; Risk">Safety &amp; Risk</option>
+                    <option value="Asset Management">Asset Management</option>
+                    <option value="Fleet">Fleet</option>
+                    <option value="Procurement">Procurement</option>
+                    <option value="Inventory / Warehouse">Inventory / Warehouse</option>
+                    <option value="Shipping &amp; Receiving">Shipping &amp; Receiving</option>
+                    <option value="Data &amp; Reporting">Data &amp; Reporting</option>
+                    <option value="Nexus Enterprise Intelligence">Nexus Enterprise Intelligence</option>
+                    <option value="Map Intelligence">Map Intelligence</option>
+                    <option value="Organizational Assessment">Organizational Assessment</option>
                     <option value="Other">Other</option>
                   </select>
-                  <p class="form-error" id="contact-type-error" role="alert"></p>
+                  <p class="form-error" id="contact-interest-error" role="alert"></p>
                 </div>
                 </div>
 
-                <div class="form-group form-group--full">
-                  <label for="contact-goals">How can we help? <span aria-hidden="true">*</span></label>
-                  <textarea id="contact-goals" name="goals" rows="7" required aria-describedby="contact-goals-error contact-goals-hint" placeholder="Describe what you are trying to accomplish, what is currently getting in the way, and any constraints we should know about."></textarea>
-                  <p class="form-hint" id="contact-goals-hint">Specific beats polished. A paragraph describing a real operational difficulty is more useful than a formal request for information.</p>
-                  <p class="form-error" id="contact-goals-error" role="alert"></p>
+                <div class="form-group form-group--full" style="margin-top:1.25rem">
+                  <label for="contact-challenge">Describe Your Operational Challenge <span aria-hidden="true">*</span></label>
+                  <textarea id="contact-challenge" name="challenge" rows="7" required aria-describedby="contact-challenge-error" placeholder="Describe what you are trying to accomplish, what is currently getting in the way, and where your organization needs greater visibility, coordination, or accountability."></textarea>
+                  <p class="form-error" id="contact-challenge-error" role="alert"></p>
                 </div>
 
-              <div class="form-disclosure">
-                <span class="form-disclosure__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></span>
-                <div>
-                  <p><strong>How this form works &mdash; stated plainly.</strong> This is a static website with no server-side application behind it. Submitting this form does <strong>not</strong> transmit your information to GCS. Your entries are validated in your browser, and you are then shown a formatted summary along with a link that opens your own email client addressed to <a href="mailto:info@buildbetterwithgcs.com">info@buildbetterwithgcs.com</a> with that summary included.</p>
-                  <p>Nothing is stored, logged, or sent anywhere until you send that email yourself. We would rather tell you this than show you a &ldquo;message sent&rdquo; confirmation that isn't true.</p>
+                <div style="margin-top:1.5rem">
+                  <button type="submit" class="btn btn--primary btn--lg">Contact GCS</button>
+                  <p class="form-privacy-note">Information submitted through this form is used only to respond to your inquiry.</p>
                 </div>
-              </div>
-
-                <button type="submit" class="btn btn--primary btn--lg">Prepare my message</button>
               </form>
-
-              <div class="form-result" data-form-result hidden tabindex="-1">
-                <h3 class="form-result__title"><span aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15l2 2 4-4"/></svg></span> Message prepared &mdash; not yet sent</h3>
-                <div class="form-result__body">
-                  <p>Your entries passed validation and are summarized below. <strong>They have not been transmitted.</strong> Use the button to open your email client with this summary prefilled, or copy the text and send it however you prefer.</p>
-                  <pre class="form-summary" data-form-summary></pre>
-                  <div class="form-result__actions">
-                    <a class="btn btn--primary btn--sm" data-form-mailto href="mailto:info@buildbetterwithgcs.com">Open email with this summary</a>
-                    <button type="button" class="btn btn--outline btn--sm" data-form-copy>Copy summary</button>
-                    <button type="button" class="btn btn--ghost btn--sm" data-form-reset>Edit entries</button>
-                  </div>
-                  <p class="form-hint">If your browser does not open an email client, write to <a href="mailto:info@buildbetterwithgcs.com">info@buildbetterwithgcs.com</a> directly.</p>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -218,32 +204,6 @@
       </div>
     </section>
 
-    <section class="section section--alt">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-label">Transparency</span>
-          <h2 class="section-title">What Happens to What You Send</h2>
-        </div>
-        <div class="grid grid--3">
-          <article class="card reveal">
-            <span class="card__icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></span>
-            <h3 class="card__title">Nothing leaves your browser here</h3>
-            <p class="card__desc">This site is static. The forms on this page perform validation locally and generate a summary for you to send yourself. No submission endpoint exists, no analytics capture your entries, and no cookie records what you typed.</p>
-          </article>
-          <article class="card reveal">
-            <span class="card__icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
-            <h3 class="card__title">What we do with an email</h3>
-            <p class="card__desc">An email you send is used to respond to your inquiry and to maintain the record of our correspondence. It is not sold, shared with data brokers, or used to build a marketing profile. Details are in our <a href="../privacy/">privacy policy</a>.</p>
-          </article>
-          <article class="card reveal">
-            <span class="card__icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
-            <h3 class="card__title">Who reads it</h3>
-            <p class="card__desc">Inquiries reach GCS leadership directly. There is no lead qualification queue, no drip sequence, and no reassignment to a sales team. If GCS is not the right fit for what you describe, we will say so plainly.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
   </main>
   <!-- ===================== SITE FOOTER ===================== -->
   <footer class="site-footer" role="contentinfo">
@@ -280,5 +240,85 @@
   </footer>
 
   <script src="../js/main.js"></script>
-</body>
+  <script>
+  (function () {
+    var form = document.getElementById('contact-form');
+    if (!form) return;
+
+    function isEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+    function setError(id, msg) {
+      var el = document.getElementById(id);
+      var field = form.querySelector('[aria-describedby~="' + id + '"]');
+      if (!el) return;
+      el.textContent = msg;
+      if (field) {
+        if (msg) { field.classList.add('error'); field.setAttribute('aria-invalid', 'true'); }
+        else { field.classList.remove('error'); field.removeAttribute('aria-invalid'); }
+      }
+    }
+
+    function validate() {
+      var ok = true;
+      [
+        ['contact-name', 'contact-name-error', 'text'],
+        ['contact-org', 'contact-org-error', 'text'],
+        ['contact-email', 'contact-email-error', 'email'],
+        ['contact-industry', 'contact-industry-error', 'text'],
+        ['contact-interest', 'contact-interest-error', 'select'],
+        ['contact-challenge', 'contact-challenge-error', 'textarea']
+      ].forEach(function (row) {
+        var fid = row[0], eid = row[1], kind = row[2];
+        var field = document.getElementById(fid);
+        if (!field) return;
+        var val = (field.value || '').trim();
+        var msg = '';
+        if (!val) {
+          msg = 'Please complete this field.';
+        } else if (kind === 'email' && !isEmail(val)) {
+          msg = 'Please enter a valid email address.';
+        } else if (kind === 'textarea' && val.length < 20) {
+          msg = 'Please add a little more detail.';
+        }
+        setError(eid, msg);
+        if (msg) ok = false;
+      });
+      return ok;
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!validate()) {
+        var first = form.querySelector('.error');
+        if (first) first.focus();
+        return;
+      }
+
+      var name     = (document.getElementById('contact-name').value || '').trim();
+      var org      = (document.getElementById('contact-org').value || '').trim();
+      var email    = (document.getElementById('contact-email').value || '').trim();
+      var phone    = (document.getElementById('contact-phone').value || '').trim();
+      var industry = (document.getElementById('contact-industry').value || '').trim();
+      var interest = (document.getElementById('contact-interest').value || '').trim();
+      var challenge= (document.getElementById('contact-challenge').value || '').trim();
+
+      var subject = 'GCS Inquiry — ' + name + ' (' + org + ')';
+      var body = [
+        'Name: ' + name,
+        'Organization: ' + org,
+        'Email: ' + email,
+        phone ? 'Phone: ' + phone : '',
+        'Industry: ' + industry,
+        'Area of Interest: ' + interest,
+        '',
+        'Operational Challenge:',
+        challenge
+      ].filter(function (l) { return l !== null && l !== undefined; }).join('\n');
+
+      window.location.href = 'mailto:info@buildbetterwithgcs.com'
+        + '?subject=' + encodeURIComponent(subject)
+        + '&body=' + encodeURIComponent(body);
+    });
+  }());
+  </script></body>
 </html>
