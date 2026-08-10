@@ -89,7 +89,7 @@
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header" role="banner">
     <nav class="nav container" aria-label="Primary navigation">
-      <a href="../" class="nav__logo" aria-label="GCS home"><span class="nav__logo-plate"><img src="../assets/gcs-logo.svg" alt="GCS — Building Better Organizations" class="nav__logo-img" width="160" height="56" /></span></a>
+      <a href="../" class="nav__logo" aria-label="GCS home"><span class="nav__logo-plate"><img src="../assets/gcs-logo.svg" alt="GCS — Build Better Organizations" class="nav__logo-img" width="168" height="56" /></span></a>
       <button class="nav__toggle" type="button" aria-controls="nav-menu" aria-expanded="false" aria-label="Open navigation menu"><span class="hamburger" aria-hidden="true"></span><span class="hamburger" aria-hidden="true"></span><span class="hamburger" aria-hidden="true"></span></button>
       <ul class="nav__links" id="nav-menu" role="list">
         <li><a href="../" class="nav__link">Home</a></li>
@@ -138,12 +138,12 @@
             <!-- Layers panel -->
             <div class="map-layers-panel">
               <div class="map-layers-title">Map Layers</div>
-              <label class="layer-toggle"><input type="checkbox" checked data-layer="facilities" /><span class="layer-dot" style="background:#0f1f3d;"></span>Facilities</label>
-              <label class="layer-toggle"><input type="checkbox" checked data-layer="fleet" /><span class="layer-dot" style="background:#7aaa35;"></span>Fleet</label>
-              <label class="layer-toggle"><input type="checkbox" checked data-layer="projects" /><span class="layer-dot" style="background:#2e4a7a;"></span>Capital Projects</label>
+              <label class="layer-toggle"><input type="checkbox" checked data-layer="facilities" /><span class="layer-dot" style="background:#00122B;"></span>Facilities</label>
+              <label class="layer-toggle"><input type="checkbox" checked data-layer="fleet" /><span class="layer-dot" style="background:#68981C;"></span>Fleet</label>
+              <label class="layer-toggle"><input type="checkbox" checked data-layer="projects" /><span class="layer-dot" style="background:#335475;"></span>Capital Projects</label>
               <label class="layer-toggle"><input type="checkbox" data-layer="risk" /><span class="layer-dot" style="background:#b42318;"></span>Risk Zones</label>
               <label class="layer-toggle"><input type="checkbox" data-layer="workorders" /><span class="layer-dot" style="background:#b45309;"></span>Active Work Orders</label>
-              <label class="layer-toggle"><input type="checkbox" checked data-layer="service" /><span class="layer-dot" style="background:#6b7a87;"></span>Service Territory</label>
+              <label class="layer-toggle"><input type="checkbox" checked data-layer="service" /><span class="layer-dot" style="background:#646465;"></span>Service Territory</label>
               <div style="border-top:1px solid var(--surface-border);margin:0.5rem 0;padding-top:0.5rem;">
                 <div class="map-layers-title">Filter by Condition</div>
                 <select id="condition-filter" style="width:100%;padding:0.375rem;border:1px solid var(--surface-border);border-radius:4px;font-size:0.8125rem;">
@@ -169,7 +169,7 @@
                 <line x1="500" y1="0" x2="500" y2="520" stroke="#fff" stroke-width="1.5" opacity="0.3"/>
 
                 <!-- Service territory -->
-                <rect x="30" y="30" width="560" height="460" rx="8" fill="#6b7a87" fill-opacity="0.08" stroke="#6b7a87" stroke-width="1.5" stroke-dasharray="6 4" data-layer-group="service"/>
+                <rect x="30" y="30" width="560" height="460" rx="8" fill="#646465" fill-opacity="0.08" stroke="#646465" stroke-width="1.5" stroke-dasharray="6 4" data-layer-group="service"/>
 
                 <!-- Risk zones (hidden by default) -->
                 <ellipse cx="150" cy="300" rx="80" ry="60" fill="#b42318" fill-opacity="0.10" stroke="#b42318" stroke-width="1.5" data-layer-group="risk"/>
@@ -178,42 +178,42 @@
                 <!-- Facilities layer -->
                 <g data-layer-group="facilities">
                   <!-- Building icons as rounded rects -->
-                  <rect x="80" y="60" width="36" height="28" rx="4" fill="#0f1f3d" opacity="0.85"/>
+                  <rect x="80" y="60" width="36" height="28" rx="4" fill="#00122B" opacity="0.85"/>
                   <text x="98" y="79" text-anchor="middle" font-size="8" fill="#fff" font-family="sans-serif">ADMIN</text>
-                  <rect x="280" y="130" width="40" height="30" rx="4" fill="#0f1f3d" opacity="0.85"/>
+                  <rect x="280" y="130" width="40" height="30" rx="4" fill="#00122B" opacity="0.85"/>
                   <text x="300" y="149" text-anchor="middle" font-size="8" fill="#fff" font-family="sans-serif">BLDG 4</text>
-                  <rect x="430" y="240" width="38" height="28" rx="4" fill="#0f1f3d" opacity="0.85"/>
+                  <rect x="430" y="240" width="38" height="28" rx="4" fill="#00122B" opacity="0.85"/>
                   <text x="449" y="258" text-anchor="middle" font-size="8" fill="#fff" font-family="sans-serif">MAINT</text>
                   <rect x="120" y="360" width="44" height="28" rx="4" fill="#b42318" opacity="0.85"/>
                   <text x="142" y="378" text-anchor="middle" font-size="8" fill="#fff" font-family="sans-serif">BLDG 11</text>
-                  <rect x="330" y="380" width="40" height="28" rx="4" fill="#0f1f3d" opacity="0.85"/>
+                  <rect x="330" y="380" width="40" height="28" rx="4" fill="#00122B" opacity="0.85"/>
                   <text x="350" y="398" text-anchor="middle" font-size="8" fill="#fff" font-family="sans-serif">ANNEX B</text>
-                  <rect x="510" y="80" width="38" height="28" rx="4" fill="#0f1f3d" opacity="0.85"/>
+                  <rect x="510" y="80" width="38" height="28" rx="4" fill="#00122B" opacity="0.85"/>
                   <text x="529" y="98" text-anchor="middle" font-size="8" fill="#fff" font-family="sans-serif">PARK CTR</text>
                 </g>
 
                 <!-- Fleet layer -->
                 <g data-layer-group="fleet">
-                  <circle cx="160" cy="180" r="8" fill="#7aaa35" opacity="0.9"/>
+                  <circle cx="160" cy="180" r="8" fill="#68981C" opacity="0.9"/>
                   <text x="160" y="183" text-anchor="middle" font-size="7" fill="#fff" font-family="sans-serif">F</text>
-                  <circle cx="310" cy="220" r="8" fill="#7aaa35" opacity="0.9"/>
+                  <circle cx="310" cy="220" r="8" fill="#68981C" opacity="0.9"/>
                   <text x="310" y="223" text-anchor="middle" font-size="7" fill="#fff" font-family="sans-serif">F</text>
-                  <circle cx="450" cy="310" r="8" fill="#7aaa35" opacity="0.9"/>
+                  <circle cx="450" cy="310" r="8" fill="#68981C" opacity="0.9"/>
                   <text x="450" y="313" text-anchor="middle" font-size="7" fill="#fff" font-family="sans-serif">F</text>
                   <circle cx="240" cy="400" r="8" fill="#b45309" opacity="0.9"/>
                   <text x="240" y="403" text-anchor="middle" font-size="7" fill="#fff" font-family="sans-serif">!</text>
-                  <circle cx="560" cy="280" r="8" fill="#7aaa35" opacity="0.9"/>
+                  <circle cx="560" cy="280" r="8" fill="#68981C" opacity="0.9"/>
                   <text x="560" y="283" text-anchor="middle" font-size="7" fill="#fff" font-family="sans-serif">F</text>
                 </g>
 
                 <!-- Capital projects layer -->
                 <g data-layer-group="projects">
-                  <polygon points="200,60 215,85 185,85" fill="#2e4a7a" opacity="0.85"/>
-                  <text x="200" y="98" text-anchor="middle" font-size="7" fill="#2e4a7a" font-family="sans-serif" font-weight="700">PROJ A</text>
-                  <polygon points="380,300 395,325 365,325" fill="#2e4a7a" opacity="0.85"/>
-                  <text x="380" y="338" text-anchor="middle" font-size="7" fill="#2e4a7a" font-family="sans-serif" font-weight="700">PROJ B</text>
-                  <polygon points="520,400 535,425 505,425" fill="#5a8a2a" opacity="0.85"/>
-                  <text x="520" y="438" text-anchor="middle" font-size="7" fill="#5a8a2a" font-family="sans-serif" font-weight="700">PROJ C</text>
+                  <polygon points="200,60 215,85 185,85" fill="#335475" opacity="0.85"/>
+                  <text x="200" y="98" text-anchor="middle" font-size="7" fill="#335475" font-family="sans-serif" font-weight="700">PROJ A</text>
+                  <polygon points="380,300 395,325 365,325" fill="#335475" opacity="0.85"/>
+                  <text x="380" y="338" text-anchor="middle" font-size="7" fill="#335475" font-family="sans-serif" font-weight="700">PROJ B</text>
+                  <polygon points="520,400 535,425 505,425" fill="#4d720f" opacity="0.85"/>
+                  <text x="520" y="438" text-anchor="middle" font-size="7" fill="#4d720f" font-family="sans-serif" font-weight="700">PROJ C</text>
                 </g>
 
                 <!-- Work orders layer (hidden by default) -->
@@ -389,8 +389,8 @@
     <div class="container">
       <div class="footer__grid">
         <div>
-          <div class="footer__brand"><a href="../" aria-label="GCS home"><img src="../assets/gcs-logo.svg" alt="GCS" class="nav__logo-img nav__logo-img--sm" width="120" height="44" /></a></div>
-          <div class="footer__company-name" style="margin-top:0.5rem;">GCS — Building Better Organizations.</div>
+          <div class="footer__brand"><a href="../" aria-label="GCS home"><img src="../assets/gcs-logo.svg" alt="GCS" class="nav__logo-img nav__logo-img--sm" width="132" height="44" /></a></div>
+          <div class="footer__company-name" style="margin-top:0.5rem;">GCS — Build Better Organizations.</div>
           <p class="footer__subtext" style="margin-top:0.5rem;">GCS connects the entire organization into one intelligence, action, and accountability environment.</p>
         </div>
         <div>
@@ -398,7 +398,7 @@
           <div class="footer__nav" style="margin-top:0.75rem;"><a href="../privacy/">Privacy</a><a href="../responsible-ai/">Responsible AI</a><a href="../accessibility/">Accessibility</a></div>
         </div>
       </div>
-      <div class="footer__bottom"><span>&copy; <span id="footer-year"></span> GCS. All rights reserved.</span><span>Building Better Organizations.</span></div>
+      <div class="footer__bottom"><span>&copy; <span id="footer-year"></span> GCS. All rights reserved.</span><span>Build Better Organizations.</span></div>
     </div>
   </footer>
 

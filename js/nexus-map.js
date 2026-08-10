@@ -46,11 +46,11 @@
   ];
 
   var GROUP_COLORS = {
-    leadership:   '#0f1f3d',
-    finance:      '#2e4a7a',
+    leadership:   '#00122B',
+    finance:      '#335475',
     people:       '#3a6b8e',
-    compliance:   '#5a8a2a',
-    operations:   '#7aaa35',
+    compliance:   '#4d720f',
+    operations:   '#68981C',
     supply:       '#4a8a25',
     technical:    '#3a7a35',
     intelligence: '#2a6a2e',
@@ -114,7 +114,7 @@
       var angle = (i / innerDepts.length) * 2 * Math.PI - Math.PI / 2;
       var x = cx + innerR * Math.cos(angle);
       var y = cy + innerR * Math.sin(angle);
-      var color = GROUP_COLORS[dept.group] || '#7aaa35';
+      var color = GROUP_COLORS[dept.group] || '#68981C';
 
       var line = createLine(NS, cx, cy, x, y, color, 0.28);
       svg.appendChild(line);
@@ -129,7 +129,7 @@
       var angle = (i / outerDepts.length) * 2 * Math.PI - Math.PI / 2 + (Math.PI / outerDepts.length);
       var x = cx + outerR * Math.cos(angle);
       var y = cy + outerR * Math.sin(angle);
-      var color = GROUP_COLORS[dept.group] || '#7aaa35';
+      var color = GROUP_COLORS[dept.group] || '#68981C';
 
       var line = createLine(NS, cx, cy, x, y, color, 0.18);
       svg.appendChild(line);
@@ -260,7 +260,7 @@
       chip.className = 'org-chip';
       var dot = document.createElement('span');
       dot.className = 'org-chip__dot';
-      dot.style.background = GROUP_COLORS[d.group] || '#7aaa35';
+      dot.style.background = GROUP_COLORS[d.group] || '#68981C';
       chip.appendChild(dot);
       chip.appendChild(document.createTextNode(d.name));
       chips.appendChild(chip);
