@@ -293,6 +293,78 @@ assert('No real email patterns in source (non-public address)',
   !(/[a-z0-9._%+-]+@(?!buildbetterwithgcs\.com)[a-z0-9-]+\.[a-z]{2,}/i.test(allFiles)));
 
 /* ================================================================
+   DEPARTMENT NAV ACTIVE STATE — VISUAL REQUIREMENTS
+   ================================================================ */
+section('Department Nav Active State');
+
+assert('Active dept button has GCS green fill (CSS background var(--gcs-green))',
+  contains(readFile('css/styles.css'), 'sandbox-nav-btn.active') &&
+  contains(readFile('css/styles.css'), 'background: var(--gcs-green)'));
+assert('Active dept button text is white (#fff)',
+  /sandbox-nav-btn\.active[^}]*color:\s*#fff/.test(readFile('css/styles.css') || ''));
+assert('Active dept button has bold/semibold label (font-weight 700 or 600)',
+  /sandbox-nav-btn\.active[^}]*font-weight:\s*(700|600)/.test(readFile('css/styles.css') || ''));
+assert('Inactive dept buttons have visible border (border: 1px solid)',
+  /sandbox-nav-btn[^.][^}]*border:\s*1px/.test(readFile('css/styles.css') || ''));
+assert('Inactive dept buttons have hover background feedback',
+  /sandbox-nav-btn:hover[^}]*background/.test(readFile('css/styles.css') || ''));
+assert('Dept buttons have keyboard focus-visible ring',
+  contains(readFile('css/styles.css'), 'sandbox-nav-btn:focus-visible'));
+assert('Mobile active dept: full GCS green fill on mobile (@media max-width:640px)',
+  (function() {
+    var css = readFile('css/styles.css') || '';
+    var mobileBlock = css.substring(css.indexOf('@media (max-width: 640px)'));
+    return /sandbox-nav-btn\.active[^}]*background:\s*var\(--gcs-green\)/.test(mobileBlock);
+  })());
+
+/* ================================================================
+   GUIDED DEMO — HOMEPAGE MODAL
+   ================================================================ */
+section('Guided Demo Modal');
+
+assert('Guided demo modal exists in homepage HTML',
+  contains(home, 'guided-demo-modal'));
+assert('Guided demo overlay has role="dialog"',
+  contains(home, 'role="dialog"'));
+assert('Guided demo overlay has aria-modal="true"',
+  contains(home, 'aria-modal="true"'));
+assert('Guided demo has close button (gdemo-close)',
+  contains(home, 'id="gdemo-close"'));
+assert('Guided demo has Back navigation button',
+  contains(home, 'id="gdemo-back"'));
+assert('Guided demo has Next navigation button',
+  contains(home, 'id="gdemo-next"'));
+assert('Guided demo has progress fill bar (gdemo-fill)',
+  contains(home, 'id="gdemo-fill"'));
+assert('Guided demo has step-label indicator',
+  contains(home, 'id="gdemo-step-label"'));
+assert('Guided demo has 5 steps (data-step attributes)',
+  countMatches(home, 'data-step="[0-4]"') >= 5);
+assert('Guided demo Step 1 — See Your Organization',
+  containsCI(home, 'See Your Organization'));
+assert('Guided demo Step 2 — Know What Needs Attention',
+  containsCI(home, 'Know What Needs Attention'));
+assert('Guided demo Step 3 — Explore Departments',
+  containsCI(home, 'Explore Departments'));
+assert('Guided demo Step 4 — Ask & Analyze',
+  containsCI(home, 'Ask') && containsCI(home, 'Analyze'));
+assert('Guided demo Step 5 — Decide What To Do Next',
+  containsCI(home, 'Decide What To Do Next'));
+assert('Guided demo final CTA links to sandbox (Explore Nexus Live)',
+  contains(home, 'id="gdemo-final-cta"') && contains(home, 'sandbox/'));
+assert('Guided demo synthetic-data disclosure present',
+  containsCI(home, 'synthetic') && containsCI(home, 'fictional'));
+assert('Demo CTA button opens modal (not plain href to demos/)',
+  contains(home, 'id="open-guided-demo"') && !contains(home, '<a href="demos/" class="btn btn--outline'));
+assert('Demo video block is a button element (not fake video link)',
+  contains(home, 'id="open-guided-demo-block"') &&
+  !contains(home, '<a href="demos/" class="demo-video-block"'));
+assert('Guided demo has keyboard Escape close handler',
+  contains(home, "e.key === 'Escape'") || contains(home, 'e.key === "Escape"'));
+assert('Guided demo has Tab-trap for keyboard navigation',
+  contains(home, 'e.shiftKey') && contains(home, 'first.focus()'));
+
+/* ================================================================
    RESULTS SUMMARY
    ================================================================ */
 const total = passed + failed;
