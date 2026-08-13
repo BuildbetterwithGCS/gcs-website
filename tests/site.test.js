@@ -252,6 +252,69 @@ assert('Demos page does not fabricate videos',
   !containsCI(demos, '<video') && !containsCI(demos, '<iframe'));
 
 /* ================================================================
+   DEMOS PAGE — NO STATIC PLACEHOLDERS (NEW ACCEPTANCE TESTS)
+   ================================================================ */
+section('Demos Page — No Static Placeholders');
+
+assert('No "Production video coming soon" text on demos page',
+  !containsCI(demos, 'Production video coming soon'));
+assert('No static "coming soon" demo tile (div role=img with coming-soon label)',
+  !(/role="img"[^>]*coming[\s\S]{0,80}soon/.test(demos)));
+assert('All 5 demo tiles are button elements (not passive divs)',
+  countMatches(demos, 'open-demo-overview') >= 1 &&
+  countMatches(demos, 'open-demo-nexus') >= 1 &&
+  countMatches(demos, 'open-demo-genesis') >= 1 &&
+  countMatches(demos, 'open-demo-map') >= 1 &&
+  countMatches(demos, 'open-demo-consulting') >= 1);
+assert('Demo tiles labeled EXPLORE DEMO (not a time estimate)',
+  containsCI(demos, 'EXPLORE DEMO') &&
+  !(/&#126;\s*\d+\s*(SECONDS|MINUTES)/.test(demos)));
+assert('No fake play button on static non-interactive element (role=img + play)',
+  !(/role="img"[\s\S]{0,200}demo-video-block__play/.test(demos)));
+
+assert('GCS Overview guided demo modal present',
+  contains(demos, 'id="demo-overlay-overview"'));
+assert('Nexus guided demo modal present',
+  contains(demos, 'id="demo-overlay-nexus"'));
+assert('Genesis guided demo modal present',
+  contains(demos, 'id="demo-overlay-genesis"'));
+assert('Map Intelligence guided demo modal present',
+  contains(demos, 'id="demo-overlay-map"'));
+assert('Consulting guided demo modal present',
+  contains(demos, 'id="demo-overlay-consulting"'));
+
+assert('All demo modals have role="dialog"',
+  countMatches(demos, 'role="dialog"') >= 5);
+assert('All demo modals have aria-modal="true"',
+  countMatches(demos, 'aria-modal="true"') >= 5);
+assert('All demo modals have close buttons',
+  countMatches(demos, 'data-demo-close=') >= 5);
+assert('All demo modals have Back navigation',
+  countMatches(demos, 'data-demo-back=') >= 5);
+assert('All demo modals have Next navigation',
+  countMatches(demos, 'data-demo-next=') >= 5);
+assert('All demo modals have progress fill bar',
+  countMatches(demos, 'gdfill-') >= 5);
+assert('All demo modals have step-label indicator',
+  countMatches(demos, 'gdlbl-') >= 5);
+assert('Guided demos have synthetic-data disclosure',
+  countMatches(demos, 'synthetic') >= 5);
+assert('Guided demos have fictional disclosure',
+  containsCI(demos, 'fictional'));
+assert('Demos JS wires openDemo function',
+  contains(demos, 'function openDemo'));
+assert('Demos JS wires closeDemo function',
+  contains(demos, 'function closeDemo'));
+assert('Demos JS has Escape key handler',
+  contains(demos, "e.key === 'Escape'") || contains(demos, 'e.key === "Escape"'));
+assert('Demos JS has Tab-trap keyboard navigation',
+  contains(demos, 'e.shiftKey') && contains(demos, 'first.focus()'));
+assert('Demo modals link to sandbox or relevant page (final CTA)',
+  contains(demos, 'sandbox/') || contains(demos, '../sandbox/'));
+assert('No <video> or <iframe> fake player on demos page',
+  !containsCI(demos, '<video') && !containsCI(demos, '<iframe'));
+
+/* ================================================================
    ACCESSIBILITY
    ================================================================ */
 section('Accessibility');
