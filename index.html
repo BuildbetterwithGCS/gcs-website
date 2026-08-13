@@ -43,15 +43,13 @@
       </button>
       <ul class="nav__links" id="nav-menu" role="list">
         <li><a href="./" class="nav__link" aria-current="page">Home</a></li>
-        <li><a href="solutions/" class="nav__link">Solutions</a></li>
-        <li><a href="nexus/" class="nav__link">Nexus</a></li>
-        <li><a href="departments/" class="nav__link">Departments</a></li>
+        <li><a href="platform/" class="nav__link">Platform</a></li>
+        <li><a href="consulting/" class="nav__link">Consulting</a></li>
         <li><a href="industries/" class="nav__link">Industries</a></li>
-        <li><a href="map-intelligence/" class="nav__link">Map Intelligence</a></li>
-        <li><a href="sandbox/" class="nav__link nav__link--sandbox">Explore Nexus</a></li>
+        <li><a href="demos/" class="nav__link">Demos</a></li>
         <li><a href="about/" class="nav__link">About</a></li>
-        <li><a href="contact/" class="nav__link">Contact</a></li>
-        <li><a href="request-demo/" class="nav__link nav__link--cta">Request Demo</a></li>
+        <li><a href="sandbox/" class="nav__link nav__link--sandbox">Explore Nexus Live</a></li>
+        <li><a href="contact/" class="nav__link nav__link--get-started">Get Started</a></li>
       </ul>
     </nav>
   </header>
@@ -62,39 +60,57 @@
     <section class="hero--home">
       <div class="hero__bg-grid" aria-hidden="true"></div>
       <div class="container hero__content">
-        <span class="hero__eyebrow">Enterprise Operations Intelligence</span>
         <h1 class="hero__title">
-          <span class="hero__brand-line">GCS</span>
           Build Better Organizations.
         </h1>
-        <p class="hero__taglines" aria-label="Platform positioning">
-          <span>One Platform.</span>
-          <span>Every Department.</span>
-          <span>Every Industry.</span>
+        <p class="hero__subtitle" style="max-width:580px;margin:0.75rem auto 0;">
+          See your organization. Know what needs attention. Decide what to do next.
         </p>
-        <p class="hero__subtitle">GCS connects every department, function, asset, workflow, and decision of your organization into one intelligent operational platform.</p>
-        <div class="hero__actions">
-          <a href="sandbox/" class="btn btn--primary btn--lg">Explore Nexus — No Login</a>
-          <a href="request-demo/" class="btn btn--outline btn--lg">Request a Demo</a>
+        <div class="hero__actions" style="margin-top:2rem;justify-content:center;flex-wrap:wrap;gap:1.25rem;">
+          <!-- Primary: Watch Demo -->
+          <div class="hero__cta-stack">
+            <a href="demos/" class="btn btn--outline btn--lg" aria-label="Watch the GCS video demonstration">
+              &#9654; Watch the GCS Demo
+            </a>
+          </div>
+          <!-- Primary: Explore Nexus Live -->
+          <div class="hero__cta-stack">
+            <a href="sandbox/" class="btn btn--primary btn--lg" aria-label="Explore Nexus Live — no login required">
+              Explore Nexus Live
+            </a>
+            <p class="hero__demo-note"><strong>No login</strong> &bull; Synthetic data &bull; Nothing to install</p>
+          </div>
         </div>
-        <div class="hero__metrics">
-          <div class="stat-card">
-            <strong>Enterprise Operations Intelligence</strong>
-            <span>The platform that connects an organization's existing systems, departments, people, and data into one intelligent operating environment.</span>
-          </div>
-          <div class="stat-card">
-            <strong>Every Department Connected</strong>
-            <span>Finance, HR, Safety, Risk, Facilities, Fleet, Operations, Procurement, Logistics, GIS, Compliance, and more — one platform.</span>
-          </div>
-          <div class="stat-card">
-            <strong>Every Industry Served</strong>
-            <span>Government, Healthcare, Manufacturing, Education, Utilities, Transportation, Corporate Enterprise, and more — same platform, different configuration.</span>
-          </div>
+        <div style="margin-top:1.5rem;text-align:center;">
+          <a href="contact/" class="btn btn--ghost">Talk to GCS &rarr;</a>
         </div>
       </div>
     </section>
 
-    <!-- ORGANIZATIONAL CONNECTIVITY GRAPHIC -->
+    <!-- VIDEO DEMO PREVIEW -->
+    <section class="section section--muted" aria-labelledby="demo-preview-heading" style="padding-top:2.5rem;padding-bottom:2.5rem;">
+      <div class="container" style="max-width:860px;">
+        <div class="section-header section-header--center" style="margin-bottom:1.5rem;">
+          <span class="section-label">GCS Overview</span>
+          <h2 id="demo-preview-heading" class="section-title" style="font-size:1.5rem;">See GCS in 90 seconds</h2>
+        </div>
+        <a href="demos/" class="demo-video-block" role="button" aria-label="Watch the GCS Overview demonstration video">
+          <div class="demo-video-block__grid" aria-hidden="true"></div>
+          <div class="demo-video-block__inner">
+            <div class="demo-video-block__play" aria-hidden="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+            <div class="demo-video-block__label">GCS Overview</div>
+            <div class="demo-video-block__sublabel">How GCS builds better organizations — approximately 90 seconds</div>
+            <span class="demo-video-block__badge">DEMO AVAILABLE</span>
+            <div class="demo-video-block__coming">Click to view all demonstrations &rarr;</div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- NEXUS VISUAL PREVIEW — below hero -->
+<!-- ORGANIZATIONAL CONNECTIVITY GRAPHIC -->
     <section class="section section--muted nexus-connect-section" aria-labelledby="connect-heading">
       <div class="container">
         <div class="section-header section-header--center">
@@ -419,16 +435,7 @@
           <p class="footer__subtext" style="margin-top:0.5rem;">GCS connects the entire organization into one intelligence, action, and accountability environment.</p>
         </div>
         <div>
-          <div class="footer__nav">
-            <a href="nexus/">Nexus</a>
-            <a href="departments/">Departments</a>
-            <a href="industries/">Industries</a>
-            <a href="sandbox/">Explore Nexus</a>
-            <a href="map-intelligence/">Map Intelligence</a>
-            <a href="about/">About</a>
-            <a href="contact/">Contact</a>
-            <a href="request-demo/">Request Demo</a>
-          </div>
+          <div class="footer__nav"><a href="platform/">Platform</a><a href="consulting/">Consulting</a><a href="industries/">Industries</a><a href="demos/">Demos</a><a href="sandbox/">Explore Nexus Live</a><a href="about/">About</a><a href="contact/">Get Started</a></div>
           <div class="footer__nav" style="margin-top:0.75rem;">
             <a href="privacy/">Privacy</a>
             <a href="responsible-ai/">Responsible AI</a>
