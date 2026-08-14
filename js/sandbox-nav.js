@@ -24,16 +24,32 @@
 
     if (!navEl || !navBtns.length) return;
 
-    /** Show the panel for viewKey, update ARIA and active classes. */
+    /** Resolve the dept color for the active button (reads computed --dept-color). */
+    function getDeptColor(btn) {
+      if (!btn || typeof getComputedStyle === 'undefined') return null;
+      return getComputedStyle(btn).getPropertyValue('--dept-color').trim() || null;
+    }
+
+    /** Show the panel for viewKey, update ARIA, active classes, and dept accent. */
     function showView(viewKey) {
+      var activeBtn = null;
       navBtns.forEach(function (b) {
         var active = b.getAttribute('data-view') === viewKey;
         b.classList.toggle('active', active);
         b.setAttribute('aria-selected', active ? 'true' : 'false');
         b.setAttribute('tabindex', active ? '0' : '-1');
+        if (active) activeBtn = b;
       });
       views.forEach(function (v) {
-        v.classList.toggle('active', v.getAttribute('data-view') === viewKey);
+        var active = v.getAttribute('data-view') === viewKey;
+        v.classList.toggle('active', active);
+        // Carry dept color as CSS custom property into the active panel
+        if (active) {
+          var color = getDeptColor(activeBtn);
+          if (color) {
+            v.style.setProperty('--dept-accent', color);
+          }
+        }
       });
     }
 
@@ -77,6 +93,17 @@
     updateNavOverflow();
     navEl.addEventListener('scroll', updateNavOverflow);
     window.addEventListener('resize', updateNavOverflow);
+
+    // Set initial dept accent for the already-active tab
+    var initialActive = null;
+    navBtns.forEach(function (b) {
+      if (b.classList.contains('active') || b.getAttribute('aria-selected') === 'true') {
+        initialActive = b;
+      }
+    });
+    if (initialActive) {
+      showView(initialActive.getAttribute('data-view'));
+    }
 
     return { showView: showView };
   }
