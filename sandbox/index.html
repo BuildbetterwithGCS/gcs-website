@@ -142,24 +142,26 @@
               <button id="sandbox-change-org" type="button" class="btn btn--sm" style="background:rgba(255,255,255,0.12);color:#fff;border-color:rgba(255,255,255,0.25);font-size:0.8rem;">Change Organization</button>
             </div>
             <!-- Sandbox navigation -->
-            <nav class="sandbox-nav" aria-label="Nexus module navigation">
-              <button class="sandbox-nav-btn active" type="button" data-view="executive">Executive</button>
-              <button class="sandbox-nav-btn" type="button" data-view="finance">Finance</button>
-              <button class="sandbox-nav-btn" type="button" data-view="hr">HR &amp; Workforce</button>
-              <button class="sandbox-nav-btn" type="button" data-view="safety">Safety</button>
-              <button class="sandbox-nav-btn" type="button" data-view="risk">Risk &amp; Compliance</button>
-              <button class="sandbox-nav-btn" type="button" data-view="facilities">Facilities</button>
-              <button class="sandbox-nav-btn" type="button" data-view="fleet">Fleet &amp; Assets</button>
-              <button class="sandbox-nav-btn" type="button" data-view="projects">Projects</button>
-              <button class="sandbox-nav-btn" type="button" data-view="procurement">Procurement</button>
-              <button class="sandbox-nav-btn" type="button" data-view="logistics">Logistics</button>
-              <button class="sandbox-nav-btn" type="button" data-view="reports">Reports</button>
+            <div class="sandbox-nav-wrap" id="sandbox-nav-wrap">
+            <nav class="sandbox-nav" id="sandbox-nav" role="tablist" aria-label="Nexus department navigation">
+              <button class="sandbox-nav-btn active" type="button" role="tab" aria-selected="true" aria-controls="view-executive" id="tab-executive" tabindex="0" data-view="executive">Executive</button>
+              <button class="sandbox-nav-btn" type="button" role="tab" aria-selected="false" aria-controls="view-finance" id="tab-finance" tabindex="-1" data-view="finance">Finance</button>
+              <button class="sandbox-nav-btn" type="button" role="tab" aria-selected="false" aria-controls="view-hr" id="tab-hr" tabindex="-1" data-view="hr">HR &amp; Workforce</button>
+              <button class="sandbox-nav-btn" type="button" role="tab" aria-selected="false" aria-controls="view-safety" id="tab-safety" tabindex="-1" data-view="safety">Safety</button>
+              <button class="sandbox-nav-btn" type="button" role="tab" aria-selected="false" aria-controls="view-risk" id="tab-risk" tabindex="-1" data-view="risk">Risk &amp; Compliance</button>
+              <button class="sandbox-nav-btn" type="button" role="tab" aria-selected="false" aria-controls="view-facilities" id="tab-facilities" tabindex="-1" data-view="facilities">Facilities</button>
+              <button class="sandbox-nav-btn" type="button" role="tab" aria-selected="false" aria-controls="view-fleet" id="tab-fleet" tabindex="-1" data-view="fleet">Fleet &amp; Assets</button>
+              <button class="sandbox-nav-btn" type="button" role="tab" aria-selected="false" aria-controls="view-projects" id="tab-projects" tabindex="-1" data-view="projects">Projects</button>
+              <button class="sandbox-nav-btn" type="button" role="tab" aria-selected="false" aria-controls="view-procurement" id="tab-procurement" tabindex="-1" data-view="procurement">Procurement</button>
+              <button class="sandbox-nav-btn" type="button" role="tab" aria-selected="false" aria-controls="view-logistics" id="tab-logistics" tabindex="-1" data-view="logistics">Logistics</button>
+              <button class="sandbox-nav-btn" type="button" role="tab" aria-selected="false" aria-controls="view-reports" id="tab-reports" tabindex="-1" data-view="reports">Reports</button>
             </nav>
+            </div>
             <!-- Sandbox views -->
             <div class="sandbox-body">
 
               <!-- EXECUTIVE -->
-              <div class="sandbox-view active" data-view="executive">
+              <div class="sandbox-view active" role="tabpanel" id="view-executive" aria-labelledby="tab-executive" data-view="executive">
                 <div class="dash-row dash-row--4">
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Budget Utilization</div><div class="dash-kpi__val" data-org-val="budget-util">73.2%</div><div class="dash-kpi__delta dash-kpi__delta--up">FY on track</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Open Work Orders</div><div class="dash-kpi__val" data-org-val="open-wo">142</div><div class="dash-kpi__delta dash-kpi__delta--warn">18 past due</div></div>
@@ -196,7 +198,7 @@
               </div>
 
               <!-- FINANCE -->
-              <div class="sandbox-view" data-view="finance">
+              <div class="sandbox-view" role="tabpanel" id="view-finance" aria-labelledby="tab-finance" data-view="finance">
                 <div class="dash-row dash-row--4">
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Total Budget</div><div class="dash-kpi__val">$48.2M</div><div class="dash-kpi__delta dash-kpi__delta--up">FY approved</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Spent YTD</div><div class="dash-kpi__val">$35.3M</div><div class="dash-kpi__delta dash-kpi__delta--up">73.2% — on track</div></div>
@@ -230,7 +232,7 @@
               </div>
 
               <!-- HR -->
-              <div class="sandbox-view" data-view="hr">
+              <div class="sandbox-view" role="tabpanel" id="view-hr" aria-labelledby="tab-hr" data-view="hr">
                 <div class="dash-row dash-row--4">
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Total Headcount</div><div class="dash-kpi__val">384</div><div class="dash-kpi__delta dash-kpi__delta--up">+12 since last quarter</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Open Positions</div><div class="dash-kpi__val">27</div><div class="dash-kpi__delta dash-kpi__delta--warn">9 critical roles</div></div>
@@ -262,7 +264,7 @@
               </div>
 
               <!-- SAFETY -->
-              <div class="sandbox-view" data-view="safety">
+              <div class="sandbox-view" role="tabpanel" id="view-safety" aria-labelledby="tab-safety" data-view="safety">
                 <div class="dash-row dash-row--4">
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Incidents YTD</div><div class="dash-kpi__val">7</div><div class="dash-kpi__delta dash-kpi__delta--up">↓ Down from 12 prior yr</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Near Misses</div><div class="dash-kpi__val">14</div><div class="dash-kpi__delta dash-kpi__delta--warn">3 unresolved</div></div>
@@ -296,7 +298,7 @@
               </div>
 
               <!-- RISK & COMPLIANCE -->
-              <div class="sandbox-view" data-view="risk">
+              <div class="sandbox-view" role="tabpanel" id="view-risk" aria-labelledby="tab-risk" data-view="risk">
                 <div class="dash-row dash-row--4">
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Open Risk Items</div><div class="dash-kpi__val">31</div><div class="dash-kpi__delta dash-kpi__delta--warn">4 high priority</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Compliance Obligations</div><div class="dash-kpi__val">88</div><div class="dash-kpi__delta dash-kpi__delta--up">91% met</div></div>
@@ -324,7 +326,7 @@
               </div>
 
               <!-- FACILITIES -->
-              <div class="sandbox-view" data-view="facilities">
+              <div class="sandbox-view" role="tabpanel" id="view-facilities" aria-labelledby="tab-facilities" data-view="facilities">
                 <div class="dash-row dash-row--4">
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Total Facilities</div><div class="dash-kpi__val">23</div><div class="dash-kpi__delta">Buildings managed</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Work Orders Open</div><div class="dash-kpi__val">142</div><div class="dash-kpi__delta dash-kpi__delta--warn">18 past due</div></div>
@@ -355,7 +357,7 @@
               </div>
 
               <!-- FLEET & ASSETS -->
-              <div class="sandbox-view" data-view="fleet">
+              <div class="sandbox-view" role="tabpanel" id="view-fleet" aria-labelledby="tab-fleet" data-view="fleet">
                 <div class="dash-row dash-row--4">
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Fleet Units</div><div class="dash-kpi__val">87</div><div class="dash-kpi__delta">Active fleet</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Units Serviceable</div><div class="dash-kpi__val">79</div><div class="dash-kpi__delta dash-kpi__delta--warn">8 down / maintenance</div></div>
@@ -386,7 +388,7 @@
               </div>
 
               <!-- PROJECTS -->
-              <div class="sandbox-view" data-view="projects">
+              <div class="sandbox-view" role="tabpanel" id="view-projects" aria-labelledby="tab-projects" data-view="projects">
                 <div class="dash-row dash-row--4">
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Active Projects</div><div class="dash-kpi__val">24</div><div class="dash-kpi__delta">Capital &amp; operational</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">On Schedule</div><div class="dash-kpi__val">18</div><div class="dash-kpi__delta dash-kpi__delta--up">75% on track</div></div>
@@ -420,7 +422,7 @@
               </div>
 
               <!-- PROCUREMENT -->
-              <div class="sandbox-view" data-view="procurement">
+              <div class="sandbox-view" role="tabpanel" id="view-procurement" aria-labelledby="tab-procurement" data-view="procurement">
                 <div class="dash-row dash-row--4">
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Active POs</div><div class="dash-kpi__val">68</div><div class="dash-kpi__delta">Open purchase orders</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Spend YTD</div><div class="dash-kpi__val">$8.7M</div><div class="dash-kpi__delta dash-kpi__delta--up">Within approved budget</div></div>
@@ -451,7 +453,7 @@
               </div>
 
               <!-- LOGISTICS -->
-              <div class="sandbox-view" data-view="logistics">
+              <div class="sandbox-view" role="tabpanel" id="view-logistics" aria-labelledby="tab-logistics" data-view="logistics">
                 <div class="dash-row dash-row--4">
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Inventory Items</div><div class="dash-kpi__val">4,281</div><div class="dash-kpi__delta">SKUs managed</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Low Stock Alerts</div><div class="dash-kpi__val">38</div><div class="dash-kpi__delta dash-kpi__delta--warn">12 critical items</div></div>
@@ -482,7 +484,7 @@
               </div>
 
               <!-- REPORTS -->
-              <div class="sandbox-view" data-view="reports">
+              <div class="sandbox-view" role="tabpanel" id="view-reports" aria-labelledby="tab-reports" data-view="reports">
                 <div class="dash-row dash-row--3">
                   <div class="dash-list">
                     <div class="dash-list__title">Executive Reports Available</div>
@@ -567,6 +569,7 @@
   </footer>
 
   <script src="../js/main.js"></script>
+  <script src="../js/sandbox-nav.js"></script>
   <script>
   // Sandbox interactivity
   (function() {
@@ -674,8 +677,12 @@
     var orgSelector = document.getElementById('org-selector');
     var orgNameEl = document.getElementById('sandbox-org-name');
     var changeBtn = document.getElementById('sandbox-change-org');
-    var navBtns = document.querySelectorAll('.sandbox-nav-btn');
-    var views = document.querySelectorAll('.sandbox-view');
+
+    // Nav tab switching is handled by sandbox-nav.js
+    var _navCtrl = (typeof window.initSandboxNav === 'function' ? window.initSandboxNav() : null);
+    function showView(viewKey) {
+      if (_navCtrl) { _navCtrl.showView(viewKey); }
+    }
 
     function selectOrg(orgKey) {
       var data = orgData[orgKey] || orgData.municipality;
@@ -695,17 +702,8 @@
       showView('executive');
     }
 
-    function showView(viewKey) {
-      navBtns.forEach(function(b) { b.classList.toggle('active', b.getAttribute('data-view') === viewKey); });
-      views.forEach(function(v) { v.classList.toggle('active', v.getAttribute('data-view') === viewKey); });
-    }
-
     orgBtns.forEach(function(btn) {
       btn.addEventListener('click', function() { selectOrg(btn.getAttribute('data-org')); });
-    });
-
-    navBtns.forEach(function(btn) {
-      btn.addEventListener('click', function() { showView(btn.getAttribute('data-view')); });
     });
 
     if (changeBtn) {
