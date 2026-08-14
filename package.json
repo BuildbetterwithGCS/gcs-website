@@ -1,0 +1,21 @@
+{
+  "name": "gcs-website",
+  "version": "1.0.0",
+  "description": "Public website for GCS.",
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "testMatch": ["**/tests/**/*.test.js"]
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://localhost:26831/BuildbetterwithGCS/gcs-website"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^30.4.2",
+    "jest-environment-jsdom": "^30.4.1"
+  }
+}
