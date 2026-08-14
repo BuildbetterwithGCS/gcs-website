@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>GCS | Building Better Organizations</title>
+  <title>GCS | Build Better Organizations</title>
   <meta name="description" content="GCS connects the entire organization — Finance, HR, Safety, Risk, Facilities, Operations, Supply Chain, Fleet, Projects, and more — into one connected intelligence environment." />
   <meta name="author" content="GCS" />
   <meta name="robots" content="index, follow" />
@@ -12,7 +12,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="GCS" />
   <meta property="og:url" content="https://buildbetterwithgcs.com/" />
-  <meta property="og:title" content="GCS | Building Better Organizations" />
+  <meta property="og:title" content="GCS | Build Better Organizations" />
   <meta property="og:description" content="One connected intelligence environment for every department, function, and decision that runs your organization." />
   <meta property="og:image" content="https://buildbetterwithgcs.com/assets/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -33,7 +33,7 @@
     <nav class="nav container" aria-label="Primary navigation">
       <a href="./" class="nav__logo" aria-label="GCS home">
         <span class="nav__logo-plate">
-          <img src="assets/gcs-logo.svg" alt="GCS — Building Better Organizations" class="nav__logo-img" width="160" height="56" />
+          <img src="assets/gcs-logo.svg" alt="GCS — Build Better Organizations" class="nav__logo-img" width="168" height="56" />
         </span>
       </a>
       <button class="nav__toggle" type="button" aria-controls="nav-menu" aria-expanded="false" aria-label="Open navigation menu">
@@ -43,14 +43,13 @@
       </button>
       <ul class="nav__links" id="nav-menu" role="list">
         <li><a href="./" class="nav__link" aria-current="page">Home</a></li>
-        <li><a href="nexus/" class="nav__link">Platform</a></li>
-        <li><a href="departments/" class="nav__link">Departments</a></li>
+        <li><a href="platform/" class="nav__link">Platform</a></li>
+        <li><a href="consulting/" class="nav__link">Consulting</a></li>
         <li><a href="industries/" class="nav__link">Industries</a></li>
-        <li><a href="map-intelligence/" class="nav__link">Map Intelligence</a></li>
-        <li><a href="sandbox/" class="nav__link nav__link--sandbox">Explore Nexus</a></li>
+        <li><a href="demos/" class="nav__link">Demos</a></li>
         <li><a href="about/" class="nav__link">About</a></li>
-        <li><a href="contact/" class="nav__link">Contact</a></li>
-        <li><a href="request-demo/" class="nav__link nav__link--cta">Request Demo</a></li>
+        <li><a href="sandbox/" class="nav__link nav__link--sandbox">Explore Nexus Live</a></li>
+        <li><a href="contact/" class="nav__link nav__link--get-started">Get Started</a></li>
       </ul>
     </nav>
   </header>
@@ -61,39 +60,57 @@
     <section class="hero--home">
       <div class="hero__bg-grid" aria-hidden="true"></div>
       <div class="container hero__content">
-        <span class="hero__eyebrow">Enterprise Operations Intelligence</span>
         <h1 class="hero__title">
-          <span class="hero__brand-line">GCS</span>
-          Building Better Organizations.
+          Build Better Organizations.
         </h1>
-        <p class="hero__taglines" aria-label="Platform positioning">
-          <span>One Platform.</span>
-          <span>Every Department.</span>
-          <span>Every Industry.</span>
+        <p class="hero__subtitle" style="max-width:580px;margin:0.75rem auto 0;">
+          See your organization. Know what needs attention. Decide what to do next.
         </p>
-        <p class="hero__subtitle">GCS connects every department, function, asset, workflow, and decision of your organization into one intelligent operational platform.</p>
-        <div class="hero__actions">
-          <a href="sandbox/" class="btn btn--primary btn--lg">Explore Nexus — No Login</a>
-          <a href="request-demo/" class="btn btn--outline btn--lg">Request a Demo</a>
+        <div class="hero__actions" style="margin-top:2rem;justify-content:center;flex-wrap:wrap;gap:1.25rem;">
+          <!-- Primary: Watch Demo -->
+          <div class="hero__cta-stack">
+            <button type="button" id="open-guided-demo" class="btn btn--outline btn--lg" aria-label="Watch the GCS guided product demonstration" aria-haspopup="dialog">
+              &#9654; Watch the GCS Demo
+            </button>
+          </div>
+          <!-- Primary: Explore Nexus Live -->
+          <div class="hero__cta-stack">
+            <a href="sandbox/" class="btn btn--primary btn--lg" aria-label="Explore Nexus Live — no login required">
+              Explore Nexus Live
+            </a>
+            <p class="hero__demo-note"><strong>No login</strong> &bull; Synthetic data &bull; Nothing to install</p>
+          </div>
         </div>
-        <div class="hero__metrics">
-          <div class="stat-card">
-            <strong>Enterprise Operations Intelligence</strong>
-            <span>The platform that connects an organization's existing systems, departments, people, and data into one intelligent operating environment.</span>
-          </div>
-          <div class="stat-card">
-            <strong>Every Department Connected</strong>
-            <span>Finance, HR, Safety, Risk, Facilities, Fleet, Operations, Procurement, Logistics, GIS, Compliance, and more — one platform.</span>
-          </div>
-          <div class="stat-card">
-            <strong>Every Industry Served</strong>
-            <span>Government, Healthcare, Manufacturing, Education, Utilities, Transportation, Corporate Enterprise, and more — same platform, different configuration.</span>
-          </div>
+        <div style="margin-top:1.5rem;text-align:center;">
+          <a href="contact/" class="btn btn--ghost">Talk to GCS &rarr;</a>
         </div>
       </div>
     </section>
 
-    <!-- ORGANIZATIONAL CONNECTIVITY GRAPHIC -->
+    <!-- VIDEO DEMO PREVIEW -->
+    <section class="section section--muted" aria-labelledby="demo-preview-heading" style="padding-top:2.5rem;padding-bottom:2.5rem;">
+      <div class="container" style="max-width:860px;">
+        <div class="section-header section-header--center" style="margin-bottom:1.5rem;">
+          <span class="section-label">GCS Overview</span>
+          <h2 id="demo-preview-heading" class="section-title" style="font-size:1.5rem;">See GCS in 90 seconds</h2>
+        </div>
+        <button type="button" class="demo-video-block" id="open-guided-demo-block" aria-label="Open the GCS guided product demonstration" aria-haspopup="dialog">
+          <div class="demo-video-block__grid" aria-hidden="true"></div>
+          <div class="demo-video-block__inner">
+            <div class="demo-video-block__play" aria-hidden="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+            <div class="demo-video-block__label">GCS Overview</div>
+            <div class="demo-video-block__sublabel">How GCS builds better organizations — interactive guided demo</div>
+            <span class="demo-video-block__badge">GUIDED DEMO</span>
+            <div class="demo-video-block__coming">Click to explore the platform &rarr;</div>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <!-- NEXUS VISUAL PREVIEW — below hero -->
+<!-- ORGANIZATIONAL CONNECTIVITY GRAPHIC -->
     <section class="section section--muted nexus-connect-section" aria-labelledby="connect-heading">
       <div class="container">
         <div class="section-header section-header--center">
@@ -411,23 +428,14 @@
         <div>
           <div class="footer__brand">
             <a href="./" aria-label="GCS home">
-              <img src="assets/gcs-logo.svg" alt="GCS" class="nav__logo-img nav__logo-img--sm" width="120" height="44" />
+              <img src="assets/gcs-logo.svg" alt="GCS" class="nav__logo-img nav__logo-img--sm" width="132" height="44" />
             </a>
           </div>
-          <div class="footer__company-name" style="margin-top:0.5rem;">GCS — Building Better Organizations.</div>
+          <div class="footer__company-name" style="margin-top:0.5rem;">GCS — Build Better Organizations.</div>
           <p class="footer__subtext" style="margin-top:0.5rem;">GCS connects the entire organization into one intelligence, action, and accountability environment.</p>
         </div>
         <div>
-          <div class="footer__nav">
-            <a href="nexus/">Platform</a>
-            <a href="departments/">Departments</a>
-            <a href="industries/">Industries</a>
-            <a href="sandbox/">Sandbox</a>
-            <a href="map-intelligence/">Map Intelligence</a>
-            <a href="about/">About</a>
-            <a href="contact/">Contact</a>
-            <a href="request-demo/">Request Demo</a>
-          </div>
+          <div class="footer__nav"><a href="platform/">Platform</a><a href="consulting/">Consulting</a><a href="industries/">Industries</a><a href="demos/">Demos</a><a href="sandbox/">Explore Nexus Live</a><a href="about/">About</a><a href="contact/">Get Started</a></div>
           <div class="footer__nav" style="margin-top:0.75rem;">
             <a href="privacy/">Privacy</a>
             <a href="responsible-ai/">Responsible AI</a>
@@ -437,7 +445,7 @@
       </div>
       <div class="footer__bottom">
         <span>&copy; <span id="footer-year"></span> GCS. All rights reserved.</span>
-        <span>Building Better Organizations.</span>
+        <span>Build Better Organizations.</span>
       </div>
     </div>
   </footer>
@@ -445,5 +453,227 @@
   <script src="js/main.js"></script>
   <script src="js/interactive.js"></script>
   <script src="js/nexus-map.js"></script>
+
+  <!-- GUIDED DEMO MODAL -->
+  <div id="guided-demo-overlay" class="guided-demo-overlay" role="dialog" aria-modal="true"
+       aria-labelledby="gdemo-title" aria-describedby="gdemo-subtitle" hidden>
+    <div class="guided-demo-modal" id="guided-demo-modal">
+      <div class="guided-demo-modal__header">
+        <div>
+          <div class="guided-demo-modal__title" id="gdemo-title">&#9654; GCS Platform Demo</div>
+          <div class="guided-demo-modal__subtitle" id="gdemo-subtitle">Interactive guided tour &mdash; Synthetic data only &mdash; No login required</div>
+        </div>
+        <button type="button" class="guided-demo-modal__close" id="gdemo-close" aria-label="Close demo">&times;</button>
+      </div>
+      <!-- Progress bar -->
+      <div class="guided-demo-progress">
+        <div class="guided-demo-progress__track">
+          <div class="guided-demo-progress__fill" id="gdemo-fill" style="width:20%"></div>
+        </div>
+        <span class="guided-demo-progress__label" id="gdemo-step-label">Step 1 of 5</span>
+      </div>
+      <!-- Step dots -->
+      <div class="guided-demo-dots" aria-hidden="true">
+        <div class="guided-demo-dot is-active" data-dot="0"></div>
+        <div class="guided-demo-dot" data-dot="1"></div>
+        <div class="guided-demo-dot" data-dot="2"></div>
+        <div class="guided-demo-dot" data-dot="3"></div>
+        <div class="guided-demo-dot" data-dot="4"></div>
+      </div>
+
+      <!-- Step 1 — See Your Organization -->
+      <div class="guided-demo-step is-active" data-step="0">
+        <div class="guided-demo-step__eyebrow">Step 1 of 5</div>
+        <h2 class="guided-demo-step__heading">See Your Organization</h2>
+        <p class="guided-demo-step__caption">Nexus gives leadership a live view of the entire organization &mdash; every department, every function &mdash; from one dashboard. The example below shows a fictional mid-size municipality.</p>
+        <div class="guided-demo-visual">
+          <div class="guided-demo-kpi-row">
+            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Open Work Orders</div><div class="guided-demo-kpi__val">247</div><div class="guided-demo-kpi__delta">&#9650; 12 new this week</div></div>
+            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Safety Incidents (30d)</div><div class="guided-demo-kpi__val">3</div><div class="guided-demo-kpi__delta">&#9660; 2 vs prior month</div></div>
+            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Budget Utilization</div><div class="guided-demo-kpi__val">68%</div><div class="guided-demo-kpi__delta">On track YTD</div></div>
+            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Staff Coverage</div><div class="guided-demo-kpi__val">94%</div><div class="guided-demo-kpi__delta">2 open positions</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 — Know What Needs Attention -->
+      <div class="guided-demo-step" data-step="1">
+        <div class="guided-demo-step__eyebrow">Step 2 of 5</div>
+        <h2 class="guided-demo-step__heading">Know What Needs Attention</h2>
+        <p class="guided-demo-step__caption">Nexus surfaces the things that require leadership attention &mdash; risks, compliance gaps, budget variances, and workforce issues &mdash; so nothing falls through the cracks.</p>
+        <div class="guided-demo-visual">
+          <div class="guided-demo-item-row">
+            <div class="guided-demo-item"><span class="guided-demo-item__dot guided-demo-item__dot--red"></span>Vehicle inspection overdue &mdash; Fleet Unit 14</div>
+            <div class="guided-demo-item"><span class="guided-demo-item__dot guided-demo-item__dot--warn"></span>Facilities HVAC maintenance window expires in 6 days</div>
+            <div class="guided-demo-item"><span class="guided-demo-item__dot guided-demo-item__dot--warn"></span>3 compliance certifications expiring this quarter</div>
+            <div class="guided-demo-item"><span class="guided-demo-item__dot"></span>Finance: Q3 actuals within 2% of budget target</div>
+            <div class="guided-demo-item"><span class="guided-demo-item__dot"></span>HR: New hire onboarding on schedule (4 pending)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 — Explore Departments -->
+      <div class="guided-demo-step" data-step="2">
+        <div class="guided-demo-step__eyebrow">Step 3 of 5</div>
+        <h2 class="guided-demo-step__heading">Explore Departments</h2>
+        <p class="guided-demo-step__caption">Switch departments instantly &mdash; one click shows that department&rsquo;s full dashboard. Nexus connects Finance, HR, Safety, Risk, Facilities, Fleet, Projects, and more into one platform.</p>
+        <div class="guided-demo-visual">
+          <div class="guided-demo-dept-pills">
+            <span class="guided-demo-dept-pill is-selected">&#10003; Executive</span>
+            <span class="guided-demo-dept-pill">Finance</span>
+            <span class="guided-demo-dept-pill">HR &amp; Workforce</span>
+            <span class="guided-demo-dept-pill">Safety</span>
+            <span class="guided-demo-dept-pill">Risk &amp; Compliance</span>
+            <span class="guided-demo-dept-pill">Facilities</span>
+            <span class="guided-demo-dept-pill">Fleet &amp; Assets</span>
+            <span class="guided-demo-dept-pill">Projects</span>
+          </div>
+          <p style="font-size:0.8rem;color:rgba(255,255,255,0.45);margin-top:0.5rem;">Each department tab is one click. Try it live in Nexus Sandbox &rarr;</p>
+        </div>
+      </div>
+
+      <!-- Step 4 — Ask / Analyze -->
+      <div class="guided-demo-step" data-step="3">
+        <div class="guided-demo-step__eyebrow">Step 4 of 5</div>
+        <h2 class="guided-demo-step__heading">Ask &amp; Analyze</h2>
+        <p class="guided-demo-step__caption">GCS Genesis lets you ask natural-language questions across all your data. You don&rsquo;t need a data analyst &mdash; you just ask. The answers come back in plain language with the numbers to back them up.</p>
+        <div class="guided-demo-visual">
+          <div class="guided-demo-ask-bar">&ldquo;Which facilities have the highest maintenance cost per square foot this year?&rdquo;</div>
+          <div class="guided-demo-answer">
+            <strong style="color:var(--gcs-green-lt);">Genesis:</strong> The top three facilities by maintenance cost per sq ft are: (1) Building C &mdash; $4.82/sqft, (2) North Annex &mdash; $3.91/sqft, (3) Main Campus East Wing &mdash; $3.44/sqft. Building C is 38% above portfolio average, driven by HVAC repairs in Q2.
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5 — Decide What To Do Next -->
+      <div class="guided-demo-step" data-step="4">
+        <div class="guided-demo-step__eyebrow">Step 5 of 5</div>
+        <h2 class="guided-demo-step__heading">Decide What To Do Next</h2>
+        <p class="guided-demo-step__caption">Nexus closes the loop from visibility to action. Leadership can assign work, set priorities, document decisions, and track outcomes &mdash; all in one place.</p>
+        <div class="guided-demo-visual">
+          <ul class="guided-demo-action-list">
+            <li>Assign HVAC maintenance to Facilities team &mdash; due this week</li>
+            <li>Flag Fleet Unit 14 for immediate inspection &mdash; safety priority</li>
+            <li>Request Q3 budget reforecast from Finance director</li>
+            <li>Schedule compliance renewal review for Risk &amp; Legal</li>
+            <li>Approve 2 pending hire requests in HR dashboard</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Final CTA row (shown on last step) -->
+      <div class="guided-demo-cta-row" id="gdemo-final-cta">
+        <a href="sandbox/" aria-label="Explore Nexus Live — no login required">Explore Nexus Live &rarr;</a>
+        <p style="margin-top:0.625rem;font-size:0.8rem;color:rgba(255,255,255,0.45);">No login &bull; Synthetic data &bull; Nothing to install</p>
+      </div>
+
+      <!-- Footer controls -->
+      <div class="guided-demo-modal__footer">
+        <p class="guided-demo-modal__disclosure">&#9432; All data shown is entirely synthetic and fictional. No real organizations, employees, or financials are represented.</p>
+        <div class="guided-demo-nav">
+          <button type="button" class="guided-demo-nav-btn" id="gdemo-back" aria-label="Previous step">&#8592; Back</button>
+          <button type="button" class="guided-demo-nav-btn guided-demo-nav-btn--primary" id="gdemo-next" aria-label="Next step">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    var TOTAL = 5;
+    var current = 0;
+    var overlay = document.getElementById('guided-demo-overlay');
+    var modal   = document.getElementById('guided-demo-modal');
+    var fill    = document.getElementById('gdemo-fill');
+    var stepLbl = document.getElementById('gdemo-step-label');
+    var dots    = document.querySelectorAll('.guided-demo-dot');
+    var steps   = document.querySelectorAll('.guided-demo-step');
+    var backBtn = document.getElementById('gdemo-back');
+    var nextBtn = document.getElementById('gdemo-next');
+    var closeBtn= document.getElementById('gdemo-close');
+    var finalCta= document.getElementById('gdemo-final-cta');
+    var openers = [
+      document.getElementById('open-guided-demo'),
+      document.getElementById('open-guided-demo-block')
+    ];
+
+    function openDemo() {
+      current = 0;
+      renderStep();
+      overlay.removeAttribute('hidden');
+      overlay.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      closeBtn.focus();
+    }
+
+    function closeDemo() {
+      overlay.classList.remove('is-open');
+      overlay.setAttribute('hidden', '');
+      document.body.style.overflow = '';
+      // Return focus to the opener that triggered the modal
+      var opener = document.getElementById('open-guided-demo');
+      if (opener) opener.focus();
+    }
+
+    function renderStep() {
+      steps.forEach(function(s, i) {
+        s.classList.toggle('is-active', i === current);
+      });
+      dots.forEach(function(d, i) {
+        d.classList.toggle('is-active', i === current);
+      });
+      fill.style.width = ((current + 1) / TOTAL * 100) + '%';
+      stepLbl.textContent = 'Step ' + (current + 1) + ' of ' + TOTAL;
+      backBtn.disabled = current === 0;
+      backBtn.style.opacity = current === 0 ? '0.4' : '1';
+      if (current === TOTAL - 1) {
+        nextBtn.textContent = 'Done';
+        nextBtn.setAttribute('aria-label', 'Close demo');
+        finalCta.classList.add('is-visible');
+      } else {
+        nextBtn.textContent = 'Next \u2192';
+        nextBtn.setAttribute('aria-label', 'Next step');
+        finalCta.classList.remove('is-visible');
+      }
+    }
+
+    openers.forEach(function(btn) {
+      if (btn) btn.addEventListener('click', openDemo);
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', closeDemo);
+
+    if (backBtn) backBtn.addEventListener('click', function() {
+      if (current > 0) { current--; renderStep(); }
+    });
+
+    if (nextBtn) nextBtn.addEventListener('click', function() {
+      if (current < TOTAL - 1) { current++; renderStep(); }
+      else { closeDemo(); }
+    });
+
+    // Close on overlay click outside modal
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closeDemo();
+    });
+
+    // Keyboard: Escape to close, Tab trap
+    document.addEventListener('keydown', function(e) {
+      if (!overlay.classList.contains('is-open')) return;
+      if (e.key === 'Escape') { closeDemo(); return; }
+      if (e.key === 'Tab') {
+        var focusable = modal.querySelectorAll(
+          'button:not([disabled]), [href], input, [tabindex]:not([tabindex="-1"])'
+        );
+        var first = focusable[0], last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault(); last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault(); first.focus();
+        }
+      }
+    });
+  })();
+  </script>
 </body>
 </html>
