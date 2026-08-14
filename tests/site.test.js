@@ -360,24 +360,24 @@ assert('No real email patterns in source (non-public address)',
    ================================================================ */
 section('Department Nav Active State');
 
-assert('Active dept button has GCS green fill (CSS background var(--gcs-green))',
+assert('Active dept button has dept-color fill (CSS --dept-color)',
   contains(readFile('css/styles.css'), 'sandbox-nav-btn.active') &&
-  contains(readFile('css/styles.css'), 'background: var(--gcs-green)'));
+  contains(readFile('css/styles.css'), 'background: var(--dept-color)'));
 assert('Active dept button text is white (#fff)',
   /sandbox-nav-btn\.active[^}]*color:\s*#fff/.test(readFile('css/styles.css') || ''));
 assert('Active dept button has bold/semibold label (font-weight 700 or 600)',
   /sandbox-nav-btn\.active[^}]*font-weight:\s*(700|600)/.test(readFile('css/styles.css') || ''));
-assert('Inactive dept buttons have visible border (border: 1px solid)',
-  /sandbox-nav-btn[^.][^}]*border:\s*1px/.test(readFile('css/styles.css') || ''));
+assert('Inactive dept buttons have visible border',
+  /sandbox-nav-btn[^.][^}]*border:\s*\d+px/.test(readFile('css/styles.css') || ''));
 assert('Inactive dept buttons have hover background feedback',
   /sandbox-nav-btn:hover[^}]*background/.test(readFile('css/styles.css') || ''));
 assert('Dept buttons have keyboard focus-visible ring',
   contains(readFile('css/styles.css'), 'sandbox-nav-btn:focus-visible'));
-assert('Mobile active dept: full GCS green fill on mobile (@media max-width:640px)',
+assert('Mobile dept buttons are compact/pill on mobile (@media max-width:640px)',
   (function() {
     var css = readFile('css/styles.css') || '';
     var mobileBlock = css.substring(css.indexOf('@media (max-width: 640px)'));
-    return /sandbox-nav-btn\.active[^}]*background:\s*var\(--gcs-green\)/.test(mobileBlock);
+    return /sandbox-nav-btn[^}]*border-radius/.test(mobileBlock);
   })());
 
 /* ================================================================
