@@ -105,8 +105,8 @@ assert('Homepage final CTA present', containsCI(home, 'See what GCS could do for
 assert('Homepage removed entry-point section', !containsCI(home, 'Two Paths In') && !containsCI(home, 'Find your entry point'));
 assert('Homepage removed redundant platform section', !containsCI(home, 'The platform that connects it all'));
 assert('Homepage removed interactive scenario', !containsCI(home, 'What can GCS do for your organization?'));
-assert('Homepage guided modal preserved', contains(home, 'guided-demo-overlay') && contains(home, 'id="open-guided-demo"'));
-assert('Homepage guided modal final CTA updated', containsCI(home, 'Explore Nexus &rarr;'));
+assert('Homepage Watch Nexus Demo links to sandbox demo player', contains(home, 'sandbox/?watchdemo=1'));
+assert('Homepage includes Explore Nexus link', containsCI(home, 'Explore Nexus'));
 
 section('Nexus page');
 assert('Nexus hero headline updated', containsCI(nexus, 'The GCS Operations Intelligence Platform.'));
@@ -135,9 +135,9 @@ section('Demos page');
 assert('Demos hero terminology updated', containsCI(demos, 'Watch Nexus Demo or explore for yourself.'));
 assert('Demos uses Explore Nexus terminology', containsCI(demos, 'Explore Nexus'));
 assert('Demos includes no-login support note', containsCI(demos, 'Interactive demonstration') && containsCI(demos, 'No login'));
-assert('Demos keeps guided tour buttons', countMatches(demos, 'open-demo-') >= 5);
+assert('Demos simplifies to two primary paths with sandbox links', containsCI(demos, 'Watch Nexus Demo') && contains(demos, 'sandbox/?watchdemo=1'));
 assert('Demos does not call tours videos in copy', !containsCI(demos, 'Watch GCS Demo') && !containsCI(demos, 'Explore Nexus Live'));
-assert('Demos keeps modal infrastructure', countMatches(demos, 'role="dialog"') >= 5 && contains(demos, 'function openDemo'));
+assert('Demos removes legacy tour modals', countMatches(demos, 'role="dialog"') === 0 && !contains(demos, 'open-demo-'));
 
 section('Sandbox and demo player');
 assert('Sandbox remains synthetic', containsCI(sandbox, 'SYNTHETIC DATA'));

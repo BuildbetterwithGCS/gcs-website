@@ -16,6 +16,7 @@
     finished: false,
     currentIndex: 0,
     captionsOn: true,
+    muted: false,
     audioEl: null
   };
 
@@ -318,7 +319,13 @@
     }
 
     if (muteBtn) {
-      muteBtn.classList.toggle('ndp-btn--audio-unavailable', !sceneHasAudio(scene));
+      var hasAudio = sceneHasAudio(scene);
+      muteBtn.classList.toggle('ndp-btn--audio-unavailable', !hasAudio);
+      muteBtn.setAttribute('aria-hidden', hasAudio ? 'false' : 'true');
+      muteBtn.tabIndex = hasAudio ? 0 : -1;
+      muteBtn.setAttribute('aria-label', state.muted ? 'Unmute narration' : 'Mute narration');
+      muteBtn.title = state.muted ? 'Unmute' : 'Mute';
+      muteBtn.textContent = state.muted ? '🔇' : '🔊';
     }
   }
 
@@ -384,7 +391,11 @@
     if (sceneHasAudio(scene)) {
       state.audioEl = new Audio(scene.audioSrc);
       state.audioEl.preload = 'auto';
+      state.audioEl.muted = state.muted;
       state.audioEl.currentTime = 0;
+      state.audioEl.addEventListener('ended', function () {
+        if (state.playing && !state.paused) advanceScene();
+      });
       state.audioEl.play().catch(function () {
         stopAudio();
       });
@@ -483,6 +494,14 @@
   function toggleCaptions() {
     state.captionsOn = !state.captionsOn;
     showCaption((SCENES[state.currentIndex] || {}).caption || '');
+    updatePlayerUI();
+  }
+
+  function toggleMute() {
+    state.muted = !state.muted;
+    if (state.audioEl) {
+      state.audioEl.muted = state.muted;
+    }
     updatePlayerUI();
   }
 
@@ -612,6 +631,7 @@
     document.getElementById('ndp-btn-prev').addEventListener('click', prevScene);
     document.getElementById('ndp-btn-next').addEventListener('click', nextScene);
     document.getElementById('ndp-btn-captions').addEventListener('click', toggleCaptions);
+    document.getElementById('ndp-btn-mute').addEventListener('click', toggleMute);
     document.getElementById('ndp-btn-exit').addEventListener('click', exitDemoMode);
 
     document.addEventListener('keydown', function (e) {
@@ -638,6 +658,11 @@
           e.preventDefault();
           toggleCaptions();
           break;
+        case 'm':
+        case 'M':
+          e.preventDefault();
+          toggleMute();
+          break;
         case 'Escape':
           e.preventDefault();
           exitDemoMode();
@@ -649,6 +674,23 @@
   function init() {
     injectPlayer();
     updatePlayerUI();
+
+    // iPhone Safari / desktop: when the page becomes hidden, pause the RAF clock
+    // so timeline.startTime does not drift when the page returns to focus.
+    document.addEventListener('visibilitychange', function () {
+      if (!state.active || !state.playing) return;
+      if (document.hidden) {
+        // Treat as a pause of the clock without changing play state
+        timeline.pauseTime = performance.now();
+      } else {
+        // Absorb the time the page was hidden
+        timeline.totalPaused += performance.now() - timeline.pauseTime;
+        // Restart RAF if it was cancelled
+        if (!timeline.rafId) {
+          timeline.rafId = requestAnimationFrame(tick);
+        }
+      }
+    });
 
     var params = new URLSearchParams(window.location.search);
     if (params.get('watchdemo') === '1') {
@@ -673,6 +715,7 @@
     replay: replay,
     prevScene: prevScene,
     nextScene: nextScene,
-    toggleCaptions: toggleCaptions
+    toggleCaptions: toggleCaptions,
+    toggleMute: toggleMute
   };
 })();
