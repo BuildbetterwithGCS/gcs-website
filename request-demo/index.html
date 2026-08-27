@@ -86,7 +86,11 @@
               <h2 class="form-card__title">Demonstration request</h2>
               <p class="form-card__lead">Fields marked with an asterisk are required. The more specific you are about the operational problem, the more useful the session will be.</p>
 
-              <form id="demo-form" data-honest-form data-form-kind="Demonstration request" novalidate>
+              <form id="demo-form" name="demo-request" method="POST" data-netlify="true" netlify-honeypot="bot-field" data-honest-form data-form-kind="Demonstration request" novalidate>
+                <input type="hidden" name="form-name" value="demo-request" />
+                <p class="form-group" style="display:none;" aria-hidden="true">
+                  <label>Do not fill this field: <input name="bot-field" /></label>
+                </p>
                 <div class="form-grid">
                 <div class="form-group">
                   <label for="demo-name">Full name <span aria-hidden="true">*</span></label>
@@ -206,29 +210,18 @@
                   <p class="form-error" id="demo-goals-error" role="alert"></p>
                 </div>
 
-              <div class="form-disclosure">
-                <span class="form-disclosure__icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></span>
-                <div>
-                  <p><strong>How this form works &mdash; stated plainly.</strong> This is a static website with no server-side application behind it. Submitting this form does <strong>not</strong> transmit your information to GCS. Your entries are validated in your browser, and you are then shown a formatted summary along with a link that opens your own email client addressed to <a href="mailto:info@buildbetterwithgcs.com">info@buildbetterwithgcs.com</a> with that summary included.</p>
-                  <p>Nothing is stored, logged, or sent anywhere until you send that email yourself. We would rather tell you this than show you a &ldquo;message sent&rdquo; confirmation that isn't true.</p>
-                </div>
-              </div>
-
-                <button type="submit" class="btn btn--primary btn--lg">Prepare my request</button>
+                <p class="form-privacy-note" style="margin-top:1rem;">Information submitted is used only to prepare your demonstration session. <a href="../privacy/">Privacy policy.</a></p>
+                <button type="submit" class="btn btn--primary btn--lg" style="margin-top:1rem;">Submit Demonstration Request</button>
               </form>
 
-              <div class="form-result" data-form-result hidden tabindex="-1">
-                <h3 class="form-result__title"><span aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15l2 2 4-4"/></svg></span> Request prepared &mdash; not yet sent</h3>
-                <div class="form-result__body">
-                  <p>Your entries passed validation and are summarized below. <strong>They have not been transmitted.</strong> Use the button to open your email client with this summary prefilled, or copy the text and send it however you prefer.</p>
-                  <pre class="form-summary" data-form-summary></pre>
-                  <div class="form-result__actions">
-                    <a class="btn btn--primary btn--sm" data-form-mailto href="mailto:info@buildbetterwithgcs.com">Open email with this summary</a>
-                    <button type="button" class="btn btn--outline btn--sm" data-form-copy>Copy summary</button>
-                    <button type="button" class="btn btn--ghost btn--sm" data-form-reset>Edit entries</button>
-                  </div>
-                  <p class="form-hint">If your browser does not open an email client, write to <a href="mailto:info@buildbetterwithgcs.com">info@buildbetterwithgcs.com</a> directly.</p>
-                </div>
+              <div class="form-result" data-form-result hidden tabindex="-1" style="padding:2rem;background:var(--bg-muted,#f4f6f9);border-radius:0.75rem;text-align:center;">
+                <p style="font-size:1.5rem;margin-bottom:0.5rem;">&#10003;</p>
+                <h3 style="margin-bottom:0.5rem;">Request received.</h3>
+                <p>Thank you. Your demonstration request has been received by GCS.</p>
+              </div>
+
+              <div data-form-error hidden style="padding:1.25rem;background:#fff3f3;border:1px solid #f5c6c6;border-radius:0.5rem;margin-top:1rem;">
+                <p><strong>Something went wrong.</strong> Your request could not be submitted. Please try again, or write directly to <a href="mailto:info@buildbetterwithgcs.com">info@buildbetterwithgcs.com</a>.</p>
               </div>
             </div>
           </div>
@@ -295,8 +288,7 @@
           <div class="footer__nav"><a href="../nexus/">Nexus</a><a href="../consulting/">Consulting</a><a href="../industries/">Industries</a><a href="../about/">About</a><a href="../contact/">Contact</a><a href="../request-demo/">Request Demo</a></div>
           <div class="footer__nav" style="margin-top:1rem;">
             <a href="../privacy/">Privacy</a>
-            <a href="../responsible-ai/">Responsible AI</a>
-            <a href="../contact/">Contact</a>
+            <a href="../accessibility/">Accessibility</a>
           </div>
         </div>
       </div>

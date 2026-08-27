@@ -2638,3 +2638,14 @@ noscript .nexus-dept-grid { display: flex; }
   #ndp-btn-resume::after,
   #ndp-btn-replay::after { content: none; }
 }
+
+/* Mobile org selector — show only primary 4 orgs initially on small screens */
+@media (max-width: 640px) {
+  .sandbox-org-btn[data-org-secondary] { display: none; }
+  .sandbox-org-btn[data-org-secondary].org-expanded { display: flex; }
+  #org-more-wrap { display: block; }
+}
+@media (min-width: 641px) {
+  #org-more-wrap { display: none; }
+  .sandbox-org-btn[data-org-secondary] { display: flex; }
+}

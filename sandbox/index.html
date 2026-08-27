@@ -81,42 +81,42 @@
             <h3 class="card__title">Valley Sample Hospital</h3>
             <p class="card__desc">A fictional hospital with facilities, compliance, HR, procurement, equipment management, and patient services.</p>
           </button>
-          <button class="sandbox-org-btn card" type="button" data-org="school" style="text-align:left;cursor:pointer;" aria-pressed="false">
+          <button class="sandbox-org-btn card" type="button" data-org="school" data-org-secondary style="text-align:left;cursor:pointer;" aria-pressed="false">
             <span class="card__eyebrow">School District</span>
             <h3 class="card__title">Lakewood Sample School District</h3>
             <p class="card__desc">A fictional district managing facilities, transportation, finance, HR, and capital projects across multiple campuses.</p>
           </button>
-          <button class="sandbox-org-btn card" type="button" data-org="warehouse" style="text-align:left;cursor:pointer;" aria-pressed="false">
+          <button class="sandbox-org-btn card" type="button" data-org="warehouse" data-org-secondary style="text-align:left;cursor:pointer;" aria-pressed="false">
             <span class="card__eyebrow">Warehousing &amp; Distribution</span>
             <h3 class="card__title">Crossroads Sample Warehouse</h3>
             <p class="card__desc">A fictional distribution center with inventory, receiving, shipping, fleet, and supply chain operations.</p>
           </button>
-          <button class="sandbox-org-btn card" type="button" data-org="construction" style="text-align:left;cursor:pointer;" aria-pressed="false">
+          <button class="sandbox-org-btn card" type="button" data-org="construction" data-org-secondary style="text-align:left;cursor:pointer;" aria-pressed="false">
             <span class="card__eyebrow">Construction</span>
             <h3 class="card__title">Greenfield Sample Construction</h3>
             <p class="card__desc">A fictional construction firm managing projects, equipment, safety, procurement, and subcontractors.</p>
           </button>
-          <button class="sandbox-org-btn card" type="button" data-org="airport" style="text-align:left;cursor:pointer;" aria-pressed="false">
+          <button class="sandbox-org-btn card" type="button" data-org="airport" data-org-secondary style="text-align:left;cursor:pointer;" aria-pressed="false">
             <span class="card__eyebrow">Airport</span>
             <h3 class="card__title">Skyport Sample Airport</h3>
             <p class="card__desc">A fictional regional airport with facilities, fleet, compliance, operations, safety, and capital planning.</p>
           </button>
-          <button class="sandbox-org-btn card" type="button" data-org="utility" style="text-align:left;cursor:pointer;" aria-pressed="false">
+          <button class="sandbox-org-btn card" type="button" data-org="utility" data-org-secondary style="text-align:left;cursor:pointer;" aria-pressed="false">
             <span class="card__eyebrow">Utility</span>
             <h3 class="card__title">Valley Sample Utility District</h3>
             <p class="card__desc">A fictional public utility with infrastructure assets, GIS, capital projects, compliance, and field operations.</p>
           </button>
-          <button class="sandbox-org-btn card" type="button" data-org="corporate" style="text-align:left;cursor:pointer;" aria-pressed="false">
+          <button class="sandbox-org-btn card" type="button" data-org="corporate" data-org-secondary style="text-align:left;cursor:pointer;" aria-pressed="false">
             <span class="card__eyebrow">Corporate Enterprise</span>
             <h3 class="card__title">Summit Sample Corporation</h3>
             <p class="card__desc">A fictional multi-site enterprise with finance, HR, procurement, facilities, fleet, and performance management.</p>
           </button>
-          <button class="sandbox-org-btn card" type="button" data-org="nonprofit" style="text-align:left;cursor:pointer;" aria-pressed="false">
+          <button class="sandbox-org-btn card" type="button" data-org="nonprofit" data-org-secondary style="text-align:left;cursor:pointer;" aria-pressed="false">
             <span class="card__eyebrow">Nonprofit</span>
             <h3 class="card__title">Northside Sample Nonprofit</h3>
             <p class="card__desc">A fictional nonprofit with grants, fundraising, program delivery, compliance, and donor management.</p>
           </button>
-          <button class="sandbox-org-btn card" type="button" data-org="enterprise" style="text-align:left;cursor:pointer;" aria-pressed="false">
+          <button class="sandbox-org-btn card" type="button" data-org="enterprise" data-org-secondary style="text-align:left;cursor:pointer;" aria-pressed="false">
             <span class="card__eyebrow">Professional Services</span>
             <h3 class="card__title">Meridian Sample Firm</h3>
             <p class="card__desc">A fictional professional services company with projects, HR, finance, knowledge management, and client delivery.</p>
@@ -126,7 +126,7 @@
             <h3 class="card__title">Apex Sample Data Center</h3>
             <p class="card__desc">A fictional data center campus with facilities, power and cooling systems, compliance, safety, fleet, capital projects, and IT operations.</p>
           </button>
-          <button class="sandbox-org-btn card" type="button" data-org="pubsafety" style="text-align:left;cursor:pointer;" aria-pressed="false">
+          <button class="sandbox-org-btn card" type="button" data-org="pubsafety" data-org-secondary style="text-align:left;cursor:pointer;" aria-pressed="false">
             <span class="card__eyebrow">Public Safety</span>
             <h3 class="card__title">Metro Sample Public Safety</h3>
             <p class="card__desc">A fictional public safety agency with fleet, facilities, compliance, safety, emergency management, and HR.</p>
@@ -1050,7 +1050,6 @@
           <div class="footer__nav"><a href="../nexus/">Nexus</a><a href="../consulting/">Consulting</a><a href="../industries/">Industries</a><a href="../about/">About</a><a href="../contact/">Contact</a><a href="../request-demo/">Request Demo</a></div>
           <div class="footer__nav" style="margin-top:0.75rem;">
             <a href="../privacy/">Privacy</a>
-            <a href="../responsible-ai/">Responsible AI</a>
             <a href="../accessibility/">Accessibility</a>
           </div>
         </div>
@@ -1285,7 +1284,6 @@
       });
     }
 
-
     // Orientation modal
     var orientOverlay = document.getElementById('orient-overlay');
     var orientExecBtn = document.getElementById('orient-exec-btn');
@@ -1334,6 +1332,33 @@
       var expanded = row.getAttribute('aria-expanded') === 'true';
       row.setAttribute('aria-expanded', expanded ? 'false' : 'true');
     });
+
+    // watchdemo=1: auto-select Riverside, bypass org selector and orientation modal
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('watchdemo') !== '1') return;
+      // Suppress orientation modal
+      orientShown = true;
+      // Auto-select the default demo organization
+      selectOrg('municipality');
+      // Scroll the demo player area into view after selection
+      var playerEl = document.getElementById('ndp-player') || document.getElementById('sandbox-section');
+      if (playerEl) {
+        setTimeout(function () { playerEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 600);
+      }
+    }());
+
+    // Mobile "More Demonstration Organizations" button
+    var orgShowMoreBtn = document.getElementById('org-show-more');
+    if (orgShowMoreBtn) {
+      orgShowMoreBtn.addEventListener('click', function () {
+        document.querySelectorAll('.sandbox-org-btn[data-org-secondary]').forEach(function (btn) {
+          btn.classList.add('org-expanded');
+        });
+        var wrap = document.getElementById('org-more-wrap');
+        if (wrap) wrap.style.display = 'none';
+      });
+    }
   })();
   </script>
 </body>

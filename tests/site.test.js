@@ -60,7 +60,6 @@ const routes = [
   'genesis/index.html',
   'privacy/index.html',
   'accessibility/index.html',
-  'responsible-ai/index.html',
   'reference/index.html',
   'terms/index.html',
   'founder/index.html',
@@ -145,7 +144,7 @@ assert('Sandbox still loads demo player', contains(sandbox, 'js/nexus-demo-playe
 assert('Demo player uses deterministic clock', contains(demoPlayer, 'performance.now()') && contains(demoPlayer, 'requestAnimationFrame(tick)'));
 assert('Demo player uses URLSearchParams', contains(demoPlayer, 'new URLSearchParams(window.location.search)'));
 assert('Demo player removes speech synthesis', !contains(demoPlayer, 'speechSynthesis') && !contains(demoPlayer, 'SpeechSynthesisUtterance'));
-assert('Demo player includes audio-ready scene fields', countMatches(demoPlayer, 'audioSrc: null') >= 8);
+assert('Demo player includes audio-ready scene fields', countMatches(demoPlayer, "audioSrc: '../assets/audio/nexus-demo/") >= 8);
 assert('Demo player updates aria-valuenow', contains(demoPlayer, 'aria-valuenow') && contains(demoPlayer, 'setAttribute(\'aria-valuenow\''));
 assert('Demo player includes captions-only completion state', containsCI(demoPlayer, 'Demo complete. Explore Nexus interactively or request a real demonstration.') && contains(demoPlayer, 'ndp-player--captions-only'));
 assert('Demo player hides unavailable audio button', contains(demoPlayer, 'ndp-btn--audio-unavailable'));
@@ -164,6 +163,43 @@ assert('No Get Started remains in site copy', !containsCI(allHtml, 'Get Started'
 assert('Synthetic demo data remains labeled', containsCI(allHtml, 'SYNTHETIC DEMO DATA') || containsCI(allHtml, 'SYNTHETIC DATA'));
 assert('No credential-like strings introduced', !(/password\s*[:=]\s*['"][^'"]{3,}/i.test(allHtml)));
 assert('No non-public email addresses introduced', !(/[a-z0-9._%+-]+@(?!buildbetterwithgcs\.com)[a-z0-9-]+\.[a-z]{2,}/i.test(allHtml)));
+
+section('PR #22 — Responsible AI removal');
+const responsibleAi = readFile('responsible-ai/index.html');
+assert('Responsible AI page redirects to homepage', contains(responsibleAi, 'url=/') || contains(responsibleAi, "window.location.replace('/')"));
+const allRouteHtml = routes.map(readFile).filter(Boolean).join('\n');
+assert('No responsible-ai footer link in public pages', !containsCI(allRouteHtml, 'href="../responsible-ai/"') && !containsCI(allRouteHtml, 'href="responsible-ai/"'));
+assert('No Responsible AI nav link in public pages', !allRouteHtml.match(/>Responsible AI<\/a>/));
+
+section('PR #22 — watchdemo=1 auto-launch');
+assert('Sandbox watchdemo auto-selects municipality', contains(sandbox, "selectOrg('municipality')") && contains(sandbox, "watchdemo"));
+assert('Sandbox bypasses orientation modal on watchdemo', contains(sandbox, 'orientShown = true') && contains(sandbox, "watchdemo"));
+assert('Sandbox has More Demonstration Organizations button', contains(sandbox, 'org-show-more') && containsCI(sandbox, 'More Demonstration Organizations'));
+assert('Sandbox secondary orgs use data-org-secondary attribute', contains(sandbox, 'data-org-secondary'));
+
+section('PR #22 — Narration audio architecture');
+const audioManifest = readFile('assets/audio/nexus-demo/manifest.json');
+assert('Audio manifest exists', audioManifest !== null);
+assert('Audio manifest has 10 tracks', audioManifest && countMatches(audioManifest, '"scene"') === 10);
+assert('Demo player scenes reference audio files', countMatches(demoPlayer, "assets/audio/nexus-demo/") >= 10);
+assert('Demo player has audio error fallback', contains(demoPlayer, "'error'") && contains(demoPlayer, 'stopAudio'));
+
+section('PR #22 — Netlify Forms');
+const contactHtml = readFile('contact/index.html');
+const demoHtml = readFile('request-demo/index.html');
+assert('Contact form uses Netlify Forms', contains(contactHtml, 'data-netlify="true"') && contains(contactHtml, 'name="contact"'));
+assert('Contact form has honeypot field', contains(contactHtml, 'bot-field'));
+assert('Contact form has success state', contains(contactHtml, 'contact-success'));
+assert('Contact form does not open mailto directly on submit', !contains(contactHtml, "window.location.href = 'mailto:"));
+assert('Request Demo form uses Netlify Forms', contains(demoHtml, 'data-netlify="true"') && contains(demoHtml, 'name="demo-request"'));
+assert('Request Demo form has honeypot field', contains(demoHtml, 'bot-field'));
+assert('Request Demo success state says received by GCS', containsCI(demoHtml, 'received by GCS'));
+assert('Request Demo removes honest-form mailto disclosure', !containsCI(demoHtml, 'Submitting this form does'));
+
+section('PR #22 — Terminology');
+assert('Contact form uses Operations Intelligence not Enterprise Intelligence', !contains(contactHtml, 'Nexus Enterprise Intelligence'));
+assert('Netlify config exists', readFile('netlify.toml') !== null);
+
 
 console.log('\n' + '═'.repeat(50));
 console.log('GCS Website Acceptance Tests');
