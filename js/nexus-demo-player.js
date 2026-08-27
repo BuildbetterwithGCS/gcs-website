@@ -17,6 +17,7 @@
     currentIndex: 0,
     captionsOn: true,
     muted: false,
+    volume: 1.0,
     audioEl: null
   };
 
@@ -327,6 +328,14 @@
       muteBtn.title = state.muted ? 'Unmute' : 'Mute';
       muteBtn.textContent = state.muted ? '🔇' : '🔊';
     }
+
+    var volSlider = document.getElementById('ndp-vol');
+    if (volSlider) {
+      var hasAudio2 = sceneHasAudio(scene);
+      volSlider.classList.toggle('ndp-btn--audio-unavailable', !hasAudio2);
+      volSlider.style.display = hasAudio2 ? '' : 'none';
+      volSlider.value = state.muted ? 0 : state.volume;
+    }
   }
 
   function finishDemo() {
@@ -392,6 +401,7 @@
       state.audioEl = new Audio(scene.audioSrc);
       state.audioEl.preload = 'auto';
       state.audioEl.muted = state.muted;
+      state.audioEl.volume = state.volume;
       state.audioEl.currentTime = 0;
       state.audioEl.addEventListener('ended', function () {
         if (state.playing && !state.paused) advanceScene();
@@ -412,9 +422,11 @@
     state.finished = false;
     state.playing = true;
     state.paused = false;
-    timeline.startTime = performance.now();
 
     var afterSwitch = function () {
+      // Start the scene clock only after the tab is visible so events fire at
+      // the correct visual time rather than drifting by the tab-switch delay.
+      timeline.startTime = performance.now();
       prepareScene(scene);
       if (scene.highlight) highlightElement(document.querySelector(scene.highlight));
       updatePlayerUI();
@@ -501,6 +513,19 @@
     state.muted = !state.muted;
     if (state.audioEl) {
       state.audioEl.muted = state.muted;
+    }
+    updatePlayerUI();
+  }
+
+  function setVolume(val) {
+    state.volume = Math.max(0, Math.min(1, parseFloat(val) || 1));
+    if (state.audioEl) {
+      state.audioEl.volume = state.volume;
+    }
+    // Auto-unmute when volume is raised
+    if (state.volume > 0 && state.muted) {
+      state.muted = false;
+      if (state.audioEl) state.audioEl.muted = false;
     }
     updatePlayerUI();
   }
@@ -616,6 +641,7 @@
       '  </div>',
       '  <div class="ndp-controls__right">',
       '    <button type="button" id="ndp-btn-mute" class="ndp-btn ndp-btn--audio-unavailable" aria-hidden="true" tabindex="-1">🔊</button>',
+      '    <input type="range" id="ndp-vol" class="ndp-vol-slider" min="0" max="1" step="0.05" value="1" aria-label="Volume" style="display:none;" />',
       '    <button type="button" id="ndp-btn-captions" class="ndp-btn ndp-btn--active" aria-label="Toggle captions" aria-pressed="true">CC</button>',
       '    <button type="button" id="ndp-btn-exit" class="ndp-btn ndp-btn--exit" aria-label="Exit demo">✕ Exit</button>',
       '  </div>',
@@ -633,6 +659,11 @@
     document.getElementById('ndp-btn-captions').addEventListener('click', toggleCaptions);
     document.getElementById('ndp-btn-mute').addEventListener('click', toggleMute);
     document.getElementById('ndp-btn-exit').addEventListener('click', exitDemoMode);
+
+    var volEl = document.getElementById('ndp-vol');
+    if (volEl) {
+      volEl.addEventListener('input', function () { setVolume(this.value); });
+    }
 
     document.addEventListener('keydown', function (e) {
       if (!state.active) return;
@@ -716,6 +747,7 @@
     prevScene: prevScene,
     nextScene: nextScene,
     toggleCaptions: toggleCaptions,
-    toggleMute: toggleMute
+    toggleMute: toggleMute,
+    setVolume: setVolume
   };
 })();

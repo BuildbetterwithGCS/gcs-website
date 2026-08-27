@@ -2520,6 +2520,38 @@ noscript .nexus-dept-grid { display: flex; }
 .ndp-btn--exit:hover { background: rgba(220,38,38,0.2); border-color: #dc2626; }
 .ndp-btn--audio-unavailable { display: none; }
 
+/* Volume slider — shown only when audio is present */
+.ndp-vol-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 72px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.25);
+  outline: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.ndp-vol-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--gcs-green);
+  cursor: pointer;
+}
+.ndp-vol-slider::-moz-range-thumb {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--gcs-green);
+  cursor: pointer;
+  border: none;
+}
+.ndp-vol-slider:focus-visible {
+  outline: 2px solid var(--gcs-green);
+  outline-offset: 3px;
+}
+
 /* Progress bar */
 .ndp-progress {
   display: flex;
@@ -2583,10 +2615,26 @@ noscript .nexus-dept-grid { display: flex; }
     padding: 0.5rem 0.625rem;
   }
   .ndp-controls__center { min-width: 80px; }
-  .ndp-btn { font-size: 0.75rem; padding: 0.5rem 0.625rem; min-height: 2.5rem; min-width: 2.5rem; }
+  .ndp-btn { font-size: 0.75rem; padding: 0.5rem 0.625rem; min-height: 2.75rem; min-width: 2.75rem; }
   .ndp-btn--primary { padding: 0.5rem 0.75rem; }
   .ndp-caption { font-size: 0.875rem; padding: 0.5rem 0.875rem; }
   .ndp-scene-title { font-size: 0.6875rem; }
   .ndp-progress__label { font-size: 0.6875rem; }
   .ndp-watch-btn { font-size: 0.8125rem; padding: 0.5rem 1rem; }
+  /* Volume slider too narrow to use on mobile */
+  .ndp-vol-slider { display: none !important; }
+}
+
+/* Very small screens (390px iPhone) — keep controls on one row */
+@media (max-width: 430px) {
+  .ndp-controls { flex-wrap: nowrap; overflow-x: auto; padding: 0.5rem; gap: 0.25rem; }
+  .ndp-controls::-webkit-scrollbar { height: 0; }
+  .ndp-controls__center { min-width: 60px; }
+  .ndp-btn { padding: 0.5rem 0.5rem; min-height: 2.75rem; min-width: 2.75rem; }
+  .ndp-btn--exit { min-width: auto; }
+  /* Show only icon on primary action buttons */
+  #ndp-btn-play::after,
+  #ndp-btn-pause::after,
+  #ndp-btn-resume::after,
+  #ndp-btn-replay::after { content: none; }
 }
