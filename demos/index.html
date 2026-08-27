@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Demos | GCS — Explore GCS in Action</title>
-  <meta name="description" content="Explore GCS interactive guided demonstrations — platform overview, Nexus, Genesis, Map Intelligence, and consulting. No login required." />
+  <title>Demos | GCS — Watch Nexus Demo or Explore Nexus</title>
+  <meta name="description" content="Watch the guided Nexus demo or explore the interactive sandbox with synthetic data and no login required." />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://buildbetterwithgcs.com/demos/" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -32,13 +32,12 @@
       </button>
       <ul class="nav__links" id="nav-menu" role="list">
         <li><a href="../" class="nav__link">Home</a></li>
-        <li><a href="../platform/" class="nav__link">Platform</a></li>
+        <li><a href="../nexus/" class="nav__link">Nexus</a></li>
         <li><a href="../consulting/" class="nav__link">Consulting</a></li>
         <li><a href="../industries/" class="nav__link">Industries</a></li>
-        <li><a href="../demos/" class="nav__link" aria-current="page">Demos</a></li>
         <li><a href="../about/" class="nav__link">About</a></li>
-        <li><a href="../sandbox/" class="nav__link nav__link--sandbox">Explore Nexus Live</a></li>
-        <li><a href="../contact/" class="nav__link nav__link--get-started">Get Started</a></li>
+        <li><a href="../contact/" class="nav__link">Contact</a></li>
+        <li><a href="../request-demo/" class="nav__link nav__link--cta">Request Demo</a></li>
       </ul>
     </nav>
   </header>
@@ -48,145 +47,122 @@
       <div class="container">
         <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="../">Home</a><span>/</span><span aria-current="page">Demos</span></nav>
         <div class="page-hero__inner">
-          <span class="page-hero__eyebrow">GCS Demonstrations</span>
-          <h1 class="page-hero__title">See GCS in Action</h1>
-          <p class="page-hero__lead">Interactive guided demonstrations for every major GCS capability. Explore the platform before talking to anyone.</p>
+          <span class="page-hero__eyebrow">Nexus Demonstrations</span>
+          <h1 class="page-hero__title">Watch Nexus Demo or explore for yourself.</h1>
+          <p class="page-hero__lead">Choose the guided presentation when you want a quick story, or open the interactive sandbox when you want to move at your own pace.</p>
           <div class="page-hero__actions">
-            <a href="../sandbox/" class="btn btn--primary">Explore Nexus Live — No Login</a>
-            <a href="../contact/" class="btn btn--outline">Talk to GCS</a>
+            <a href="../sandbox/?watchdemo=1" class="btn btn--primary">Watch Nexus Demo</a>
+            <a href="../sandbox/" class="btn btn--outline">Explore Nexus</a>
           </div>
+          <p class="section-note" style="margin-top:0.875rem;">Interactive demonstration &bull; Synthetic data &bull; No login</p>
         </div>
       </div>
     </section>
 
-    <section class="section section--light" aria-labelledby="demos-heading">
+    <section class="section section--light" aria-labelledby="primary-demo-heading">
       <div class="container">
         <div class="section-header section-header--center">
-          <span class="section-label">Interactive Demonstrations</span>
-          <h2 id="demos-heading" class="section-title">GCS capability — explored, not just explained.</h2>
-          <p class="section-subtitle">Each demonstration covers a major GCS experience. Click any tile to open an interactive guided exploration.</p>
+          <span class="section-label">Primary Paths</span>
+          <h2 id="primary-demo-heading" class="section-title">Two ways to experience Nexus.</h2>
         </div>
-
-        <div class="demos-grid">
-
-          <!-- GCS Overview -->
-          <div>
-            <button type="button" class="demo-video-block" id="open-demo-overview" aria-label="Open GCS Overview guided demonstration" aria-haspopup="dialog">
-              <div class="demo-video-block__grid" aria-hidden="true"></div>
-              <div class="demo-video-block__inner">
-                <div class="demo-video-block__play" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
-                </div>
-                <div class="demo-video-block__label">GCS Overview</div>
-                <div class="demo-video-block__sublabel">What GCS does and why it matters</div>
-                <span class="demo-video-block__badge">EXPLORE DEMO</span>
-                <div class="demo-video-block__coming">Click to explore &rarr;</div>
-              </div>
-            </button>
-            <div style="margin-top:0.875rem;">
-              <h3 style="font-size:1rem;font-weight:700;color:var(--gcs-navy);">GCS Overview</h3>
-              <p style="font-size:0.875rem;color:var(--text-muted);margin-top:0.25rem;">Understand the GCS value proposition — how connected organizational intelligence helps leaders see, decide, and act.</p>
-            </div>
-          </div>
-
-          <!-- Nexus -->
-          <div>
-            <button type="button" class="demo-video-block" id="open-demo-nexus" aria-label="Open Nexus guided demonstration" aria-haspopup="dialog">
-              <div class="demo-video-block__grid" aria-hidden="true"></div>
-              <div class="demo-video-block__inner">
-                <div class="demo-video-block__play" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
-                </div>
-                <div class="demo-video-block__label">Nexus</div>
-                <div class="demo-video-block__sublabel">One platform — every department connected</div>
-                <span class="demo-video-block__badge">INTERACTIVE DEMO</span>
-                <div class="demo-video-block__coming">Click to explore &rarr;</div>
-              </div>
-            </button>
-            <div style="margin-top:0.875rem;">
-              <h3 style="font-size:1rem;font-weight:700;color:var(--gcs-navy);">Nexus Platform</h3>
-              <p style="font-size:0.875rem;color:var(--text-muted);margin-top:0.25rem;">See how Nexus connects every department, surfaces what needs attention, and supports leadership decisions.</p>
-              <div style="display:flex;flex-wrap:wrap;gap:0.625rem;margin-top:0.625rem;align-items:center;">
-                <a href="../sandbox/?watchdemo=1" class="btn-primary" style="font-size:0.8125rem;padding:0.4375rem 0.875rem;border-radius:2rem;text-decoration:none;display:inline-flex;align-items:center;gap:0.375rem;background:var(--gcs-navy);color:#fff;">&#9654; Watch Demo</a>
-                <a href="../sandbox/" class="link-arrow" style="font-size:0.875rem;display:inline-block;">Explore Nexus Live &rarr;</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Genesis -->
-          <div>
-            <button type="button" class="demo-video-block" id="open-demo-genesis" aria-label="Open Genesis guided demonstration" aria-haspopup="dialog">
-              <div class="demo-video-block__grid" aria-hidden="true"></div>
-              <div class="demo-video-block__inner">
-                <div class="demo-video-block__play" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
-                </div>
-                <div class="demo-video-block__label">Genesis</div>
-                <div class="demo-video-block__sublabel">Ask, analyze, and support organizational decisions</div>
-                <span class="demo-video-block__badge">EXPLORE DEMO</span>
-                <div class="demo-video-block__coming">Click to explore &rarr;</div>
-              </div>
-            </button>
-            <div style="margin-top:0.875rem;">
-              <h3 style="font-size:1rem;font-weight:700;color:var(--gcs-navy);">Genesis</h3>
-              <p style="font-size:0.875rem;color:var(--text-muted);margin-top:0.25rem;">See how Genesis helps leaders ask organizational questions, surface insights from connected data, and support governed decisions.</p>
-            </div>
-          </div>
-
-          <!-- Map Intelligence -->
-          <div>
-            <button type="button" class="demo-video-block" id="open-demo-map" aria-label="Open Map Intelligence guided demonstration" aria-haspopup="dialog">
-              <div class="demo-video-block__grid" aria-hidden="true"></div>
-              <div class="demo-video-block__inner">
-                <div class="demo-video-block__play" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
-                </div>
-                <div class="demo-video-block__label">Map Intelligence</div>
-                <div class="demo-video-block__sublabel">Understand your organization geographically</div>
-                <span class="demo-video-block__badge">EXPLORE DEMO</span>
-                <div class="demo-video-block__coming">Click to explore &rarr;</div>
-              </div>
-            </button>
-            <div style="margin-top:0.875rem;">
-              <h3 style="font-size:1rem;font-weight:700;color:var(--gcs-navy);">Map Intelligence</h3>
-              <p style="font-size:0.875rem;color:var(--text-muted);margin-top:0.25rem;">Explore GCS GIS capabilities — facilities, assets, projects, and risk shown in spatial context.</p>
-            </div>
-          </div>
-
-          <!-- Consulting + Implementation -->
-          <div>
-            <button type="button" class="demo-video-block" id="open-demo-consulting" aria-label="Open Consulting and Implementation guided demonstration" aria-haspopup="dialog">
-              <div class="demo-video-block__grid" aria-hidden="true"></div>
-              <div class="demo-video-block__inner">
-                <div class="demo-video-block__play" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
-                </div>
-                <div class="demo-video-block__label">Consulting &amp; Implementation</div>
-                <div class="demo-video-block__sublabel">Assessment, design, implementation, improvement</div>
-                <span class="demo-video-block__badge">EXPLORE DEMO</span>
-                <div class="demo-video-block__coming">Click to explore &rarr;</div>
-              </div>
-            </button>
-            <div style="margin-top:0.875rem;">
-              <h3 style="font-size:1rem;font-weight:700;color:var(--gcs-navy);">Consulting &amp; Implementation</h3>
-              <p style="font-size:0.875rem;color:var(--text-muted);margin-top:0.25rem;">Understand how GCS combines operational consulting with connected intelligence technology — from assessment through ongoing improvement.</p>
-              <a href="../consulting/" class="link-arrow" style="font-size:0.875rem;margin-top:0.5rem;display:inline-block;">Learn about consulting &rarr;</a>
-            </div>
-          </div>
-
+        <div class="grid--2">
+          <article class="card reveal">
+            <span class="card__eyebrow">Guided presentation</span>
+            <h3 class="card__title">Watch Nexus Demo</h3>
+            <p class="card__desc">Launch the timed walkthrough in the sandbox for a short, structured story about how Nexus helps leaders see, know, act, and prove value.</p>
+            <a href="../sandbox/?watchdemo=1" class="btn btn--primary" style="margin-top:1rem;">Watch Nexus Demo</a>
+          </article>
+          <article class="card reveal">
+            <span class="card__eyebrow">Interactive sandbox</span>
+            <h3 class="card__title">Explore Nexus</h3>
+            <p class="card__desc">Open the public sandbox to click through departments, ask questions, open details, and explore synthetic operating data without logging in.</p>
+            <p class="section-note" style="margin-top:0.875rem;">Interactive demonstration &bull; Synthetic data &bull; No login</p>
+            <a href="../sandbox/" class="btn btn--outline" style="margin-top:1rem;">Explore Nexus</a>
+          </article>
         </div>
       </div>
     </section>
 
-    <!-- CTA -->
+    <section class="section section--muted" aria-labelledby="more-demos-heading">
+      <div class="container">
+        <div class="section-header section-header--center">
+          <span class="section-label">Additional Guided Tours</span>
+          <h2 id="more-demos-heading" class="section-title">Explore related capabilities.</h2>
+          <p class="section-subtitle">These guided HTML tours explain how the broader GCS offering fits together around Nexus.</p>
+        </div>
+        <div class="demos-grid">
+          <div>
+            <button type="button" class="demo-video-block" id="open-demo-overview" aria-label="Open Nexus overview guided tour" aria-haspopup="dialog">
+              <div class="demo-video-block__grid" aria-hidden="true"></div>
+              <div class="demo-video-block__inner">
+                <div class="demo-video-block__play" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg></div>
+                <div class="demo-video-block__label">Nexus Overview</div>
+                <div class="demo-video-block__sublabel">The connected operating picture</div>
+                <span class="demo-video-block__badge">GUIDED TOUR</span>
+                <div class="demo-video-block__coming">Open tour &rarr;</div>
+              </div>
+            </button>
+          </div>
+          <div>
+            <button type="button" class="demo-video-block" id="open-demo-nexus" aria-label="Open Nexus capabilities guided tour" aria-haspopup="dialog">
+              <div class="demo-video-block__grid" aria-hidden="true"></div>
+              <div class="demo-video-block__inner">
+                <div class="demo-video-block__play" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg></div>
+                <div class="demo-video-block__label">Nexus</div>
+                <div class="demo-video-block__sublabel">Dashboards, questions, and action</div>
+                <span class="demo-video-block__badge">GUIDED TOUR</span>
+                <div class="demo-video-block__coming">Open tour &rarr;</div>
+              </div>
+            </button>
+          </div>
+          <div>
+            <button type="button" class="demo-video-block" id="open-demo-genesis" aria-label="Open Genesis guided tour" aria-haspopup="dialog">
+              <div class="demo-video-block__grid" aria-hidden="true"></div>
+              <div class="demo-video-block__inner">
+                <div class="demo-video-block__play" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg></div>
+                <div class="demo-video-block__label">Genesis</div>
+                <div class="demo-video-block__sublabel">Ask and analyze connected information</div>
+                <span class="demo-video-block__badge">GUIDED TOUR</span>
+                <div class="demo-video-block__coming">Open tour &rarr;</div>
+              </div>
+            </button>
+          </div>
+          <div>
+            <button type="button" class="demo-video-block" id="open-demo-map" aria-label="Open Map Intelligence guided tour" aria-haspopup="dialog">
+              <div class="demo-video-block__grid" aria-hidden="true"></div>
+              <div class="demo-video-block__inner">
+                <div class="demo-video-block__play" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg></div>
+                <div class="demo-video-block__label">Map Intelligence</div>
+                <div class="demo-video-block__sublabel">Geographic context for operations</div>
+                <span class="demo-video-block__badge">GUIDED TOUR</span>
+                <div class="demo-video-block__coming">Open tour &rarr;</div>
+              </div>
+            </button>
+          </div>
+          <div>
+            <button type="button" class="demo-video-block" id="open-demo-consulting" aria-label="Open consulting guided tour" aria-haspopup="dialog">
+              <div class="demo-video-block__grid" aria-hidden="true"></div>
+              <div class="demo-video-block__inner">
+                <div class="demo-video-block__play" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg></div>
+                <div class="demo-video-block__label">Consulting</div>
+                <div class="demo-video-block__sublabel">Assess, design, implement, improve</div>
+                <span class="demo-video-block__badge">GUIDED TOUR</span>
+                <div class="demo-video-block__coming">Open tour &rarr;</div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="section section--light">
       <div class="container">
         <div class="cta-band">
-          <span class="eyebrow">No login required</span>
-          <h2>Ready to explore the platform?</h2>
-          <p>Select a fictional organization and explore Nexus across every department — no account needed.</p>
+          <span class="eyebrow">Need a real walkthrough?</span>
+          <h2>Request a demonstration tailored to your organization.</h2>
+          <p>Use the sandbox now, then request a live demonstration when you want to see the platform through your own operational questions.</p>
           <div class="cta-actions">
-            <a href="../sandbox/" class="btn btn--primary">Explore Nexus Live</a>
+            <a href="../request-demo/" class="btn btn--primary">Request a Demonstration</a>
             <a href="../contact/" class="btn btn--outline">Talk to GCS</a>
           </div>
         </div>
@@ -203,7 +179,7 @@
           <p class="footer__subtext" style="margin-top:0.5rem;">GCS connects the entire organization into one intelligence, action, and accountability environment.</p>
         </div>
         <div>
-          <div class="footer__nav"><a href="../platform/">Platform</a><a href="../consulting/">Consulting</a><a href="../industries/">Industries</a><a href="../demos/">Demos</a><a href="../sandbox/">Explore Nexus Live</a><a href="../about/">About</a><a href="../contact/">Get Started</a></div>
+          <div class="footer__nav"><a href="../nexus/">Nexus</a><a href="../consulting/">Consulting</a><a href="../industries/">Industries</a><a href="../about/">About</a><a href="../contact/">Contact</a><a href="../request-demo/">Request Demo</a></div>
           <div class="footer__nav" style="margin-top:0.75rem;"><a href="../privacy/">Privacy</a><a href="../responsible-ai/">Responsible AI</a><a href="../accessibility/">Accessibility</a></div>
         </div>
       </div>
@@ -217,7 +193,7 @@
        Synthetic data only. No real organizations represented.
        ============================================================ -->
 
-  <!-- ── GCS Overview Guided Demo ── -->
+  <!-- ── GCS Overview Nexus Demo ── -->
   <div id="demo-overlay-overview" class="guided-demo-overlay" role="dialog" aria-modal="true"
        aria-labelledby="gdemo-title-overview" aria-describedby="gdemo-sub-overview" hidden>
     <div class="guided-demo-modal">
@@ -241,7 +217,7 @@
       <div class="guided-demo-step is-active" data-demo="overview" data-step="0">
         <div class="guided-demo-step__eyebrow">Step 1 of 4</div>
         <h2 class="guided-demo-step__heading">One Platform. Every Department.</h2>
-        <p class="guided-demo-step__caption">GCS Nexus connects every department into a single intelligence and action environment. Leadership sees the entire organization in real time &mdash; not through separate reports, but through one connected platform.</p>
+        <p class="guided-demo-step__caption">Nexus connects every department into a single intelligence and action environment. Leadership sees the entire organization in real time &mdash; not through separate reports, but through one connected platform.</p>
         <div class="guided-demo-visual">
           <div class="guided-demo-kpi-row">
             <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Departments Connected</div><div class="guided-demo-kpi__val">9</div><div class="guided-demo-kpi__delta">Finance, HR, Safety, Risk &amp; more</div></div>
@@ -290,7 +266,7 @@
         </div>
       </div>
       <div class="guided-demo-cta-row" id="gdfinalcta-overview" style="display:none">
-        <a href="../sandbox/" aria-label="Explore Nexus Live — no login required">Explore Nexus Live &rarr;</a>
+        <a href="../sandbox/" aria-label="Explore Nexus — no login required">Explore Nexus &rarr;</a>
         <p style="margin-top:0.625rem;font-size:0.8rem;color:rgba(255,255,255,0.45);">No login &bull; Synthetic data &bull; Nothing to install</p>
       </div>
       <div class="guided-demo-modal__footer">
@@ -303,7 +279,7 @@
     </div>
   </div>
 
-  <!-- ── Nexus Guided Demo ── -->
+  <!-- ── Nexus Nexus Demo ── -->
   <div id="demo-overlay-nexus" class="guided-demo-overlay" role="dialog" aria-modal="true"
        aria-labelledby="gdemo-title-nexus" aria-describedby="gdemo-sub-nexus" hidden>
     <div class="guided-demo-modal">
@@ -395,7 +371,7 @@
         </div>
       </div>
       <div class="guided-demo-cta-row" id="gdfinalcta-nexus" style="display:none">
-        <a href="../sandbox/" aria-label="Explore Nexus Live — no login required">Explore Nexus Live &rarr;</a>
+        <a href="../sandbox/" aria-label="Explore Nexus — no login required">Explore Nexus &rarr;</a>
         <p style="margin-top:0.625rem;font-size:0.8rem;color:rgba(255,255,255,0.45);">No login &bull; Synthetic data &bull; Nothing to install</p>
       </div>
       <div class="guided-demo-modal__footer">
@@ -408,7 +384,7 @@
     </div>
   </div>
 
-  <!-- ── Genesis Guided Demo ── -->
+  <!-- ── Genesis Nexus Demo ── -->
   <div id="demo-overlay-genesis" class="guided-demo-overlay" role="dialog" aria-modal="true"
        aria-labelledby="gdemo-title-genesis" aria-describedby="gdemo-sub-genesis" hidden>
     <div class="guided-demo-modal">
@@ -478,7 +454,7 @@
         </div>
       </div>
       <div class="guided-demo-cta-row" id="gdfinalcta-genesis" style="display:none">
-        <a href="../sandbox/" aria-label="Explore Nexus Live — no login required">Explore Nexus Live &rarr;</a>
+        <a href="../sandbox/" aria-label="Explore Nexus — no login required">Explore Nexus &rarr;</a>
         <p style="margin-top:0.625rem;font-size:0.8rem;color:rgba(255,255,255,0.45);">No login &bull; Synthetic data &bull; Nothing to install</p>
       </div>
       <div class="guided-demo-modal__footer">
@@ -491,7 +467,7 @@
     </div>
   </div>
 
-  <!-- ── Map Intelligence Guided Demo ── -->
+  <!-- ── Map Intelligence Nexus Demo ── -->
   <div id="demo-overlay-map" class="guided-demo-overlay" role="dialog" aria-modal="true"
        aria-labelledby="gdemo-title-map" aria-describedby="gdemo-sub-map" hidden>
     <div class="guided-demo-modal">
@@ -552,7 +528,7 @@
       <div class="guided-demo-step" data-demo="map" data-step="3">
         <div class="guided-demo-step__eyebrow">Step 4 of 4</div>
         <h2 class="guided-demo-step__heading">Spatial Intelligence + Nexus</h2>
-        <p class="guided-demo-step__caption">Map Intelligence is part of the GCS platform. Every spatial insight connects to Nexus &mdash; so leaders can act on geographic findings directly from the map view.</p>
+        <p class="guided-demo-step__caption">Map Intelligence is part of the Nexus. Every spatial insight connects to Nexus &mdash; so leaders can act on geographic findings directly from the map view.</p>
         <div class="guided-demo-visual">
           <div class="guided-demo-dept-pills">
             <span class="guided-demo-dept-pill is-selected">&#10003; Facilities layer</span>
@@ -577,7 +553,7 @@
     </div>
   </div>
 
-  <!-- ── Consulting Guided Demo ── -->
+  <!-- ── Consulting Nexus Demo ── -->
   <div id="demo-overlay-consulting" class="guided-demo-overlay" role="dialog" aria-modal="true"
        aria-labelledby="gdemo-title-consulting" aria-describedby="gdemo-sub-consulting" hidden>
     <div class="guided-demo-modal">

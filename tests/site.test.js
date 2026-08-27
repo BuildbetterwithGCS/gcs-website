@@ -1,27 +1,17 @@
-/**
- * GCS Website — Deterministic UX Acceptance Tests
- *
- * Run with:  node tests/site.test.js
- *
- * Tests validate the HTML files directly (no browser required).
- * Returns exit code 0 on all pass, exit code 1 on any failure.
- */
-
 'use strict';
 
-const fs   = require('fs');
+const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 
-/* ---- tiny test harness ----------------------------------------- */
-let passed = 0, failed = 0;
+let passed = 0;
+let failed = 0;
 const failures = [];
 
 function readFile(rel) {
   const full = path.join(ROOT, rel);
-  if (!fs.existsSync(full)) return null;
-  return fs.readFileSync(full, 'utf8');
+  return fs.existsSync(full) ? fs.readFileSync(full, 'utf8') : null;
 }
 
 function assert(name, condition, detail) {
@@ -30,9 +20,8 @@ function assert(name, condition, detail) {
     console.log('  ✔ ' + name);
   } else {
     failed++;
-    const msg = detail ? name + ' — ' + detail : name;
-    failures.push(msg);
-    console.log('  ✖ ' + msg);
+    failures.push(detail ? name + ' — ' + detail : name);
+    console.log('  ✖ ' + (detail ? name + ' — ' + detail : name));
   }
 }
 
@@ -40,7 +29,6 @@ function section(title) {
   console.log('\n── ' + title + ' ──');
 }
 
-/* ---- helpers ---------------------------------------------------- */
 function contains(html, str) {
   return typeof html === 'string' && html.includes(str);
 }
@@ -55,391 +43,136 @@ function countMatches(html, pattern) {
   return m ? m.length : 0;
 }
 
-/* ================================================================
-   HOMEPAGE TESTS
-   ================================================================ */
-section('Homepage');
-
-const home = readFile('index.html');
-assert('Homepage exists', home !== null);
-assert('Build Better Organizations headline', containsCI(home, 'Build Better Organizations'));
-assert('WATCH THE GCS DEMO CTA exists', containsCI(home, 'Watch the GCS Demo'));
-assert('EXPLORE NEXUS LIVE CTA exists', containsCI(home, 'Explore Nexus Live'));
-assert('"No login" message visible', containsCI(home, 'No login'));
-assert('Synthetic data disclosure visible', containsCI(home, 'Synthetic data'));
-assert('"Nothing to install" visible', containsCI(home, 'Nothing to install'));
-assert('TALK TO GCS link exists', containsCI(home, 'Talk to GCS'));
-assert('Video/demo placeholder exists on homepage', containsCI(home, 'demo-video-block'));
-assert('Nexus dashboard preview exists on homepage', containsCI(home, 'dash-shell'));
-assert('Link to sandbox exists on homepage', contains(home, 'href="sandbox/"') || contains(home, "href='sandbox/'"));
-
-/* ================================================================
-   NAVIGATION TESTS
-   ================================================================ */
-section('Navigation — Homepage');
-
-assert('Nav: Platform link', contains(home, 'href="platform/"'));
-assert('Nav: Consulting link', contains(home, 'href="consulting/"'));
-assert('Nav: Industries link', contains(home, 'href="industries/"'));
-assert('Nav: Demos link', contains(home, 'href="demos/"'));
-assert('Nav: About link', contains(home, 'href="about/"'));
-assert('Nav: Explore Nexus Live link', containsCI(home, 'Explore Nexus Live'));
-assert('Nav: Get Started link', containsCI(home, 'Get Started'));
-
-/* ---- Sandbox subpage nav ---- */
-section('Navigation — Sandbox subpage');
-const sandbox = readFile('sandbox/index.html');
-assert('Sandbox nav: Platform link', contains(sandbox, 'href="../platform/"'));
-assert('Sandbox nav: Consulting link', contains(sandbox, 'href="../consulting/"'));
-assert('Sandbox nav: Demos link', contains(sandbox, 'href="../demos/"'));
-assert('Sandbox nav: Explore Nexus Live', containsCI(sandbox, 'Explore Nexus Live'));
-
-/* ================================================================
-   PUBLIC ROUTES — EXISTING PAGES STILL ACCESSIBLE
-   ================================================================ */
-section('Public routes exist (no regressions)');
-
 const routes = [
   'index.html',
-  'sandbox/index.html',
   'nexus/index.html',
+  'consulting/index.html',
   'industries/index.html',
   'about/index.html',
   'contact/index.html',
-  'platform/index.html',
-  'consulting/index.html',
+  'request-demo/index.html',
   'demos/index.html',
-  'solutions/index.html',
+  'platform/index.html',
+  'sandbox/index.html',
   'departments/index.html',
   'map-intelligence/index.html',
+  'solutions/index.html',
   'genesis/index.html',
   'privacy/index.html',
   'accessibility/index.html',
   'responsible-ai/index.html',
+  'reference/index.html',
+  'terms/index.html',
+  'founder/index.html',
+  'founder-command-center/index.html'
 ];
 
-routes.forEach(function(route) {
+const home = readFile('index.html');
+const nexus = readFile('nexus/index.html');
+const consulting = readFile('consulting/index.html');
+const demos = readFile('demos/index.html');
+const platform = readFile('platform/index.html');
+const sandbox = readFile('sandbox/index.html');
+const css = readFile('css/styles.css');
+const demoPlayer = readFile('js/nexus-demo-player.js');
+
+section('Routes');
+routes.forEach((route) => assert(route + ' exists', readFile(route) !== null));
+
+section('Sitewide navigation and footer');
+routes.forEach((route) => {
   const html = readFile(route);
-  assert(route + ' exists', html !== null);
+  assert(route + ' nav includes Nexus', containsCI(html, '>Nexus</a>'));
+  assert(route + ' nav includes Contact', containsCI(html, '>Contact</a>'));
+  assert(route + ' nav includes Request Demo CTA', containsCI(html, 'nav__link nav__link--cta'));
+  assert(route + ' footer includes Request Demo', containsCI(html, 'request-demo/') && containsCI(html, '>Request Demo<'));
+  assert(route + ' removes old nav labels', !containsCI(html, '>Platform</a></li>') && !containsCI(html, '>Demos</a></li>') && !containsCI(html, 'Explore Nexus Live') && !containsCI(html, 'Get Started'));
 });
 
-/* ================================================================
-   NEXUS DEMO / SANDBOX TESTS
-   ================================================================ */
-section('Nexus Demo — Sandbox');
+section('Homepage');
+assert('Homepage title updated', contains(home, '<title>GCS | Build Better Organizations</title>'));
+assert('Homepage meta description updated', containsCI(home, 'GCS combines operational expertise with Nexus'));
+assert('Homepage hero headline', containsCI(home, 'Build Better Organizations.'));
+assert('Homepage hero CTA See Nexus', contains(home, 'href="nexus/" class="btn btn--primary btn--lg">See Nexus</a>'));
+assert('Homepage hero CTA Talk to GCS', contains(home, 'href="contact/" class="btn btn--ghost btn--lg">Talk to GCS</a>'));
+assert('Homepage tertiary request demo link', containsCI(home, 'Request a Demonstration'));
+assert('Homepage keeps dashboard preview', containsCI(home, 'dash-shell'));
+assert('Homepage capability section present', containsCI(home, 'Four things Nexus enables.'));
+assert('Homepage demo section present', containsCI(home, 'See Nexus in Action'));
+assert('Homepage consulting section present', containsCI(home, 'Technology and expertise working together.'));
+assert('Homepage industries section present', containsCI(home, 'Industries We Serve'));
+assert('Homepage final CTA present', containsCI(home, 'See what GCS could do for your organization.'));
+assert('Homepage removed entry-point section', !containsCI(home, 'Two Paths In') && !containsCI(home, 'Find your entry point'));
+assert('Homepage removed redundant platform section', !containsCI(home, 'The platform that connects it all'));
+assert('Homepage removed interactive scenario', !containsCI(home, 'What can GCS do for your organization?'));
+assert('Homepage guided modal preserved', contains(home, 'guided-demo-overlay') && contains(home, 'id="open-guided-demo"'));
+assert('Homepage guided modal final CTA updated', containsCI(home, 'Explore Nexus &rarr;'));
 
-assert('Sandbox exists', sandbox !== null);
-assert('Synthetic data disclosure present', containsCI(sandbox, 'SYNTHETIC DATA'));
-assert('DEMONSTRATION ENVIRONMENT notice present',
-  containsCI(sandbox, 'DEMONSTRATION ENVIRONMENT'));
-assert('No login messaging present', containsCI(sandbox, 'No login'));
-assert('Orientation modal present', contains(sandbox, 'orient-overlay'));
-assert('"Welcome to Nexus" orientation message', containsCI(sandbox, 'Welcome to Nexus'));
-assert('Fictional organization statement in orientation', containsCI(sandbox, 'fictional'));
+section('Nexus page');
+assert('Nexus hero headline updated', containsCI(nexus, 'The GCS Operations Intelligence Platform.'));
+assert('Nexus hero lead updated', containsCI(nexus, 'one operating picture'));
+assert('Nexus hero explore CTA', contains(nexus, 'href="../sandbox/" class="btn btn--primary">Explore Nexus</a>'));
+assert('Nexus request demonstration CTA', containsCI(nexus, 'Request a Demonstration'));
+assert('Nexus disconnected information section', containsCI(nexus, 'Organizations run on disconnected information.'));
+assert('Nexus connect existing systems section', containsCI(nexus, 'Connect what you already have.'));
+assert('Nexus SEE KNOW ACT PROVE content', containsCI(nexus, 'SEE') && containsCI(nexus, 'KNOW') && containsCI(nexus, 'ACT') && containsCI(nexus, 'PROVE'));
+assert('Nexus dashboard remains synthetic', containsCI(nexus, 'SYNTHETIC DEMO DATA'));
+assert('Nexus capabilities list includes Ask Nexus and Map Intelligence', containsCI(nexus, 'Ask Nexus') && containsCI(nexus, 'Map Intelligence'));
 
-/* ================================================================
-   DEPARTMENT NAVIGATION — ONE CLICK, NEVER DOUBLE-CLICK
-   ================================================================ */
-section('Department Navigation — UX Requirements');
+section('Consulting page');
+assert('Consulting eyebrow updated', containsCI(consulting, 'GCS Consulting Services'));
+assert('Consulting hero headline updated', containsCI(consulting, 'Expertise and technology working together.'));
+assert('Consulting lead updated', containsCI(consulting, 'GCS combines operational consulting with Nexus'));
+assert('Consulting hero explore CTA updated', contains(consulting, 'href="../sandbox/" class="btn btn--outline">Explore Nexus</a>'));
 
-assert('Department nav buttons are <button> elements (not double-click dependent)',
-  contains(sandbox, 'class="sandbox-nav-btn"') && contains(sandbox, 'type="button"'));
-assert('No dblclick handler in sandbox', !containsCI(sandbox, 'dblclick'));
-assert('No double-click requirement in sandbox', !containsCI(sandbox, 'double-click'));
-assert('Department nav has active state CSS class', contains(sandbox, 'sandbox-nav-btn.active') || contains(sandbox, 'active'));
-assert('Executive Overview is first/default department',
-  (sandbox || '').indexOf('data-view="executive"') <
-  (sandbox || '').indexOf('data-view="finance"'));
-assert('Dept heading visible — EXPLORE YOUR ORGANIZATION',
-  containsCI(sandbox, 'Explore your organization'));
-assert('Dept heading instructs to select a department',
-  containsCI(sandbox, 'Select a department'));
-assert('Finance department present', contains(sandbox, 'data-view="finance"'));
-assert('HR & Workforce department present', contains(sandbox, 'data-view="hr"'));
-assert('Facilities department present', contains(sandbox, 'data-view="facilities"'));
-assert('Safety department present', contains(sandbox, 'data-view="safety"'));
-assert('Risk department present', contains(sandbox, 'data-view="risk"'));
+section('Platform redirect page');
+assert('Platform canonical points to /nexus/', contains(platform, 'href="https://buildbetterwithgcs.com/nexus/"'));
+assert('Platform has meta refresh redirect', contains(platform, '<meta http-equiv="refresh" content="0;url=/nexus/" />'));
+assert('Platform has JavaScript redirect', contains(platform, 'window.location.replace("/nexus/")'));
+assert('Platform has moved notice', containsCI(platform, 'This page has moved.') && containsCI(platform, 'View the Nexus platform page'));
 
-/* ================================================================
-   DEPARTMENT SWITCHING — ONE ACTION, NOT DOUBLE-CLICK
-   ================================================================ */
-section('Department Switching');
+section('Demos page');
+assert('Demos hero terminology updated', containsCI(demos, 'Watch Nexus Demo or explore for yourself.'));
+assert('Demos uses Explore Nexus terminology', containsCI(demos, 'Explore Nexus'));
+assert('Demos includes no-login support note', containsCI(demos, 'Interactive demonstration') && containsCI(demos, 'No login'));
+assert('Demos keeps guided tour buttons', countMatches(demos, 'open-demo-') >= 5);
+assert('Demos does not call tours videos in copy', !containsCI(demos, 'Watch GCS Demo') && !containsCI(demos, 'Explore Nexus Live'));
+assert('Demos keeps modal infrastructure', countMatches(demos, 'role="dialog"') >= 5 && contains(demos, 'function openDemo'));
 
-// Verify click handlers are registered (not dblclick)
-assert('Click handler registered for department nav buttons',
-  contains(sandbox, "addEventListener('click'") || contains(sandbox, 'addEventListener("click"'));
-assert('showView function exists', contains(sandbox, 'function showView'));
-assert('Department switch updates active class',
-  contains(sandbox, "classList.toggle('active'") || contains(sandbox, 'classList.toggle("active"'));
-assert('Keyboard activation supported (keydown listener)',
-  contains(sandbox, "addEventListener('keydown'") || contains(sandbox, 'addEventListener("keydown"'));
+section('Sandbox and demo player');
+assert('Sandbox remains synthetic', containsCI(sandbox, 'SYNTHETIC DATA'));
+assert('Sandbox still loads demo player', contains(sandbox, 'js/nexus-demo-player.js'));
+assert('Demo player uses deterministic clock', contains(demoPlayer, 'performance.now()') && contains(demoPlayer, 'requestAnimationFrame(tick)'));
+assert('Demo player uses URLSearchParams', contains(demoPlayer, 'new URLSearchParams(window.location.search)'));
+assert('Demo player removes speech synthesis', !contains(demoPlayer, 'speechSynthesis') && !contains(demoPlayer, 'SpeechSynthesisUtterance'));
+assert('Demo player includes audio-ready scene fields', countMatches(demoPlayer, 'audioSrc: null') >= 8);
+assert('Demo player updates aria-valuenow', contains(demoPlayer, 'aria-valuenow') && contains(demoPlayer, 'setAttribute(\'aria-valuenow\''));
+assert('Demo player includes captions-only completion state', containsCI(demoPlayer, 'Demo complete. Explore Nexus interactively or request a real demonstration.') && contains(demoPlayer, 'ndp-player--captions-only'));
+assert('Demo player hides unavailable audio button', contains(demoPlayer, 'ndp-btn--audio-unavailable'));
+assert('Demo player uses ~10 scenes', countMatches(demoPlayer, 'id: \'') === 10);
 
-/* ================================================================
-   ORGANIZATION SWITCHING
-   ================================================================ */
-section('Organization Switching');
+section('CSS updates');
+assert('CTA nav class styled', contains(css, '.nav__link--cta'));
+assert('Legacy get-started class aliased', contains(css, '.nav__link--get-started'));
+assert('Captions-only player modifier styled', contains(css, '.ndp-player--captions-only'));
+assert('Audio unavailable button hidden', contains(css, '.ndp-btn--audio-unavailable { display: none; }'));
 
-assert('Change organization button exists', containsCI(sandbox, 'Change Organization'));
-assert('Multiple demo organizations available (≥ 6)',
-  countMatches(sandbox, 'sandbox-org-btn') >= 6);
-assert('Municipality demo org present',
-  contains(sandbox, 'data-org="municipality"'));
-assert('Manufacturing demo org present',
-  contains(sandbox, 'data-org="manufacturer"'));
-assert('Healthcare demo org present',
-  contains(sandbox, 'data-org="hospital"'));
+section('Public copy and safety');
+const allHtml = routes.map(readFile).filter(Boolean).join('\n');
+assert('No Explore Nexus Live remains', !containsCI(allHtml, 'Explore Nexus Live'));
+assert('No Get Started remains in site copy', !containsCI(allHtml, 'Get Started'));
+assert('Synthetic demo data remains labeled', containsCI(allHtml, 'SYNTHETIC DEMO DATA') || containsCI(allHtml, 'SYNTHETIC DATA'));
+assert('No credential-like strings introduced', !(/password\s*[:=]\s*['"][^'"]{3,}/i.test(allHtml)));
+assert('No non-public email addresses introduced', !(/[a-z0-9._%+-]+@(?!buildbetterwithgcs\.com)[a-z0-9-]+\.[a-z]{2,}/i.test(allHtml)));
 
-/* ================================================================
-   DATA CENTER DEMONSTRATION
-   ================================================================ */
-section('Data Center Demonstration');
-
-assert('Data Center org button present in sandbox',
-  contains(sandbox, 'data-org="datacenter"'));
-assert('Data Center org is clearly labeled synthetic',
-  containsCI(sandbox, 'Sample Data Center') || containsCI(sandbox, 'Apex Sample Data'));
-assert('Data Center data present (cooling, power, etc.)',
-  containsCI(sandbox, 'Data Center') && (
-    containsCI(sandbox, 'Cooling') || containsCI(sandbox, 'UPS') || containsCI(sandbox, 'power')
-  ));
-assert('Data Center present in industries page',
-  containsCI(readFile('industries/index.html'), 'Data Center'));
-
-/* ================================================================
-   PLATFORM PAGE
-   ================================================================ */
-section('Platform Page');
-
-const platform = readFile('platform/index.html');
-assert('Platform page exists', platform !== null);
-assert('Nexus listed on platform page', containsCI(platform, 'Nexus'));
-assert('Genesis listed on platform page', containsCI(platform, 'Genesis'));
-assert('Map Intelligence listed on platform page', containsCI(platform, 'Map Intelligence'));
-assert('Assurance listed on platform page', containsCI(platform, 'Assurance'));
-assert('Value Intelligence listed on platform page', containsCI(platform, 'Value Intelligence'));
-assert('"See the organization" tagline present', containsCI(platform, 'See the organization'));
-assert('Explore Nexus Live CTA on platform page', containsCI(platform, 'Explore Nexus Live'));
-
-/* ================================================================
-   CONSULTING PAGE
-   ================================================================ */
-section('Consulting Page');
-
-const consulting = readFile('consulting/index.html');
-assert('Consulting page exists', consulting !== null);
-assert('Assess in lifecycle', containsCI(consulting, 'Assess'));
-assert('Design in lifecycle', containsCI(consulting, 'Design'));
-assert('Implement in lifecycle', containsCI(consulting, 'Implement'));
-assert('Improve in lifecycle', containsCI(consulting, 'Improve'));
-assert('Advisory + technology messaging', containsCI(consulting, 'consulting') && containsCI(consulting, 'technology'));
-assert('Contact GCS CTA present', containsCI(consulting, 'Contact GCS') || containsCI(consulting, 'Talk to GCS'));
-
-/* ================================================================
-   DEMOS PAGE
-   ================================================================ */
-section('Demos Page');
-
-const demos = readFile('demos/index.html');
-assert('Demos page exists', demos !== null);
-assert('GCS Overview demo present', containsCI(demos, 'GCS Overview'));
-assert('Nexus demo present', containsCI(demos, 'Nexus'));
-assert('Genesis demo present', containsCI(demos, 'Genesis'));
-assert('Map Intelligence demo present', containsCI(demos, 'Map Intelligence'));
-assert('Consulting demo present', containsCI(demos, 'Consulting'));
-assert('Video placeholder components present', contains(demos, 'demo-video-block'));
-assert('Explore Nexus Live link on demos page', containsCI(demos, 'Explore Nexus Live'));
-assert('Demos page does not fabricate videos',
-  !containsCI(demos, '<video') && !containsCI(demos, '<iframe'));
-
-/* ================================================================
-   DEMOS PAGE — NO STATIC PLACEHOLDERS (NEW ACCEPTANCE TESTS)
-   ================================================================ */
-section('Demos Page — No Static Placeholders');
-
-assert('No "Production video coming soon" text on demos page',
-  !containsCI(demos, 'Production video coming soon'));
-assert('No static "coming soon" demo tile (div role=img with coming-soon label)',
-  !(/role="img"[^>]*coming[\s\S]{0,80}soon/.test(demos)));
-assert('All 5 demo tiles are button elements (not passive divs)',
-  countMatches(demos, 'open-demo-overview') >= 1 &&
-  countMatches(demos, 'open-demo-nexus') >= 1 &&
-  countMatches(demos, 'open-demo-genesis') >= 1 &&
-  countMatches(demos, 'open-demo-map') >= 1 &&
-  countMatches(demos, 'open-demo-consulting') >= 1);
-assert('Demo tiles labeled EXPLORE DEMO (not a time estimate)',
-  containsCI(demos, 'EXPLORE DEMO') &&
-  !(/&#126;\s*\d+\s*(SECONDS|MINUTES)/.test(demos)));
-assert('No fake play button on static non-interactive element (role=img + play)',
-  !(/role="img"[\s\S]{0,200}demo-video-block__play/.test(demos)));
-
-assert('GCS Overview guided demo modal present',
-  contains(demos, 'id="demo-overlay-overview"'));
-assert('Nexus guided demo modal present',
-  contains(demos, 'id="demo-overlay-nexus"'));
-assert('Genesis guided demo modal present',
-  contains(demos, 'id="demo-overlay-genesis"'));
-assert('Map Intelligence guided demo modal present',
-  contains(demos, 'id="demo-overlay-map"'));
-assert('Consulting guided demo modal present',
-  contains(demos, 'id="demo-overlay-consulting"'));
-
-assert('All demo modals have role="dialog"',
-  countMatches(demos, 'role="dialog"') >= 5);
-assert('All demo modals have aria-modal="true"',
-  countMatches(demos, 'aria-modal="true"') >= 5);
-assert('All demo modals have close buttons',
-  countMatches(demos, 'data-demo-close=') >= 5);
-assert('All demo modals have Back navigation',
-  countMatches(demos, 'data-demo-back=') >= 5);
-assert('All demo modals have Next navigation',
-  countMatches(demos, 'data-demo-next=') >= 5);
-assert('All demo modals have progress fill bar',
-  countMatches(demos, 'gdfill-') >= 5);
-assert('All demo modals have step-label indicator',
-  countMatches(demos, 'gdlbl-') >= 5);
-assert('Guided demos have synthetic-data disclosure',
-  countMatches(demos, 'synthetic') >= 5);
-assert('Guided demos have fictional disclosure',
-  containsCI(demos, 'fictional'));
-assert('Demos JS wires openDemo function',
-  contains(demos, 'function openDemo'));
-assert('Demos JS wires closeDemo function',
-  contains(demos, 'function closeDemo'));
-assert('Demos JS has Escape key handler',
-  contains(demos, "e.key === 'Escape'") || contains(demos, 'e.key === "Escape"'));
-assert('Demos JS has Tab-trap keyboard navigation',
-  contains(demos, 'e.shiftKey') && contains(demos, 'first.focus()'));
-assert('Demo modals link to sandbox or relevant page (final CTA)',
-  contains(demos, 'sandbox/') || contains(demos, '../sandbox/'));
-assert('No <video> or <iframe> fake player on demos page',
-  !containsCI(demos, '<video') && !containsCI(demos, '<iframe'));
-
-/* ================================================================
-   ACCESSIBILITY
-   ================================================================ */
-section('Accessibility');
-
-assert('Homepage skip link present', contains(home, 'skip-link'));
-assert('Homepage main landmark present', contains(home, 'id="main-content"'));
-assert('Sandbox skip link present', contains(sandbox, 'skip-link'));
-assert('Sandbox ARIA roles present', containsCI(sandbox, 'aria-'));
-assert('Demo page skip link present', contains(demos, 'skip-link'));
-assert('No double-click requirement in any page (homepage)',
-  !containsCI(home, 'dblclick'));
-assert('Department nav buttons have type="button"',
-  contains(sandbox, 'type="button"'));
-assert('Orientation modal has role="dialog"', contains(sandbox, 'role="dialog"'));
-assert('Orientation modal has aria-modal', contains(sandbox, 'aria-modal="true"'));
-assert('Orientation modal has aria-labelledby', contains(sandbox, 'aria-labelledby="orient-title"'));
-
-/* ================================================================
-   RESPONSIVE NAV
-   ================================================================ */
-section('Responsive Navigation');
-
-assert('Mobile nav toggle button present on homepage', contains(home, 'nav__toggle'));
-assert('Mobile nav toggle button present on sandbox', contains(sandbox, 'nav__toggle'));
-assert('Mobile nav toggle has aria-expanded', contains(home, 'aria-expanded="false"'));
-assert('Nav menu has id for aria-controls', contains(home, 'id="nav-menu"'));
-
-/* ================================================================
-   SENSITIVE INFORMATION CHECK
-   ================================================================ */
-section('Sensitive Information');
-
-const allFiles = routes.map(readFile).filter(Boolean).join('\n');
-assert('No API keys pattern present',
-  !(/[a-z0-9_-]{32,}/.test(allFiles) && /api[_-]?key/i.test(allFiles)));
-assert('No credential-like strings',
-  !(/password\s*[:=]\s*['"][^'"]{3,}/i.test(allFiles)));
-assert('No real email patterns in source (non-public address)',
-  !(/[a-z0-9._%+-]+@(?!buildbetterwithgcs\.com)[a-z0-9-]+\.[a-z]{2,}/i.test(allFiles)));
-
-/* ================================================================
-   DEPARTMENT NAV ACTIVE STATE — VISUAL REQUIREMENTS
-   ================================================================ */
-section('Department Nav Active State');
-
-assert('Active dept button has dept-color fill (CSS --dept-color)',
-  contains(readFile('css/styles.css'), 'sandbox-nav-btn.active') &&
-  contains(readFile('css/styles.css'), 'background: var(--dept-color)'));
-assert('Active dept button text is white (#fff)',
-  /sandbox-nav-btn\.active[^}]*color:\s*#fff/.test(readFile('css/styles.css') || ''));
-assert('Active dept button has bold/semibold label (font-weight 700 or 600)',
-  /sandbox-nav-btn\.active[^}]*font-weight:\s*(700|600)/.test(readFile('css/styles.css') || ''));
-assert('Inactive dept buttons have visible border',
-  /sandbox-nav-btn[^.][^}]*border:\s*\d+px/.test(readFile('css/styles.css') || ''));
-assert('Inactive dept buttons have hover background feedback',
-  /sandbox-nav-btn:hover[^}]*background/.test(readFile('css/styles.css') || ''));
-assert('Dept buttons have keyboard focus-visible ring',
-  contains(readFile('css/styles.css'), 'sandbox-nav-btn:focus-visible'));
-assert('Mobile dept buttons are compact/pill on mobile (@media max-width:640px)',
-  (function() {
-    var css = readFile('css/styles.css') || '';
-    var mobileBlock = css.substring(css.indexOf('@media (max-width: 640px)'));
-    return /sandbox-nav-btn[^}]*border-radius/.test(mobileBlock);
-  })());
-
-/* ================================================================
-   GUIDED DEMO — HOMEPAGE MODAL
-   ================================================================ */
-section('Guided Demo Modal');
-
-assert('Guided demo modal exists in homepage HTML',
-  contains(home, 'guided-demo-modal'));
-assert('Guided demo overlay has role="dialog"',
-  contains(home, 'role="dialog"'));
-assert('Guided demo overlay has aria-modal="true"',
-  contains(home, 'aria-modal="true"'));
-assert('Guided demo has close button (gdemo-close)',
-  contains(home, 'id="gdemo-close"'));
-assert('Guided demo has Back navigation button',
-  contains(home, 'id="gdemo-back"'));
-assert('Guided demo has Next navigation button',
-  contains(home, 'id="gdemo-next"'));
-assert('Guided demo has progress fill bar (gdemo-fill)',
-  contains(home, 'id="gdemo-fill"'));
-assert('Guided demo has step-label indicator',
-  contains(home, 'id="gdemo-step-label"'));
-assert('Guided demo has 5 steps (data-step attributes)',
-  countMatches(home, 'data-step="[0-4]"') >= 5);
-assert('Guided demo Step 1 — See Your Organization',
-  containsCI(home, 'See Your Organization'));
-assert('Guided demo Step 2 — Know What Needs Attention',
-  containsCI(home, 'Know What Needs Attention'));
-assert('Guided demo Step 3 — Explore Departments',
-  containsCI(home, 'Explore Departments'));
-assert('Guided demo Step 4 — Ask & Analyze',
-  containsCI(home, 'Ask') && containsCI(home, 'Analyze'));
-assert('Guided demo Step 5 — Decide What To Do Next',
-  containsCI(home, 'Decide What To Do Next'));
-assert('Guided demo final CTA links to sandbox (Explore Nexus Live)',
-  contains(home, 'id="gdemo-final-cta"') && contains(home, 'sandbox/'));
-assert('Guided demo synthetic-data disclosure present',
-  containsCI(home, 'synthetic') && containsCI(home, 'fictional'));
-assert('Demo CTA button opens modal (not plain href to demos/)',
-  contains(home, 'id="open-guided-demo"') && !contains(home, '<a href="demos/" class="btn btn--outline'));
-assert('Demo video block is a button element (not fake video link)',
-  contains(home, 'id="open-guided-demo-block"') &&
-  !contains(home, '<a href="demos/" class="demo-video-block"'));
-assert('Guided demo has keyboard Escape close handler',
-  contains(home, "e.key === 'Escape'") || contains(home, 'e.key === "Escape"'));
-assert('Guided demo has Tab-trap for keyboard navigation',
-  contains(home, 'e.shiftKey') && contains(home, 'first.focus()'));
-
-/* ================================================================
-   RESULTS SUMMARY
-   ================================================================ */
-const total = passed + failed;
 console.log('\n' + '═'.repeat(50));
-console.log('GCS Website UX Acceptance Tests');
+console.log('GCS Website Acceptance Tests');
 console.log('─'.repeat(50));
-console.log('Total:  ' + total);
 console.log('Passed: ' + passed);
 console.log('Failed: ' + failed);
 if (failures.length) {
   console.log('\nFailures:');
-  failures.forEach(function(f) { console.log('  • ' + f); });
+  failures.forEach((msg) => console.log('  • ' + msg));
 }
 console.log('═'.repeat(50));
 

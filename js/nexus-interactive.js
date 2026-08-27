@@ -1,6 +1,6 @@
 /**
  * nexus-interactive.js
- * GCS Nexus — Full interactive demo experience
+ * Nexus — Full interactive demo experience
  * KPI drill-downs, filters, action workflows, Ask Nexus Q&A
  * All data is synthetic. No real organizations or individuals represented.
  */
