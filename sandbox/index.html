@@ -163,8 +163,22 @@
               <button class="sandbox-nav-btn" type="button" role="tab" aria-selected="false" aria-controls="view-projects" id="tab-projects" tabindex="-1" data-view="projects">Projects</button>
               <button class="sandbox-nav-btn" type="button" role="tab" aria-selected="false" aria-controls="view-procurement" id="tab-procurement" tabindex="-1" data-view="procurement">Procurement</button>
               <button class="sandbox-nav-btn" type="button" role="tab" aria-selected="false" aria-controls="view-logistics" id="tab-logistics" tabindex="-1" data-view="logistics">Logistics</button>
+              <button class="sandbox-nav-btn" type="button" role="tab" aria-selected="false" aria-controls="view-it" id="tab-it" tabindex="-1" data-view="it">IT &amp; Data</button>
+              <button class="sandbox-nav-btn" type="button" role="tab" aria-selected="false" aria-controls="view-map" id="tab-map" tabindex="-1" data-view="map">Map Intelligence</button>
               <button class="sandbox-nav-btn" type="button" role="tab" aria-selected="false" aria-controls="view-reports" id="tab-reports" tabindex="-1" data-view="reports">Reports</button>
             </nav>
+            </div>
+            <!-- Filter bar + Ask Nexus button -->
+            <div class="sandbox-filter-row" role="toolbar" aria-label="Dashboard filters">
+              <span class="nx-filter-label">Filter:</span>
+              <button type="button" class="nx-filter-btn active" data-filter-type="status" data-filter-val="all">All Items</button>
+              <button type="button" class="nx-filter-btn" data-filter-type="status" data-filter-val="critical">Critical / Overdue</button>
+              <button type="button" class="nx-filter-btn" data-filter-type="status" data-filter-val="pending">Pending / In Progress</button>
+              <button type="button" class="nx-filter-btn" data-filter-type="status" data-filter-val="ok">On Track / Complete</button>
+              <span class="nx-filter-count" id="nx-filter-count" aria-live="polite">Showing all items</span>
+              <button type="button" class="sandbox-ask-nexus-btn" id="ask-nexus-open" aria-expanded="false" aria-controls="ask-nexus-panel">
+                <span aria-hidden="true">🤖</span> Ask Nexus
+              </button>
             </div>
             <!-- Sandbox views -->
             <div class="sandbox-body">
@@ -172,10 +186,10 @@
               <!-- EXECUTIVE -->
               <div class="sandbox-view active" role="tabpanel" id="view-executive" aria-labelledby="tab-executive" data-view="executive">
                 <div class="dash-row dash-row--4">
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Budget Utilization</div><div class="dash-kpi__val" data-org-val="budget-util">73.2%</div><div class="dash-kpi__delta dash-kpi__delta--up">FY on track</div></div>
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Open Work Orders</div><div class="dash-kpi__val" data-org-val="open-wo">142</div><div class="dash-kpi__delta dash-kpi__delta--warn">18 past due</div></div>
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Workforce Capacity</div><div class="dash-kpi__val" data-org-val="wf-cap">87%</div><div class="dash-kpi__delta dash-kpi__delta--up">Within target</div></div>
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Risk Items Open</div><div class="dash-kpi__val" data-org-val="risk-open">31</div><div class="dash-kpi__delta dash-kpi__delta--warn">4 high priority</div></div>
+                  <div class="dash-kpi" data-kpi-key="budget-util" aria-label="Budget Utilization — tap for drill-down"><div class="dash-kpi__lbl">Budget Utilization</div><div class="dash-kpi__val" data-org-val="budget-util">73.2%</div><div class="dash-kpi__delta dash-kpi__delta--up">FY on track</div></div>
+                  <div class="dash-kpi" data-kpi-key="open-wo" aria-label="Open Work Orders — tap for drill-down"><div class="dash-kpi__lbl">Open Work Orders</div><div class="dash-kpi__val" data-org-val="open-wo">142</div><div class="dash-kpi__delta dash-kpi__delta--warn">18 past due</div></div>
+                  <div class="dash-kpi" data-kpi-key="wf-cap" aria-label="Workforce Capacity — tap for drill-down"><div class="dash-kpi__lbl">Workforce Capacity</div><div class="dash-kpi__val" data-org-val="wf-cap">87%</div><div class="dash-kpi__delta dash-kpi__delta--up">Within target</div></div>
+                  <div class="dash-kpi" data-kpi-key="risk-open" aria-label="Risk Items Open — tap for drill-down"><div class="dash-kpi__lbl">Risk Items Open</div><div class="dash-kpi__val" data-org-val="risk-open">31</div><div class="dash-kpi__delta dash-kpi__delta--warn">4 high priority</div></div>
                 </div>
                 <div class="dash-row dash-row--3" style="margin-top:0.75rem;">
                   <div class="dash-chart">
@@ -189,17 +203,34 @@
                   </div>
                   <div class="dash-list">
                     <div class="dash-list__title">Executive Alerts</div>
-                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false" data-context="Facility condition — 3 buildings critical">
                       <div class="dash-expand-header"><span data-org-val="alert-1">Facility condition — 3 buildings critical</span><span class="dash-badge dash-badge--warn">HIGH</span></div>
-                      <div class="dash-expand-detail">Buildings A, C, and F — roof condition scores below 35/100. Recommended action: emergency repair fund allocation $180K. Capital plan update required by Dec 15.</div>
+                      <div class="dash-expand-detail">Buildings A, C, and F — roof condition scores below 35/100. Recommended action: emergency repair fund allocation $180K. Capital plan update required by Dec 15.
+                        <div class="nx-detail-actions" style="margin-top:0.625rem;">
+                          <button type="button" class="nx-row-action-btn" data-action="investigate">🔍 Investigate</button>
+                          <button type="button" class="nx-row-action-btn" data-action="assign">👤 Assign</button>
+                          <button type="button" class="nx-row-action-btn" data-action="create-wo">📝 Work Order</button>
+                          <button type="button" class="nx-row-action-btn" data-action="escalate">⚠️ Escalate</button>
+                        </div>
+                      </div>
                     </div>
-                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false" data-context="HR compliance filing due in 5 days">
                       <div class="dash-expand-header"><span data-org-val="alert-2">HR compliance filing due in 5 days</span><span class="dash-badge dash-badge--pend">UPCOMING</span></div>
-                      <div class="dash-expand-detail">OSHA 300 annual summary filing. HR coordinator assigned. All incident records verified. Submission requires director signature by Nov 25. No issues anticipated.</div>
+                      <div class="dash-expand-detail">OSHA 300 annual summary filing. HR coordinator assigned. All incident records verified. Submission requires director signature by Nov 25. No issues anticipated.
+                        <div class="nx-detail-actions" style="margin-top:0.625rem;">
+                          <button type="button" class="nx-row-action-btn" data-action="approve">✅ Approve</button>
+                          <button type="button" class="nx-row-action-btn" data-action="generate-report">📊 Generate Report</button>
+                        </div>
+                      </div>
                     </div>
-                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false">
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false" data-context="Procurement — 2 contracts expiring">
                       <div class="dash-expand-header"><span data-org-val="alert-3">Procurement — 2 contracts expiring</span><span class="dash-badge dash-badge--info">REVIEW</span></div>
-                      <div class="dash-expand-detail">Janitorial ($142K/yr) expiring Mar 31. Fuel contract ($380K/yr) expiring Apr 15. Both in renewal process. Recommend confirming vendor continuity by Dec 1.</div>
+                      <div class="dash-expand-detail">Janitorial ($142K/yr) expiring Mar 31. Fuel contract ($380K/yr) expiring Apr 15. Both in renewal process. Recommend confirming vendor continuity by Dec 1.
+                        <div class="nx-detail-actions" style="margin-top:0.625rem;">
+                          <button type="button" class="nx-row-action-btn" data-action="assign">👤 Assign Review</button>
+                          <button type="button" class="nx-row-action-btn" data-action="investigate">🔍 View Details</button>
+                        </div>
+                      </div>
                     </div>
                     <div class="dash-list__row"><span data-org-val="alert-4">Capital project Phase 2 — on schedule</span><span class="dash-badge dash-badge--ok">OK</span></div>
                   </div>
@@ -218,10 +249,10 @@
               <!-- FINANCE -->
               <div class="sandbox-view" role="tabpanel" id="view-finance" aria-labelledby="tab-finance" data-view="finance">
                 <div class="dash-row dash-row--4">
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Total Budget</div><div class="dash-kpi__val">$48.2M</div><div class="dash-kpi__delta dash-kpi__delta--up">FY approved</div></div>
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Spent YTD</div><div class="dash-kpi__val">$35.3M</div><div class="dash-kpi__delta dash-kpi__delta--up">73.2% — on track</div></div>
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Revenue Collected</div><div class="dash-kpi__val">$41.8M</div><div class="dash-kpi__delta dash-kpi__delta--up">↑ 6.4% vs prior yr</div></div>
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">AP Outstanding</div><div class="dash-kpi__val">$2.1M</div><div class="dash-kpi__delta dash-kpi__delta--warn">14 invoices &gt;30 days</div></div>
+                  <div class="dash-kpi" data-kpi-key="fin-budget" aria-label="Total Budget — tap for drill-down"><div class="dash-kpi__lbl">Total Budget</div><div class="dash-kpi__val">$48.2M</div><div class="dash-kpi__delta dash-kpi__delta--up">FY approved</div></div>
+                  <div class="dash-kpi" data-kpi-key="fin-spent" aria-label="Spent YTD — tap for drill-down"><div class="dash-kpi__lbl">Spent YTD</div><div class="dash-kpi__val">$35.3M</div><div class="dash-kpi__delta dash-kpi__delta--up">73.2% — on track</div></div>
+                  <div class="dash-kpi" data-kpi-key="fin-revenue" aria-label="Revenue Collected — tap for drill-down"><div class="dash-kpi__lbl">Revenue Collected</div><div class="dash-kpi__val">$41.8M</div><div class="dash-kpi__delta dash-kpi__delta--up">↑ 6.4% vs prior yr</div></div>
+                  <div class="dash-kpi" data-kpi-key="fin-ap" aria-label="AP Outstanding — tap for drill-down"><div class="dash-kpi__lbl">AP Outstanding</div><div class="dash-kpi__val">$2.1M</div><div class="dash-kpi__delta dash-kpi__delta--warn">14 invoices &gt;30 days</div></div>
                 </div>
                 <div class="dash-row dash-row--2" style="margin-top:0.75rem;">
                   <div class="dash-list">
@@ -252,16 +283,32 @@
               <!-- HR -->
               <div class="sandbox-view" role="tabpanel" id="view-hr" aria-labelledby="tab-hr" data-view="hr">
                 <div class="dash-row dash-row--4">
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Total Headcount</div><div class="dash-kpi__val">384</div><div class="dash-kpi__delta dash-kpi__delta--up">+12 since last quarter</div></div>
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Open Positions</div><div class="dash-kpi__val">27</div><div class="dash-kpi__delta dash-kpi__delta--warn">9 critical roles</div></div>
+                  <div class="dash-kpi" data-kpi-key="hr-headcount" aria-label="Total Headcount — tap for drill-down"><div class="dash-kpi__lbl">Total Headcount</div><div class="dash-kpi__val">384</div><div class="dash-kpi__delta dash-kpi__delta--up">+12 since last quarter</div></div>
+                  <div class="dash-kpi" data-kpi-key="hr-openpos" aria-label="Open Positions — tap for drill-down"><div class="dash-kpi__lbl">Open Positions</div><div class="dash-kpi__val">27</div><div class="dash-kpi__delta dash-kpi__delta--warn">9 critical roles</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Turnover Rate</div><div class="dash-kpi__val">8.4%</div><div class="dash-kpi__delta dash-kpi__delta--up">↓ Below benchmark</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Training Compliance</div><div class="dash-kpi__val">91%</div><div class="dash-kpi__delta dash-kpi__delta--warn">32 overdue certifications</div></div>
                 </div>
                 <div class="dash-row dash-row--2" style="margin-top:0.75rem;">
                   <div class="dash-list">
                     <div class="dash-list__title">Workforce Items</div>
-                    <div class="dash-list__row"><span>Annual reviews — 8 outstanding</span><span class="dash-badge dash-badge--pend">DUE SOON</span></div>
-                    <div class="dash-list__row"><span>OSHA training renewal — 12 staff</span><span class="dash-badge dash-badge--warn">OVERDUE</span></div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false" data-context="Annual reviews — 8 outstanding">
+                      <div class="dash-expand-header"><span>Annual reviews — 8 outstanding</span><span class="dash-badge dash-badge--pend">DUE SOON</span></div>
+                      <div class="dash-expand-detail">8 employees have not completed their annual performance review. Reviews are due by Nov 30. Managers have been notified. 3 are in progress. 5 not yet started.
+                        <div class="nx-detail-actions" style="margin-top:0.625rem;">
+                          <button type="button" class="nx-row-action-btn" data-action="assign">👤 Assign to Managers</button>
+                          <button type="button" class="nx-row-action-btn" data-action="escalate">⚠️ Escalate</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false" data-context="OSHA training renewal — 12 staff">
+                      <div class="dash-expand-header"><span>OSHA training renewal — 12 staff</span><span class="dash-badge dash-badge--warn">OVERDUE</span></div>
+                      <div class="dash-expand-detail">12 employees have OSHA safety training certifications that expired within the last 30 days. Department: Operations (8), Facilities (4). Training vendor confirmed availability for next-week session.
+                        <div class="nx-detail-actions" style="margin-top:0.625rem;">
+                          <button type="button" class="nx-row-action-btn" data-action="assign">👤 Schedule Training</button>
+                          <button type="button" class="nx-row-action-btn" data-action="escalate">⚠️ Escalate to Director</button>
+                        </div>
+                      </div>
+                    </div>
                     <div class="dash-list__row"><span>Benefits enrollment — open window</span><span class="dash-badge dash-badge--info">ACTIVE</span></div>
                     <div class="dash-list__row"><span>New hire onboarding — 5 in progress</span><span class="dash-badge dash-badge--ok">ON TRACK</span></div>
                     <div class="dash-list__row"><span>Succession planning — exec roles</span><span class="dash-badge dash-badge--info">IN REVIEW</span></div>
@@ -284,19 +331,44 @@
               <!-- SAFETY -->
               <div class="sandbox-view" role="tabpanel" id="view-safety" aria-labelledby="tab-safety" data-view="safety">
                 <div class="dash-row dash-row--4">
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Incidents YTD</div><div class="dash-kpi__val">7</div><div class="dash-kpi__delta dash-kpi__delta--up">↓ Down from 12 prior yr</div></div>
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Near Misses</div><div class="dash-kpi__val">14</div><div class="dash-kpi__delta dash-kpi__delta--warn">3 unresolved</div></div>
+                  <div class="dash-kpi" data-kpi-key="safety-incidents" aria-label="Incidents YTD — tap for drill-down"><div class="dash-kpi__lbl">Incidents YTD</div><div class="dash-kpi__val">7</div><div class="dash-kpi__delta dash-kpi__delta--up">↓ Down from 12 prior yr</div></div>
+                  <div class="dash-kpi" data-kpi-key="safety-nearmiss" aria-label="Near Misses — tap for drill-down"><div class="dash-kpi__lbl">Near Misses</div><div class="dash-kpi__val">14</div><div class="dash-kpi__delta dash-kpi__delta--warn">3 unresolved</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Days Without Incident</div><div class="dash-kpi__val">47</div><div class="dash-kpi__delta dash-kpi__delta--up">Goal: 90 days</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Safety Audits Due</div><div class="dash-kpi__val">5</div><div class="dash-kpi__delta dash-kpi__delta--pend">Next 30 days</div></div>
                 </div>
                 <div class="dash-row dash-row--2" style="margin-top:0.75rem;">
                   <div class="dash-list">
                     <div class="dash-list__title">Open Safety Items</div>
-                    <div class="dash-list__row"><span>Equipment guard failure — Bldg 3</span><span class="dash-badge dash-badge--warn">OPEN</span></div>
-                    <div class="dash-list__row"><span>Hazmat storage review overdue</span><span class="dash-badge dash-badge--warn">OVERDUE</span></div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false" data-context="Equipment guard failure — Bldg 3">
+                      <div class="dash-expand-header"><span>Equipment guard failure — Bldg 3</span><span class="dash-badge dash-badge--warn">OPEN</span></div>
+                      <div class="dash-expand-detail">Guard failure on press unit P-7. Reported by shift supervisor Nov 12. Near-miss potential: HIGH. Work order WO-3841 submitted but not yet scheduled. Area is cordoned pending repair.
+                        <div class="nx-detail-actions" style="margin-top:0.625rem;">
+                          <button type="button" class="nx-row-action-btn" data-action="investigate">🔍 Investigate</button>
+                          <button type="button" class="nx-row-action-btn" data-action="create-wo">📝 Create Work Order</button>
+                          <button type="button" class="nx-row-action-btn" data-action="assign">👤 Assign Corrective Action</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false" data-context="Hazmat storage review overdue">
+                      <div class="dash-expand-header"><span>Hazmat storage review overdue</span><span class="dash-badge dash-badge--warn">OVERDUE</span></div>
+                      <div class="dash-expand-detail">Annual hazmat storage review was due Oct 15. EHS coordinator on leave — no backup assigned. Review must be completed before EPA reporting window opens Jan 1. Estimated time: 4 hours.
+                        <div class="nx-detail-actions" style="margin-top:0.625rem;">
+                          <button type="button" class="nx-row-action-btn" data-action="assign">👤 Assign</button>
+                          <button type="button" class="nx-row-action-btn" data-action="escalate">⚠️ Escalate</button>
+                        </div>
+                      </div>
+                    </div>
                     <div class="dash-list__row"><span>Emergency drill scheduled — Q4</span><span class="dash-badge dash-badge--info">SCHEDULED</span></div>
                     <div class="dash-list__row"><span>Fire system inspection — cleared</span><span class="dash-badge dash-badge--ok">COMPLETE</span></div>
-                    <div class="dash-list__row"><span>PPE restocking — 3 departments</span><span class="dash-badge dash-badge--pend">PENDING</span></div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false" data-context="PPE restocking — 3 departments">
+                      <div class="dash-expand-header"><span>PPE restocking — 3 departments</span><span class="dash-badge dash-badge--pend">PENDING</span></div>
+                      <div class="dash-expand-detail">Operations, Facilities, and Fleet all below PPE threshold for Q4. PO request submitted. ETA: 5 business days. No immediate safety gap — current stock is adequate for 2 weeks.
+                        <div class="nx-detail-actions" style="margin-top:0.625rem;">
+                          <button type="button" class="nx-row-action-btn" data-action="approve">✅ Approve PO</button>
+                          <button type="button" class="nx-row-action-btn" data-action="resolve">✅ Acknowledge</button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div class="dash-chart">
                     <div class="dash-chart__title">Incidents by Month (Rolling 12)</div>
@@ -346,16 +418,33 @@
               <!-- FACILITIES -->
               <div class="sandbox-view" role="tabpanel" id="view-facilities" aria-labelledby="tab-facilities" data-view="facilities">
                 <div class="dash-row dash-row--4">
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Total Facilities</div><div class="dash-kpi__val">23</div><div class="dash-kpi__delta">Buildings managed</div></div>
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Work Orders Open</div><div class="dash-kpi__val">142</div><div class="dash-kpi__delta dash-kpi__delta--warn">18 past due</div></div>
+                  <div class="dash-kpi" data-kpi-key="fac-total" aria-label="Total Facilities — tap for drill-down"><div class="dash-kpi__lbl">Total Facilities</div><div class="dash-kpi__val">23</div><div class="dash-kpi__delta">Buildings managed</div></div>
+                  <div class="dash-kpi" data-kpi-key="fac-wo" aria-label="Work Orders Open — tap for drill-down"><div class="dash-kpi__lbl">Work Orders Open</div><div class="dash-kpi__val">142</div><div class="dash-kpi__delta dash-kpi__delta--warn">18 past due</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Avg Condition Score</div><div class="dash-kpi__val">74 / 100</div><div class="dash-kpi__delta dash-kpi__delta--warn">3 buildings critical</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">PM Compliance</div><div class="dash-kpi__val">81%</div><div class="dash-kpi__delta dash-kpi__delta--warn">Target: 90%</div></div>
                 </div>
                 <div class="dash-row dash-row--2" style="margin-top:0.75rem;">
                   <div class="dash-list">
                     <div class="dash-list__title">Facilities Requiring Action</div>
-                    <div class="dash-list__row"><span>Building 4 — Roof replacement needed</span><span class="dash-badge dash-badge--warn">CRITICAL</span></div>
-                    <div class="dash-list__row"><span>Building 11 — HVAC system aging</span><span class="dash-badge dash-badge--warn">HIGH</span></div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false" data-context="Building 4 — Roof replacement needed">
+                      <div class="dash-expand-header"><span>Building 4 — Roof replacement needed</span><span class="dash-badge dash-badge--warn">CRITICAL</span></div>
+                      <div class="dash-expand-detail">Condition score: 28/100. Roof age: 31 years. Last repair: 8 years ago. Leak reported in 3 locations. Emergency replacement cost estimate: $180K. Funding source: reserves. Lead time: 6–8 weeks.
+                        <div class="nx-detail-actions" style="margin-top:0.625rem;">
+                          <button type="button" class="nx-row-action-btn" data-action="investigate">🔍 View History</button>
+                          <button type="button" class="nx-row-action-btn" data-action="create-wo">📝 Create Work Order</button>
+                          <button type="button" class="nx-row-action-btn" data-action="escalate">⚠️ Escalate to Capital Plan</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false" data-context="Building 11 — HVAC system aging">
+                      <div class="dash-expand-header"><span>Building 11 — HVAC system aging</span><span class="dash-badge dash-badge--warn">HIGH</span></div>
+                      <div class="dash-expand-detail">System age: 24 years. Condition score: 38/100. Last PM: 14 months ago (overdue). Replacement cost estimate: $280K. Partial funding identified from infrastructure grant application.
+                        <div class="nx-detail-actions" style="margin-top:0.625rem;">
+                          <button type="button" class="nx-row-action-btn" data-action="create-wo">📝 Schedule PM</button>
+                          <button type="button" class="nx-row-action-btn" data-action="assign">👤 Assign to Facilities</button>
+                        </div>
+                      </div>
+                    </div>
                     <div class="dash-list__row"><span>Admin Complex — ADA compliance review</span><span class="dash-badge dash-badge--pend">SCHEDULED</span></div>
                     <div class="dash-list__row"><span>Maintenance Center — Electrical upgrade</span><span class="dash-badge dash-badge--info">IN PLANNING</span></div>
                     <div class="dash-list__row"><span>Annex B — Inspection complete</span><span class="dash-badge dash-badge--ok">OK</span></div>
@@ -377,16 +466,33 @@
               <!-- FLEET & ASSETS -->
               <div class="sandbox-view" role="tabpanel" id="view-fleet" aria-labelledby="tab-fleet" data-view="fleet">
                 <div class="dash-row dash-row--4">
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Fleet Units</div><div class="dash-kpi__val">87</div><div class="dash-kpi__delta">Active fleet</div></div>
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Units Serviceable</div><div class="dash-kpi__val">79</div><div class="dash-kpi__delta dash-kpi__delta--warn">8 down / maintenance</div></div>
+                  <div class="dash-kpi" data-kpi-key="fleet-units" aria-label="Fleet Units — tap for drill-down"><div class="dash-kpi__lbl">Fleet Units</div><div class="dash-kpi__val">87</div><div class="dash-kpi__delta">Active fleet</div></div>
+                  <div class="dash-kpi" data-kpi-key="fleet-serviceable" aria-label="Units Serviceable — tap for drill-down"><div class="dash-kpi__lbl">Units Serviceable</div><div class="dash-kpi__val">79</div><div class="dash-kpi__delta dash-kpi__delta--warn">8 down / maintenance</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">PM Due (30 days)</div><div class="dash-kpi__val">22</div><div class="dash-kpi__delta dash-kpi__delta--warn">6 overdue</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Avg Asset Age</div><div class="dash-kpi__val">7.4 yrs</div><div class="dash-kpi__delta dash-kpi__delta--warn">Above replacement threshold</div></div>
                 </div>
                 <div class="dash-row dash-row--2" style="margin-top:0.75rem;">
                   <div class="dash-list">
                     <div class="dash-list__title">Fleet Alerts</div>
-                    <div class="dash-list__row"><span>Unit A-14 — Maintenance past due</span><span class="dash-badge dash-badge--warn">OVERDUE</span></div>
-                    <div class="dash-list__row"><span>Unit B-07 — Inspection failed</span><span class="dash-badge dash-badge--warn">FAILED</span></div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false" data-context="Unit A-14 — Maintenance past due">
+                      <div class="dash-expand-header"><span>Unit A-14 — Maintenance past due</span><span class="dash-badge dash-badge--warn">OVERDUE</span></div>
+                      <div class="dash-expand-detail">2018 Heavy Truck. In repair 18 days — parts delayed. Maintenance cost this year: $12,400 (3× standard). Replacement analysis shows lease option at $1,100/month saves $4,200/year vs. current maintenance cost.
+                        <div class="nx-detail-actions" style="margin-top:0.625rem;">
+                          <button type="button" class="nx-row-action-btn" data-action="investigate">🔍 View History</button>
+                          <button type="button" class="nx-row-action-btn" data-action="create-wo">📝 Create Maintenance Order</button>
+                          <button type="button" class="nx-row-action-btn" data-action="escalate">⚠️ Flag for Replacement</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false" data-context="Unit B-07 — Inspection failed">
+                      <div class="dash-expand-header"><span>Unit B-07 — Inspection failed</span><span class="dash-badge dash-badge--warn">FAILED</span></div>
+                      <div class="dash-expand-detail">2019 Service Van. Failed annual DOT inspection — brake system deficiency. Must not be operated until repaired. Estimated repair: $1,800. Shop availability: 2 days.
+                        <div class="nx-detail-actions" style="margin-top:0.625rem;">
+                          <button type="button" class="nx-row-action-btn" data-action="create-wo">📝 Schedule Repair</button>
+                          <button type="button" class="nx-row-action-btn" data-action="assign">👤 Assign to Shop</button>
+                        </div>
+                      </div>
+                    </div>
                     <div class="dash-list__row"><span>Unit C-23 — Oil change scheduled</span><span class="dash-badge dash-badge--pend">SCHEDULED</span></div>
                     <div class="dash-list__row"><span>Vehicles D-01–D-04 — Annual review</span><span class="dash-badge dash-badge--info">DUE NEXT MONTH</span></div>
                     <div class="dash-list__row"><span>5 vehicles — Replacement recommended</span><span class="dash-badge dash-badge--info">IN PLANNING</span></div>
@@ -408,7 +514,7 @@
               <!-- PROJECTS -->
               <div class="sandbox-view" role="tabpanel" id="view-projects" aria-labelledby="tab-projects" data-view="projects">
                 <div class="dash-row dash-row--4">
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Active Projects</div><div class="dash-kpi__val">24</div><div class="dash-kpi__delta">Capital &amp; operational</div></div>
+                  <div class="dash-kpi" data-kpi-key="proj-active" aria-label="Active Projects — tap for drill-down"><div class="dash-kpi__lbl">Active Projects</div><div class="dash-kpi__val">24</div><div class="dash-kpi__delta">Capital &amp; operational</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">On Schedule</div><div class="dash-kpi__val">18</div><div class="dash-kpi__delta dash-kpi__delta--up">75% on track</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Behind Schedule</div><div class="dash-kpi__val">4</div><div class="dash-kpi__delta dash-kpi__delta--warn">Require attention</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Total Budget</div><div class="dash-kpi__val">$12.4M</div><div class="dash-kpi__delta dash-kpi__delta--up">Committed capital</div></div>
@@ -417,9 +523,26 @@
                   <div class="dash-list">
                     <div class="dash-list__title">Project Status</div>
                     <div class="dash-list__row"><span>Water main replacement — Phase 2</span><span class="dash-badge dash-badge--ok">ON TRACK</span></div>
-                    <div class="dash-list__row"><span>Community center renovation</span><span class="dash-badge dash-badge--warn">DELAYED</span></div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false" data-context="Community center renovation — DELAYED">
+                      <div class="dash-expand-header"><span>Community center renovation</span><span class="dash-badge dash-badge--warn">DELAYED</span></div>
+                      <div class="dash-expand-detail">Project is 3 weeks behind schedule due to contractor performance issues. Scope: $2.1M renovation. 62% complete. Root cause: subcontractor staffing shortage. Recovery plan proposed: 2-week acceleration adds $42K to budget.
+                        <div class="nx-detail-actions" style="margin-top:0.625rem;">
+                          <button type="button" class="nx-row-action-btn" data-action="investigate">🔍 View Schedule</button>
+                          <button type="button" class="nx-row-action-btn" data-action="escalate">⚠️ Escalate to Director</button>
+                          <button type="button" class="nx-row-action-btn" data-action="assign">👤 Assign Recovery Plan</button>
+                        </div>
+                      </div>
+                    </div>
                     <div class="dash-list__row"><span>Technology infrastructure upgrade</span><span class="dash-badge dash-badge--ok">ON TRACK</span></div>
-                    <div class="dash-list__row"><span>Park district improvements</span><span class="dash-badge dash-badge--warn">OVER BUDGET</span></div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false" data-context="Park district improvements — Over Budget">
+                      <div class="dash-expand-header"><span>Park district improvements</span><span class="dash-badge dash-badge--warn">OVER BUDGET</span></div>
+                      <div class="dash-expand-detail">$84K variance due to soil remediation requirement discovered during excavation. Change order submitted. Project owner has approved up to $50K from contingency. Remaining $34K requires board approval.
+                        <div class="nx-detail-actions" style="margin-top:0.625rem;">
+                          <button type="button" class="nx-row-action-btn" data-action="approve">✅ Approve Change Order</button>
+                          <button type="button" class="nx-row-action-btn" data-action="generate-report">📊 Board Summary</button>
+                        </div>
+                      </div>
+                    </div>
                     <div class="dash-list__row"><span>Fleet garage expansion</span><span class="dash-badge dash-badge--pend">IN DESIGN</span></div>
                     <div class="dash-list__row"><span>Admin system modernization</span><span class="dash-badge dash-badge--info">PLANNING</span></div>
                   </div>
@@ -442,8 +565,8 @@
               <!-- PROCUREMENT -->
               <div class="sandbox-view" role="tabpanel" id="view-procurement" aria-labelledby="tab-procurement" data-view="procurement">
                 <div class="dash-row dash-row--4">
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Active POs</div><div class="dash-kpi__val">68</div><div class="dash-kpi__delta">Open purchase orders</div></div>
-                  <div class="dash-kpi"><div class="dash-kpi__lbl">Spend YTD</div><div class="dash-kpi__val">$8.7M</div><div class="dash-kpi__delta dash-kpi__delta--up">Within approved budget</div></div>
+                  <div class="dash-kpi" data-kpi-key="proc-pos" aria-label="Active POs — tap for drill-down"><div class="dash-kpi__lbl">Active POs</div><div class="dash-kpi__val">68</div><div class="dash-kpi__delta">Open purchase orders</div></div>
+                  <div class="dash-kpi" data-kpi-key="proc-spend" aria-label="Spend YTD — tap for drill-down"><div class="dash-kpi__lbl">Spend YTD</div><div class="dash-kpi__val">$8.7M</div><div class="dash-kpi__delta dash-kpi__delta--up">Within approved budget</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Vendor Contracts</div><div class="dash-kpi__val">142</div><div class="dash-kpi__delta dash-kpi__delta--warn">12 expiring this quarter</div></div>
                   <div class="dash-kpi"><div class="dash-kpi__lbl">Open Solicitations</div><div class="dash-kpi__val">5</div><div class="dash-kpi__delta">Active RFPs/Bids</div></div>
                 </div>
@@ -815,6 +938,85 @@
                 </div>
               </div>
 
+              <!-- IT / DATA -->
+              <div class="sandbox-view" role="tabpanel" id="view-it" aria-labelledby="tab-it" data-view="it">
+                <div class="dash-row dash-row--4">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Systems Online</div><div class="dash-kpi__val">47 / 48</div><div class="dash-kpi__delta dash-kpi__delta--up">99.7% availability</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Open IT Tickets</div><div class="dash-kpi__val">83</div><div class="dash-kpi__delta dash-kpi__delta--warn">14 critical priority</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Data Integrations Active</div><div class="dash-kpi__val">24</div><div class="dash-kpi__delta dash-kpi__delta--up">All feeds healthy</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Cybersecurity Score</div><div class="dash-kpi__val">82 / 100</div><div class="dash-kpi__delta dash-kpi__delta--warn">3 vulnerabilities open</div></div>
+                </div>
+                <div class="dash-row dash-row--2" style="margin-top:0.75rem;">
+                  <div class="dash-list">
+                    <div class="dash-list__title">IT Alerts &amp; Issues</div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false" data-context="ERP integration — 1 feed error">
+                      <div class="dash-expand-header"><span>ERP integration — 1 feed error</span><span class="dash-badge dash-badge--warn">ERROR</span></div>
+                      <div class="dash-expand-detail">Finance data feed experienced a timeout at 02:14 AM. Data is 6 hours stale in dashboards. Root cause: network timeout during scheduled maintenance window. Manual resync in progress. ETA: 45 minutes.
+                        <div class="nx-detail-actions" style="margin-top:0.625rem;">
+                          <button type="button" class="nx-row-action-btn" data-action="investigate">🔍 Investigate</button>
+                          <button type="button" class="nx-row-action-btn" data-action="assign">👤 Assign to IT Team</button>
+                          <button type="button" class="nx-row-action-btn" data-action="resolve">✅ Mark Resolved</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="dash-list__row dash-expand-row" tabindex="0" role="button" aria-expanded="false" data-context="Cybersecurity training — 18 staff incomplete">
+                      <div class="dash-expand-header"><span>Cybersecurity training — 18 staff incomplete</span><span class="dash-badge dash-badge--warn">OVERDUE</span></div>
+                      <div class="dash-expand-detail">18 employees have not completed annual cybersecurity awareness training, due Oct 31. Departments: Admin (8), Finance (6), HR (4). Training takes 45 minutes. Vendor portal access confirmed.
+                        <div class="nx-detail-actions" style="margin-top:0.625rem;">
+                          <button type="button" class="nx-row-action-btn" data-action="assign">👤 Notify Employees</button>
+                          <button type="button" class="nx-row-action-btn" data-action="escalate">⚠️ Escalate to HR</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="dash-list__row"><span>Network redundancy test — quarterly</span><span class="dash-badge dash-badge--pend">SCHEDULED NOV 30</span></div>
+                    <div class="dash-list__row"><span>Workstation refresh — 48 units complete</span><span class="dash-badge dash-badge--ok">COMPLETE</span></div>
+                    <div class="dash-list__row"><span>Disaster recovery drill — annual</span><span class="dash-badge dash-badge--info">DEC 12</span></div>
+                  </div>
+                  <div class="dash-list">
+                    <div class="dash-list__title">Data Health &amp; Integration Status</div>
+                    <div class="dash-list__row"><span>Nexus Platform Data Feeds</span><span class="dash-badge dash-badge--ok">24 / 24 Active</span></div>
+                    <div class="dash-list__row"><span>Last Data Refresh (most modules)</span><span class="dash-badge dash-badge--ok">2 hours ago</span></div>
+                    <div class="dash-list__row"><span>Finance Module Feed</span><span class="dash-badge dash-badge--warn">Stale — 6 hrs</span></div>
+                    <div class="dash-list__row"><span>GIS / Map Layer Update</span><span class="dash-badge dash-badge--ok">Current</span></div>
+                    <div class="dash-list__row"><span>HR System Sync</span><span class="dash-badge dash-badge--ok">Current</span></div>
+                    <div class="dash-list__row"><span>Asset Register Sync</span><span class="dash-badge dash-badge--ok">Current</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- MAP INTELLIGENCE -->
+              <div class="sandbox-view" role="tabpanel" id="view-map" aria-labelledby="tab-map" data-view="map">
+                <div class="dash-row dash-row--4" style="margin-bottom:0.75rem;">
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Mapped Facilities</div><div class="dash-kpi__val">23</div><div class="dash-kpi__delta">All geolocated</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Active Projects</div><div class="dash-kpi__val">24</div><div class="dash-kpi__delta">On map</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Fleet on Map</div><div class="dash-kpi__val">87</div><div class="dash-kpi__delta">Last known location</div></div>
+                  <div class="dash-kpi"><div class="dash-kpi__lbl">Risk Items Spatial</div><div class="dash-kpi__val">31</div><div class="dash-kpi__delta dash-kpi__delta--warn">4 high priority</div></div>
+                </div>
+                <div class="nx-map-demo" role="region" aria-label="Map Intelligence demonstration">
+                  <div class="nx-map-toolbar" role="toolbar" aria-label="Map layer controls">
+                    <span class="nx-map-label">Layers:</span>
+                    <button type="button" class="nx-map-layer-btn active" data-layer="facilities">🏢 Facilities</button>
+                    <button type="button" class="nx-map-layer-btn active" data-layer="projects">🔨 Projects</button>
+                    <button type="button" class="nx-map-layer-btn active" data-layer="risks">⚠️ Risk</button>
+                    <button type="button" class="nx-map-layer-btn" data-layer="fleet">🚛 Fleet</button>
+                  </div>
+                  <div class="nx-map-body">
+                    <div class="nx-map-canvas" id="nx-map-canvas" role="application" aria-label="Interactive facility map">
+                      <!-- Map pins will be rendered by JS -->
+                      <div class="nx-map-bg-grid" aria-hidden="true"></div>
+                      <div class="nx-map-hint" aria-hidden="true">Tap any marker to view details</div>
+                    </div>
+                    <div class="nx-map-detail" id="nx-map-detail" aria-live="polite">
+                      <div class="nx-map-detail-empty">
+                        <div style="font-size:2rem;margin-bottom:0.5rem;">🗺️</div>
+                        <div style="font-weight:600;color:var(--text-primary);margin-bottom:0.375rem;">Select a map feature</div>
+                        <div style="font-size:0.8125rem;color:var(--text-muted);">Tap any marker on the map to view details, work history, risk assessment, and recommended actions.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div><!-- /sandbox-body -->
           </div><!-- /sandbox-wrap -->
         </div><!-- /sandbox-env -->
@@ -882,6 +1084,44 @@
 
   <script src="../js/main.js"></script>
   <script src="../js/sandbox-nav.js"></script>
+  <script src="../js/nexus-interactive.js"></script>
+
+  <!-- FLOATING ASK NEXUS BUTTON -->
+  <button type="button" id="ask-nexus-float" aria-label="Ask Nexus — open AI assistant">
+    <span class="nx-float-icon" aria-hidden="true">🤖</span>
+    <span>Ask Nexus</span>
+  </button>
+
+  <!-- ASK NEXUS PANEL -->
+  <div id="ask-nexus-panel" role="dialog" aria-modal="true" aria-label="Ask Nexus — Operations Intelligence Assistant">
+    <div class="nx-chat-header">
+      <div>
+        <div class="nx-chat-header-title"><span aria-hidden="true">🤖</span> Ask Nexus</div>
+        <div class="nx-chat-header-sub">Operations Intelligence Assistant — Synthetic Demo Data</div>
+      </div>
+      <button type="button" class="nx-chat-close" aria-label="Close Ask Nexus">&times;</button>
+    </div>
+    <div class="nx-chat-suggests" role="group" aria-label="Suggested questions">
+      <button type="button" class="nx-chat-suggest">What needs my attention today?</button>
+      <button type="button" class="nx-chat-suggest">Where are we overspending?</button>
+      <button type="button" class="nx-chat-suggest">Which facilities have the greatest risk?</button>
+      <button type="button" class="nx-chat-suggest">What work orders are overdue?</button>
+      <button type="button" class="nx-chat-suggest">What can we save this quarter?</button>
+      <button type="button" class="nx-chat-suggest">Which projects are falling behind?</button>
+      <button type="button" class="nx-chat-suggest">What changed this week?</button>
+    </div>
+    <div class="nx-chat-log" id="nx-chat-log" role="log" aria-label="Nexus conversation" aria-live="polite">
+      <div class="nx-chat-msg nx-chat-msg--nexus">
+        <span class="nx-chat-avatar">N</span>
+        <div class="nx-chat-text"><p>Hello. I'm Nexus — your organization's intelligence assistant. Ask me about priorities, risks, financials, operations, or anything else across your departments. I can see everything that's connected.</p><p style="font-size:0.8125rem;color:var(--text-muted);margin-top:0.375rem;">⚠ This is a demonstration using synthetic data only. No real organizations or individuals are represented.</p></div>
+      </div>
+    </div>
+    <div class="nx-chat-input-row">
+      <input type="text" class="nx-chat-input" placeholder="Ask anything about your organization…" aria-label="Ask Nexus a question" autocomplete="off" />
+      <button type="button" class="nx-chat-send">Ask →</button>
+    </div>
+  </div>
+
   <script>
   // Sandbox interactivity
   (function() {
@@ -1001,7 +1241,17 @@
     // Nav tab switching is handled by sandbox-nav.js
     var _navCtrl = (typeof window.initSandboxNav === 'function' ? window.initSandboxNav() : null);
     function showView(viewKey) {
-      if (_navCtrl) { _navCtrl.showView(viewKey); }
+      if (_navCtrl) {
+        _navCtrl.showView(viewKey);
+      } else {
+        // Fallback inline tab switching
+        document.querySelectorAll('.sandbox-nav-btn').forEach(function(b) {
+          b.classList.toggle('active', b.getAttribute('data-view') === viewKey);
+        });
+        document.querySelectorAll('.sandbox-view').forEach(function(v) {
+          v.classList.toggle('active', v.getAttribute('data-view') === viewKey);
+        });
+      }
     }
 
     function selectOrg(orgKey) {
