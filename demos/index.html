@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Demos | GCS — Explore GCS in Action</title>
-  <meta name="description" content="Explore GCS interactive guided demonstrations — platform overview, Nexus, Genesis, Map Intelligence, and consulting. No login required." />
+  <title>Demos | GCS — Watch Nexus Demo or Explore Nexus</title>
+  <meta name="description" content="Watch the guided Nexus demo or explore the interactive sandbox with synthetic data and no login required." />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://buildbetterwithgcs.com/demos/" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -32,13 +32,12 @@
       </button>
       <ul class="nav__links" id="nav-menu" role="list">
         <li><a href="../" class="nav__link">Home</a></li>
-        <li><a href="../platform/" class="nav__link">Platform</a></li>
+        <li><a href="../nexus/" class="nav__link">Nexus</a></li>
         <li><a href="../consulting/" class="nav__link">Consulting</a></li>
         <li><a href="../industries/" class="nav__link">Industries</a></li>
-        <li><a href="../demos/" class="nav__link" aria-current="page">Demos</a></li>
         <li><a href="../about/" class="nav__link">About</a></li>
-        <li><a href="../sandbox/" class="nav__link nav__link--sandbox">Explore Nexus Live</a></li>
-        <li><a href="../contact/" class="nav__link nav__link--get-started">Get Started</a></li>
+        <li><a href="../contact/" class="nav__link">Contact</a></li>
+        <li><a href="../request-demo/" class="nav__link nav__link--cta">Request Demo</a></li>
       </ul>
     </nav>
   </header>
@@ -48,145 +47,50 @@
       <div class="container">
         <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="../">Home</a><span>/</span><span aria-current="page">Demos</span></nav>
         <div class="page-hero__inner">
-          <span class="page-hero__eyebrow">GCS Demonstrations</span>
-          <h1 class="page-hero__title">See GCS in Action</h1>
-          <p class="page-hero__lead">Interactive guided demonstrations for every major GCS capability. Explore the platform before talking to anyone.</p>
+          <span class="page-hero__eyebrow">Nexus Demonstrations</span>
+          <h1 class="page-hero__title">Watch Nexus Demo or explore for yourself.</h1>
+          <p class="page-hero__lead">Choose the guided presentation when you want a quick story, or open the interactive sandbox when you want to move at your own pace.</p>
           <div class="page-hero__actions">
-            <a href="../sandbox/" class="btn btn--primary">Explore Nexus Live — No Login</a>
-            <a href="../contact/" class="btn btn--outline">Talk to GCS</a>
+            <a href="../sandbox/?watchdemo=1" class="btn btn--primary">Watch Nexus Demo</a>
+            <a href="../sandbox/" class="btn btn--outline">Explore Nexus</a>
           </div>
+          <p class="section-note" style="margin-top:0.875rem;">Interactive demonstration &bull; Synthetic data &bull; No login</p>
         </div>
       </div>
     </section>
 
-    <section class="section section--light" aria-labelledby="demos-heading">
+    <section class="section section--light" aria-labelledby="primary-demo-heading">
       <div class="container">
         <div class="section-header section-header--center">
-          <span class="section-label">Interactive Demonstrations</span>
-          <h2 id="demos-heading" class="section-title">GCS capability — explored, not just explained.</h2>
-          <p class="section-subtitle">Each demonstration covers a major GCS experience. Click any tile to open an interactive guided exploration.</p>
+          <span class="section-label">Primary Paths</span>
+          <h2 id="primary-demo-heading" class="section-title">Two ways to experience Nexus.</h2>
         </div>
-
-        <div class="demos-grid">
-
-          <!-- GCS Overview -->
-          <div>
-            <button type="button" class="demo-video-block" id="open-demo-overview" aria-label="Open GCS Overview guided demonstration" aria-haspopup="dialog">
-              <div class="demo-video-block__grid" aria-hidden="true"></div>
-              <div class="demo-video-block__inner">
-                <div class="demo-video-block__play" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
-                </div>
-                <div class="demo-video-block__label">GCS Overview</div>
-                <div class="demo-video-block__sublabel">What GCS does and why it matters</div>
-                <span class="demo-video-block__badge">EXPLORE DEMO</span>
-                <div class="demo-video-block__coming">Click to explore &rarr;</div>
-              </div>
-            </button>
-            <div style="margin-top:0.875rem;">
-              <h3 style="font-size:1rem;font-weight:700;color:var(--gcs-navy);">GCS Overview</h3>
-              <p style="font-size:0.875rem;color:var(--text-muted);margin-top:0.25rem;">Understand the GCS value proposition — how connected organizational intelligence helps leaders see, decide, and act.</p>
-            </div>
-          </div>
-
-          <!-- Nexus -->
-          <div>
-            <button type="button" class="demo-video-block" id="open-demo-nexus" aria-label="Open Nexus guided demonstration" aria-haspopup="dialog">
-              <div class="demo-video-block__grid" aria-hidden="true"></div>
-              <div class="demo-video-block__inner">
-                <div class="demo-video-block__play" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
-                </div>
-                <div class="demo-video-block__label">Nexus</div>
-                <div class="demo-video-block__sublabel">One platform — every department connected</div>
-                <span class="demo-video-block__badge">INTERACTIVE DEMO</span>
-                <div class="demo-video-block__coming">Click to explore &rarr;</div>
-              </div>
-            </button>
-            <div style="margin-top:0.875rem;">
-              <h3 style="font-size:1rem;font-weight:700;color:var(--gcs-navy);">Nexus Platform</h3>
-              <p style="font-size:0.875rem;color:var(--text-muted);margin-top:0.25rem;">See how Nexus connects every department, surfaces what needs attention, and supports leadership decisions.</p>
-              <div style="display:flex;flex-wrap:wrap;gap:0.625rem;margin-top:0.625rem;align-items:center;">
-                <a href="../sandbox/?watchdemo=1" class="btn-primary" style="font-size:0.8125rem;padding:0.4375rem 0.875rem;border-radius:2rem;text-decoration:none;display:inline-flex;align-items:center;gap:0.375rem;background:var(--gcs-navy);color:#fff;">&#9654; Watch Demo</a>
-                <a href="../sandbox/" class="link-arrow" style="font-size:0.875rem;display:inline-block;">Explore Nexus Live &rarr;</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Genesis -->
-          <div>
-            <button type="button" class="demo-video-block" id="open-demo-genesis" aria-label="Open Genesis guided demonstration" aria-haspopup="dialog">
-              <div class="demo-video-block__grid" aria-hidden="true"></div>
-              <div class="demo-video-block__inner">
-                <div class="demo-video-block__play" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
-                </div>
-                <div class="demo-video-block__label">Genesis</div>
-                <div class="demo-video-block__sublabel">Ask, analyze, and support organizational decisions</div>
-                <span class="demo-video-block__badge">EXPLORE DEMO</span>
-                <div class="demo-video-block__coming">Click to explore &rarr;</div>
-              </div>
-            </button>
-            <div style="margin-top:0.875rem;">
-              <h3 style="font-size:1rem;font-weight:700;color:var(--gcs-navy);">Genesis</h3>
-              <p style="font-size:0.875rem;color:var(--text-muted);margin-top:0.25rem;">See how Genesis helps leaders ask organizational questions, surface insights from connected data, and support governed decisions.</p>
-            </div>
-          </div>
-
-          <!-- Map Intelligence -->
-          <div>
-            <button type="button" class="demo-video-block" id="open-demo-map" aria-label="Open Map Intelligence guided demonstration" aria-haspopup="dialog">
-              <div class="demo-video-block__grid" aria-hidden="true"></div>
-              <div class="demo-video-block__inner">
-                <div class="demo-video-block__play" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
-                </div>
-                <div class="demo-video-block__label">Map Intelligence</div>
-                <div class="demo-video-block__sublabel">Understand your organization geographically</div>
-                <span class="demo-video-block__badge">EXPLORE DEMO</span>
-                <div class="demo-video-block__coming">Click to explore &rarr;</div>
-              </div>
-            </button>
-            <div style="margin-top:0.875rem;">
-              <h3 style="font-size:1rem;font-weight:700;color:var(--gcs-navy);">Map Intelligence</h3>
-              <p style="font-size:0.875rem;color:var(--text-muted);margin-top:0.25rem;">Explore GCS GIS capabilities — facilities, assets, projects, and risk shown in spatial context.</p>
-            </div>
-          </div>
-
-          <!-- Consulting + Implementation -->
-          <div>
-            <button type="button" class="demo-video-block" id="open-demo-consulting" aria-label="Open Consulting and Implementation guided demonstration" aria-haspopup="dialog">
-              <div class="demo-video-block__grid" aria-hidden="true"></div>
-              <div class="demo-video-block__inner">
-                <div class="demo-video-block__play" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
-                </div>
-                <div class="demo-video-block__label">Consulting &amp; Implementation</div>
-                <div class="demo-video-block__sublabel">Assessment, design, implementation, improvement</div>
-                <span class="demo-video-block__badge">EXPLORE DEMO</span>
-                <div class="demo-video-block__coming">Click to explore &rarr;</div>
-              </div>
-            </button>
-            <div style="margin-top:0.875rem;">
-              <h3 style="font-size:1rem;font-weight:700;color:var(--gcs-navy);">Consulting &amp; Implementation</h3>
-              <p style="font-size:0.875rem;color:var(--text-muted);margin-top:0.25rem;">Understand how GCS combines operational consulting with connected intelligence technology — from assessment through ongoing improvement.</p>
-              <a href="../consulting/" class="link-arrow" style="font-size:0.875rem;margin-top:0.5rem;display:inline-block;">Learn about consulting &rarr;</a>
-            </div>
-          </div>
-
+        <div class="grid--2">
+          <article class="card reveal">
+            <span class="card__eyebrow">Guided presentation</span>
+            <h3 class="card__title">Watch Nexus Demo</h3>
+            <p class="card__desc">Launch the timed walkthrough in the sandbox for a short, structured story about how Nexus helps leaders see, know, act, and prove value.</p>
+            <a href="../sandbox/?watchdemo=1" class="btn btn--primary" style="margin-top:1rem;">Watch Nexus Demo</a>
+          </article>
+          <article class="card reveal">
+            <span class="card__eyebrow">Interactive sandbox</span>
+            <h3 class="card__title">Explore Nexus</h3>
+            <p class="card__desc">Open the public sandbox to click through departments, ask questions, open details, and explore synthetic operating data without logging in.</p>
+            <p class="section-note" style="margin-top:0.875rem;">Interactive demonstration &bull; Synthetic data &bull; No login</p>
+            <a href="../sandbox/" class="btn btn--outline" style="margin-top:1rem;">Explore Nexus</a>
+          </article>
         </div>
       </div>
     </section>
 
-    <!-- CTA -->
-    <section class="section section--light">
+
+    <section class="section section--muted">
       <div class="container">
         <div class="cta-band">
-          <span class="eyebrow">No login required</span>
-          <h2>Ready to explore the platform?</h2>
-          <p>Select a fictional organization and explore Nexus across every department — no account needed.</p>
+          <h2>Request a demonstration tailored to your organization.</h2>
+          <p>Use the sandbox now, then request a live demonstration when you want to see the platform through your own operational questions.</p>
           <div class="cta-actions">
-            <a href="../sandbox/" class="btn btn--primary">Explore Nexus Live</a>
+            <a href="../request-demo/" class="btn btn--primary">Request a Demonstration</a>
             <a href="../contact/" class="btn btn--outline">Talk to GCS</a>
           </div>
         </div>
@@ -203,7 +107,7 @@
           <p class="footer__subtext" style="margin-top:0.5rem;">GCS connects the entire organization into one intelligence, action, and accountability environment.</p>
         </div>
         <div>
-          <div class="footer__nav"><a href="../platform/">Platform</a><a href="../consulting/">Consulting</a><a href="../industries/">Industries</a><a href="../demos/">Demos</a><a href="../sandbox/">Explore Nexus Live</a><a href="../about/">About</a><a href="../contact/">Get Started</a></div>
+          <div class="footer__nav"><a href="../nexus/">Nexus</a><a href="../consulting/">Consulting</a><a href="../industries/">Industries</a><a href="../about/">About</a><a href="../contact/">Contact</a><a href="../request-demo/">Request Demo</a></div>
           <div class="footer__nav" style="margin-top:0.75rem;"><a href="../privacy/">Privacy</a><a href="../responsible-ai/">Responsible AI</a><a href="../accessibility/">Accessibility</a></div>
         </div>
       </div>
@@ -211,568 +115,5 @@
     </div>
   </footer>
   <script src="../js/main.js"></script>
-
-  <!-- ============================================================
-       DEMOS PAGE — GUIDED DEMO MODALS (5 topics)
-       Synthetic data only. No real organizations represented.
-       ============================================================ -->
-
-  <!-- ── GCS Overview Guided Demo ── -->
-  <div id="demo-overlay-overview" class="guided-demo-overlay" role="dialog" aria-modal="true"
-       aria-labelledby="gdemo-title-overview" aria-describedby="gdemo-sub-overview" hidden>
-    <div class="guided-demo-modal">
-      <div class="guided-demo-modal__header">
-        <div>
-          <div class="guided-demo-modal__title" id="gdemo-title-overview">&#9654; GCS Overview</div>
-          <div class="guided-demo-modal__subtitle" id="gdemo-sub-overview">Interactive guided tour &mdash; Synthetic data only &mdash; No login required</div>
-        </div>
-        <button type="button" class="guided-demo-modal__close" data-demo-close="overview" aria-label="Close demo">&times;</button>
-      </div>
-      <div class="guided-demo-progress">
-        <div class="guided-demo-progress__track"><div class="guided-demo-progress__fill" id="gdfill-overview" style="width:25%"></div></div>
-        <span class="guided-demo-progress__label" id="gdlbl-overview">Step 1 of 4</span>
-      </div>
-      <div class="guided-demo-dots" aria-hidden="true">
-        <div class="guided-demo-dot is-active" data-demo="overview" data-dot="0"></div>
-        <div class="guided-demo-dot" data-demo="overview" data-dot="1"></div>
-        <div class="guided-demo-dot" data-demo="overview" data-dot="2"></div>
-        <div class="guided-demo-dot" data-demo="overview" data-dot="3"></div>
-      </div>
-      <div class="guided-demo-step is-active" data-demo="overview" data-step="0">
-        <div class="guided-demo-step__eyebrow">Step 1 of 4</div>
-        <h2 class="guided-demo-step__heading">One Platform. Every Department.</h2>
-        <p class="guided-demo-step__caption">GCS Nexus connects every department into a single intelligence and action environment. Leadership sees the entire organization in real time &mdash; not through separate reports, but through one connected platform.</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-kpi-row">
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Departments Connected</div><div class="guided-demo-kpi__val">9</div><div class="guided-demo-kpi__delta">Finance, HR, Safety, Risk &amp; more</div></div>
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Active Users</div><div class="guided-demo-kpi__val">142</div><div class="guided-demo-kpi__delta">Across 3 locations</div></div>
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Data Points Tracked</div><div class="guided-demo-kpi__val">14K+</div><div class="guided-demo-kpi__delta">Updated daily</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="guided-demo-step" data-demo="overview" data-step="1">
-        <div class="guided-demo-step__eyebrow">Step 2 of 4</div>
-        <h2 class="guided-demo-step__heading">See What Needs Attention</h2>
-        <p class="guided-demo-step__caption">GCS surfaces risks, gaps, and priorities automatically. Leaders spend time acting &mdash; not searching for information.</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-item-row">
-            <div class="guided-demo-item"><span class="guided-demo-item__dot guided-demo-item__dot--red"></span>Safety: Inspection overdue for 2 vehicles (Fleet Dept.)</div>
-            <div class="guided-demo-item"><span class="guided-demo-item__dot guided-demo-item__dot--warn"></span>Finance: Q3 variance exceeds 5% threshold in two cost centers</div>
-            <div class="guided-demo-item"><span class="guided-demo-item__dot guided-demo-item__dot--warn"></span>HR: 4 open positions &mdash; time-to-fill approaching SLA</div>
-            <div class="guided-demo-item"><span class="guided-demo-item__dot"></span>Risk: All compliance certifications current</div>
-          </div>
-        </div>
-      </div>
-      <div class="guided-demo-step" data-demo="overview" data-step="2">
-        <div class="guided-demo-step__eyebrow">Step 3 of 4</div>
-        <h2 class="guided-demo-step__heading">Decide and Act in One Place</h2>
-        <p class="guided-demo-step__caption">GCS closes the loop from insight to action. Assign work, document decisions, and track outcomes &mdash; all from the same platform where you saw the issue.</p>
-        <div class="guided-demo-visual">
-          <ul class="guided-demo-action-list">
-            <li>Assign fleet inspection &mdash; Safety team &mdash; due Friday</li>
-            <li>Request Finance director Q3 reforecast by end of week</li>
-            <li>Approve 2 pending hire requests in HR dashboard</li>
-            <li>Schedule quarterly risk review &mdash; Risk &amp; Legal teams</li>
-          </ul>
-        </div>
-      </div>
-      <div class="guided-demo-step" data-demo="overview" data-step="3">
-        <div class="guided-demo-step__eyebrow">Step 4 of 4</div>
-        <h2 class="guided-demo-step__heading">GCS: Built for How Organizations Actually Work</h2>
-        <p class="guided-demo-step__caption">GCS combines Nexus (connected platform), Genesis (AI analysis), Map Intelligence (spatial insight), and GCS Consulting &mdash; so every layer of the organization improves together.</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-dept-pills">
-            <span class="guided-demo-dept-pill is-selected">&#10003; Nexus Platform</span>
-            <span class="guided-demo-dept-pill">Genesis AI</span>
-            <span class="guided-demo-dept-pill">Map Intelligence</span>
-            <span class="guided-demo-dept-pill">GCS Consulting</span>
-          </div>
-        </div>
-      </div>
-      <div class="guided-demo-cta-row" id="gdfinalcta-overview" style="display:none">
-        <a href="../sandbox/" aria-label="Explore Nexus Live — no login required">Explore Nexus Live &rarr;</a>
-        <p style="margin-top:0.625rem;font-size:0.8rem;color:rgba(255,255,255,0.45);">No login &bull; Synthetic data &bull; Nothing to install</p>
-      </div>
-      <div class="guided-demo-modal__footer">
-        <p class="guided-demo-modal__disclosure">&#9432; All data shown is entirely synthetic and fictional. No real organizations, employees, or financials are represented.</p>
-        <div class="guided-demo-nav">
-          <button type="button" class="guided-demo-nav-btn" data-demo-back="overview" aria-label="Previous step">&#8592; Back</button>
-          <button type="button" class="guided-demo-nav-btn guided-demo-nav-btn--primary" data-demo-next="overview" aria-label="Next step">Next &rarr;</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Nexus Guided Demo ── -->
-  <div id="demo-overlay-nexus" class="guided-demo-overlay" role="dialog" aria-modal="true"
-       aria-labelledby="gdemo-title-nexus" aria-describedby="gdemo-sub-nexus" hidden>
-    <div class="guided-demo-modal">
-      <div class="guided-demo-modal__header">
-        <div>
-          <div class="guided-demo-modal__title" id="gdemo-title-nexus">&#9654; Nexus Platform</div>
-          <div class="guided-demo-modal__subtitle" id="gdemo-sub-nexus">Interactive guided tour &mdash; Synthetic data only &mdash; No login required</div>
-        </div>
-        <button type="button" class="guided-demo-modal__close" data-demo-close="nexus" aria-label="Close demo">&times;</button>
-      </div>
-      <div class="guided-demo-progress">
-        <div class="guided-demo-progress__track"><div class="guided-demo-progress__fill" id="gdfill-nexus" style="width:20%"></div></div>
-        <span class="guided-demo-progress__label" id="gdlbl-nexus">Step 1 of 5</span>
-      </div>
-      <div class="guided-demo-dots" aria-hidden="true">
-        <div class="guided-demo-dot is-active" data-demo="nexus" data-dot="0"></div>
-        <div class="guided-demo-dot" data-demo="nexus" data-dot="1"></div>
-        <div class="guided-demo-dot" data-demo="nexus" data-dot="2"></div>
-        <div class="guided-demo-dot" data-demo="nexus" data-dot="3"></div>
-        <div class="guided-demo-dot" data-demo="nexus" data-dot="4"></div>
-      </div>
-      <div class="guided-demo-step is-active" data-demo="nexus" data-step="0">
-        <div class="guided-demo-step__eyebrow">Step 1 of 5</div>
-        <h2 class="guided-demo-step__heading">The Executive Dashboard</h2>
-        <p class="guided-demo-step__caption">Nexus opens on the Executive view &mdash; a live summary of the entire organization. Every department, every metric, every status &mdash; in one place. (Synthetic data shown.)</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-kpi-row">
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Open Work Orders</div><div class="guided-demo-kpi__val">247</div><div class="guided-demo-kpi__delta">&#9650; 12 new this week</div></div>
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Safety Incidents (30d)</div><div class="guided-demo-kpi__val">3</div><div class="guided-demo-kpi__delta">&#9660; 2 vs prior month</div></div>
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Budget Utilization</div><div class="guided-demo-kpi__val">68%</div><div class="guided-demo-kpi__delta">On track YTD</div></div>
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Staff Coverage</div><div class="guided-demo-kpi__val">94%</div><div class="guided-demo-kpi__delta">2 open positions</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="guided-demo-step" data-demo="nexus" data-step="1">
-        <div class="guided-demo-step__eyebrow">Step 2 of 5</div>
-        <h2 class="guided-demo-step__heading">Switch Departments — One Click</h2>
-        <p class="guided-demo-step__caption">One click switches the entire dashboard to that department&rsquo;s view. Finance, HR, Safety, Risk, Facilities, Fleet &mdash; each shows its own data, actions, and status.</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-dept-pills">
-            <span class="guided-demo-dept-pill is-selected">&#10003; Executive</span>
-            <span class="guided-demo-dept-pill">Finance</span>
-            <span class="guided-demo-dept-pill">HR &amp; Workforce</span>
-            <span class="guided-demo-dept-pill">Safety</span>
-            <span class="guided-demo-dept-pill">Risk &amp; Compliance</span>
-            <span class="guided-demo-dept-pill">Facilities</span>
-            <span class="guided-demo-dept-pill">Fleet &amp; Assets</span>
-            <span class="guided-demo-dept-pill">Projects</span>
-          </div>
-          <p style="font-size:0.8rem;color:rgba(255,255,255,0.45);margin-top:0.5rem;">Try live department switching in Nexus Sandbox &rarr;</p>
-        </div>
-      </div>
-      <div class="guided-demo-step" data-demo="nexus" data-step="2">
-        <div class="guided-demo-step__eyebrow">Step 3 of 5</div>
-        <h2 class="guided-demo-step__heading">Finance Department View</h2>
-        <p class="guided-demo-step__caption">The Finance department view shows budget vs. actuals, cost center variances, and upcoming obligations &mdash; all in a single panel, updated automatically.</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-kpi-row">
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">YTD Budget Used</div><div class="guided-demo-kpi__val">$4.1M</div><div class="guided-demo-kpi__delta">68% of annual</div></div>
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Q3 Variance</div><div class="guided-demo-kpi__val">+$82K</div><div class="guided-demo-kpi__delta">&#9650; 2.1% over target</div></div>
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Invoices Pending</div><div class="guided-demo-kpi__val">17</div><div class="guided-demo-kpi__delta">$243K outstanding</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="guided-demo-step" data-demo="nexus" data-step="3">
-        <div class="guided-demo-step__eyebrow">Step 4 of 5</div>
-        <h2 class="guided-demo-step__heading">Alerts &amp; Priority Actions</h2>
-        <p class="guided-demo-step__caption">Nexus automatically surfaces what requires attention &mdash; across all departments &mdash; so leadership always knows what needs action today.</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-item-row">
-            <div class="guided-demo-item"><span class="guided-demo-item__dot guided-demo-item__dot--red"></span>Vehicle inspection overdue &mdash; Fleet Unit 14</div>
-            <div class="guided-demo-item"><span class="guided-demo-item__dot guided-demo-item__dot--warn"></span>HVAC maintenance window expires in 6 days (Facilities)</div>
-            <div class="guided-demo-item"><span class="guided-demo-item__dot guided-demo-item__dot--warn"></span>3 compliance certifications expiring this quarter (Risk)</div>
-            <div class="guided-demo-item"><span class="guided-demo-item__dot"></span>HR: New hire onboarding on schedule (4 pending)</div>
-          </div>
-        </div>
-      </div>
-      <div class="guided-demo-step" data-demo="nexus" data-step="4">
-        <div class="guided-demo-step__eyebrow">Step 5 of 5</div>
-        <h2 class="guided-demo-step__heading">Ready to Explore Live?</h2>
-        <p class="guided-demo-step__caption">Nexus Sandbox lets you explore all departments with a fictional organization &mdash; no login, no install, no forms. See the full platform in action right now.</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-dept-pills">
-            <span class="guided-demo-dept-pill is-selected">&#10003; No login required</span>
-            <span class="guided-demo-dept-pill">Synthetic data</span>
-            <span class="guided-demo-dept-pill">All departments</span>
-            <span class="guided-demo-dept-pill">Nothing to install</span>
-          </div>
-        </div>
-      </div>
-      <div class="guided-demo-cta-row" id="gdfinalcta-nexus" style="display:none">
-        <a href="../sandbox/" aria-label="Explore Nexus Live — no login required">Explore Nexus Live &rarr;</a>
-        <p style="margin-top:0.625rem;font-size:0.8rem;color:rgba(255,255,255,0.45);">No login &bull; Synthetic data &bull; Nothing to install</p>
-      </div>
-      <div class="guided-demo-modal__footer">
-        <p class="guided-demo-modal__disclosure">&#9432; All data shown is entirely synthetic and fictional. No real organizations, employees, or financials are represented.</p>
-        <div class="guided-demo-nav">
-          <button type="button" class="guided-demo-nav-btn" data-demo-back="nexus" aria-label="Previous step">&#8592; Back</button>
-          <button type="button" class="guided-demo-nav-btn guided-demo-nav-btn--primary" data-demo-next="nexus" aria-label="Next step">Next &rarr;</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Genesis Guided Demo ── -->
-  <div id="demo-overlay-genesis" class="guided-demo-overlay" role="dialog" aria-modal="true"
-       aria-labelledby="gdemo-title-genesis" aria-describedby="gdemo-sub-genesis" hidden>
-    <div class="guided-demo-modal">
-      <div class="guided-demo-modal__header">
-        <div>
-          <div class="guided-demo-modal__title" id="gdemo-title-genesis">&#9654; Genesis</div>
-          <div class="guided-demo-modal__subtitle" id="gdemo-sub-genesis">Interactive guided tour &mdash; Synthetic data only &mdash; No login required</div>
-        </div>
-        <button type="button" class="guided-demo-modal__close" data-demo-close="genesis" aria-label="Close demo">&times;</button>
-      </div>
-      <div class="guided-demo-progress">
-        <div class="guided-demo-progress__track"><div class="guided-demo-progress__fill" id="gdfill-genesis" style="width:25%"></div></div>
-        <span class="guided-demo-progress__label" id="gdlbl-genesis">Step 1 of 4</span>
-      </div>
-      <div class="guided-demo-dots" aria-hidden="true">
-        <div class="guided-demo-dot is-active" data-demo="genesis" data-dot="0"></div>
-        <div class="guided-demo-dot" data-demo="genesis" data-dot="1"></div>
-        <div class="guided-demo-dot" data-demo="genesis" data-dot="2"></div>
-        <div class="guided-demo-dot" data-demo="genesis" data-dot="3"></div>
-      </div>
-      <div class="guided-demo-step is-active" data-demo="genesis" data-step="0">
-        <div class="guided-demo-step__eyebrow">Step 1 of 4</div>
-        <h2 class="guided-demo-step__heading">Ask Your Organization a Question</h2>
-        <p class="guided-demo-step__caption">Genesis lets leadership ask natural-language questions across all connected data. No analyst needed &mdash; just ask. Answers come back in plain language with the numbers behind them.</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-ask-bar">&ldquo;Which facilities have the highest maintenance cost per square foot this year?&rdquo;</div>
-          <div class="guided-demo-answer">
-            <strong style="color:var(--gcs-green-lt);">Genesis:</strong> Top three facilities by maintenance cost per sq ft: (1) Building C &mdash; $4.82/sqft, (2) North Annex &mdash; $3.91/sqft, (3) Main Campus East Wing &mdash; $3.44/sqft. Building C is 38% above portfolio average, driven by HVAC repairs in Q2.
-          </div>
-        </div>
-      </div>
-      <div class="guided-demo-step" data-demo="genesis" data-step="1">
-        <div class="guided-demo-step__eyebrow">Step 2 of 4</div>
-        <h2 class="guided-demo-step__heading">Cross-Department Analysis</h2>
-        <p class="guided-demo-step__caption">Genesis connects data across every department. Ask a question that spans Finance and Safety, or HR and Projects &mdash; Genesis synthesizes the answer from connected sources.</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-ask-bar">&ldquo;How does overtime spending correlate with safety incidents this quarter?&rdquo;</div>
-          <div class="guided-demo-answer">
-            <strong style="color:var(--gcs-green-lt);">Genesis:</strong> Departments with &gt;15% overtime showed a 2.3&#215; higher incident rate vs. departments under 10% overtime. Q3 data shows Finance and Fleet as highest-overtime units; Safety flagged 4 of 6 Q3 incidents in those same departments.
-          </div>
-        </div>
-      </div>
-      <div class="guided-demo-step" data-demo="genesis" data-step="2">
-        <div class="guided-demo-step__eyebrow">Step 3 of 4</div>
-        <h2 class="guided-demo-step__heading">Governed AI — Not a Black Box</h2>
-        <p class="guided-demo-step__caption">Every Genesis answer shows its sources. Leaders see which data the answer is based on, so decisions are informed &mdash; not just automated.</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-item-row">
-            <div class="guided-demo-item"><span class="guided-demo-item__dot"></span>Source: HR overtime records (Q3, all departments)</div>
-            <div class="guided-demo-item"><span class="guided-demo-item__dot"></span>Source: Safety incident log (Jan–Sep, current year)</div>
-            <div class="guided-demo-item"><span class="guided-demo-item__dot"></span>Confidence: High &mdash; 847 matched records across 9 departments</div>
-            <div class="guided-demo-item"><span class="guided-demo-item__dot guided-demo-item__dot--warn"></span>Note: Seasonal staffing patterns may affect interpretation</div>
-          </div>
-        </div>
-      </div>
-      <div class="guided-demo-step" data-demo="genesis" data-step="3">
-        <div class="guided-demo-step__eyebrow">Step 4 of 4</div>
-        <h2 class="guided-demo-step__heading">From Analysis to Action</h2>
-        <p class="guided-demo-step__caption">Genesis surfaces the insight. Nexus closes the loop. Leadership can act directly from a Genesis answer &mdash; assign work, schedule reviews, or adjust priorities.</p>
-        <div class="guided-demo-visual">
-          <ul class="guided-demo-action-list">
-            <li>Flag Fleet overtime for Q4 workforce planning review</li>
-            <li>Schedule Safety debrief with Fleet &amp; Finance managers</li>
-            <li>Add cross-department overtime threshold alert to Nexus</li>
-            <li>Request Finance director Q4 staffing cost projection</li>
-          </ul>
-        </div>
-      </div>
-      <div class="guided-demo-cta-row" id="gdfinalcta-genesis" style="display:none">
-        <a href="../sandbox/" aria-label="Explore Nexus Live — no login required">Explore Nexus Live &rarr;</a>
-        <p style="margin-top:0.625rem;font-size:0.8rem;color:rgba(255,255,255,0.45);">No login &bull; Synthetic data &bull; Nothing to install</p>
-      </div>
-      <div class="guided-demo-modal__footer">
-        <p class="guided-demo-modal__disclosure">&#9432; All data shown is entirely synthetic and fictional. No real organizations, employees, or financials are represented.</p>
-        <div class="guided-demo-nav">
-          <button type="button" class="guided-demo-nav-btn" data-demo-back="genesis" aria-label="Previous step">&#8592; Back</button>
-          <button type="button" class="guided-demo-nav-btn guided-demo-nav-btn--primary" data-demo-next="genesis" aria-label="Next step">Next &rarr;</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Map Intelligence Guided Demo ── -->
-  <div id="demo-overlay-map" class="guided-demo-overlay" role="dialog" aria-modal="true"
-       aria-labelledby="gdemo-title-map" aria-describedby="gdemo-sub-map" hidden>
-    <div class="guided-demo-modal">
-      <div class="guided-demo-modal__header">
-        <div>
-          <div class="guided-demo-modal__title" id="gdemo-title-map">&#9654; Map Intelligence</div>
-          <div class="guided-demo-modal__subtitle" id="gdemo-sub-map">Interactive guided tour &mdash; Synthetic data only &mdash; No login required</div>
-        </div>
-        <button type="button" class="guided-demo-modal__close" data-demo-close="map" aria-label="Close demo">&times;</button>
-      </div>
-      <div class="guided-demo-progress">
-        <div class="guided-demo-progress__track"><div class="guided-demo-progress__fill" id="gdfill-map" style="width:25%"></div></div>
-        <span class="guided-demo-progress__label" id="gdlbl-map">Step 1 of 4</span>
-      </div>
-      <div class="guided-demo-dots" aria-hidden="true">
-        <div class="guided-demo-dot is-active" data-demo="map" data-dot="0"></div>
-        <div class="guided-demo-dot" data-demo="map" data-dot="1"></div>
-        <div class="guided-demo-dot" data-demo="map" data-dot="2"></div>
-        <div class="guided-demo-dot" data-demo="map" data-dot="3"></div>
-      </div>
-      <div class="guided-demo-step is-active" data-demo="map" data-step="0">
-        <div class="guided-demo-step__eyebrow">Step 1 of 4</div>
-        <h2 class="guided-demo-step__heading">See Your Organization Geographically</h2>
-        <p class="guided-demo-step__caption">GCS Map Intelligence layers organizational data onto GIS maps. Facilities, assets, projects, incidents, and risk &mdash; all shown spatially, so leadership understands patterns that tables and spreadsheets miss.</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-kpi-row">
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Facilities Mapped</div><div class="guided-demo-kpi__val">23</div><div class="guided-demo-kpi__delta">Across 4 zones</div></div>
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Active Projects</div><div class="guided-demo-kpi__val">11</div><div class="guided-demo-kpi__delta">8 on schedule</div></div>
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Risk Zones Flagged</div><div class="guided-demo-kpi__val">3</div><div class="guided-demo-kpi__delta">Requires leadership review</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="guided-demo-step" data-demo="map" data-step="1">
-        <div class="guided-demo-step__eyebrow">Step 2 of 4</div>
-        <h2 class="guided-demo-step__heading">Facilities &amp; Asset Intelligence</h2>
-        <p class="guided-demo-step__caption">Each facility on the map links to its maintenance history, open work orders, cost per square foot, and compliance status. Leadership can see the health of every building &mdash; spatially.</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-item-row">
-            <div class="guided-demo-item"><span class="guided-demo-item__dot guided-demo-item__dot--red"></span>Building C &mdash; HVAC maintenance overdue (Zone 2)</div>
-            <div class="guided-demo-item"><span class="guided-demo-item__dot guided-demo-item__dot--warn"></span>North Annex &mdash; Roof inspection due Q4 (Zone 1)</div>
-            <div class="guided-demo-item"><span class="guided-demo-item__dot"></span>Main Campus &mdash; All systems current (Zone 1)</div>
-            <div class="guided-demo-item"><span class="guided-demo-item__dot"></span>Warehouse D &mdash; Fire suppression test completed (Zone 3)</div>
-          </div>
-        </div>
-      </div>
-      <div class="guided-demo-step" data-demo="map" data-step="2">
-        <div class="guided-demo-step__eyebrow">Step 3 of 4</div>
-        <h2 class="guided-demo-step__heading">Project &amp; Risk Visualization</h2>
-        <p class="guided-demo-step__caption">Active projects are mapped to their locations. Risk zones are highlighted automatically when incidents or compliance gaps cluster geographically &mdash; surfacing patterns that reports miss.</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-kpi-row">
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">On-Schedule Projects</div><div class="guided-demo-kpi__val">8 / 11</div><div class="guided-demo-kpi__delta">73% on track</div></div>
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Delayed Projects</div><div class="guided-demo-kpi__val">3</div><div class="guided-demo-kpi__delta">All in Zone 2</div></div>
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Incident Cluster</div><div class="guided-demo-kpi__val">Zone 2</div><div class="guided-demo-kpi__delta">5 incidents, 90 days</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="guided-demo-step" data-demo="map" data-step="3">
-        <div class="guided-demo-step__eyebrow">Step 4 of 4</div>
-        <h2 class="guided-demo-step__heading">Spatial Intelligence + Nexus</h2>
-        <p class="guided-demo-step__caption">Map Intelligence is part of the GCS platform. Every spatial insight connects to Nexus &mdash; so leaders can act on geographic findings directly from the map view.</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-dept-pills">
-            <span class="guided-demo-dept-pill is-selected">&#10003; Facilities layer</span>
-            <span class="guided-demo-dept-pill">Projects layer</span>
-            <span class="guided-demo-dept-pill">Safety layer</span>
-            <span class="guided-demo-dept-pill">Risk zones</span>
-            <span class="guided-demo-dept-pill">Asset tracking</span>
-          </div>
-        </div>
-      </div>
-      <div class="guided-demo-cta-row" id="gdfinalcta-map" style="display:none">
-        <a href="../map-intelligence/" aria-label="Learn more about Map Intelligence">Learn About Map Intelligence &rarr;</a>
-        <p style="margin-top:0.625rem;font-size:0.8rem;color:rgba(255,255,255,0.45);">No login &bull; Synthetic data &bull; Nothing to install</p>
-      </div>
-      <div class="guided-demo-modal__footer">
-        <p class="guided-demo-modal__disclosure">&#9432; All data shown is entirely synthetic and fictional. No real organizations, employees, or financials are represented.</p>
-        <div class="guided-demo-nav">
-          <button type="button" class="guided-demo-nav-btn" data-demo-back="map" aria-label="Previous step">&#8592; Back</button>
-          <button type="button" class="guided-demo-nav-btn guided-demo-nav-btn--primary" data-demo-next="map" aria-label="Next step">Next &rarr;</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Consulting Guided Demo ── -->
-  <div id="demo-overlay-consulting" class="guided-demo-overlay" role="dialog" aria-modal="true"
-       aria-labelledby="gdemo-title-consulting" aria-describedby="gdemo-sub-consulting" hidden>
-    <div class="guided-demo-modal">
-      <div class="guided-demo-modal__header">
-        <div>
-          <div class="guided-demo-modal__title" id="gdemo-title-consulting">&#9654; Consulting &amp; Implementation</div>
-          <div class="guided-demo-modal__subtitle" id="gdemo-sub-consulting">Interactive guided tour &mdash; Synthetic data only &mdash; No login required</div>
-        </div>
-        <button type="button" class="guided-demo-modal__close" data-demo-close="consulting" aria-label="Close demo">&times;</button>
-      </div>
-      <div class="guided-demo-progress">
-        <div class="guided-demo-progress__track"><div class="guided-demo-progress__fill" id="gdfill-consulting" style="width:25%"></div></div>
-        <span class="guided-demo-progress__label" id="gdlbl-consulting">Step 1 of 4</span>
-      </div>
-      <div class="guided-demo-dots" aria-hidden="true">
-        <div class="guided-demo-dot is-active" data-demo="consulting" data-dot="0"></div>
-        <div class="guided-demo-dot" data-demo="consulting" data-dot="1"></div>
-        <div class="guided-demo-dot" data-demo="consulting" data-dot="2"></div>
-        <div class="guided-demo-dot" data-demo="consulting" data-dot="3"></div>
-      </div>
-      <div class="guided-demo-step is-active" data-demo="consulting" data-step="0">
-        <div class="guided-demo-step__eyebrow">Step 1 of 4</div>
-        <h2 class="guided-demo-step__heading">Assess: Understand Where You Are</h2>
-        <p class="guided-demo-step__caption">GCS Consulting begins with a structured organizational assessment &mdash; across operations, technology, workforce, and governance. The goal: an honest picture of where the organization is today.</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-item-row">
-            <div class="guided-demo-item"><span class="guided-demo-item__dot"></span>Operations: Workflow fragmentation identified in 3 departments</div>
-            <div class="guided-demo-item"><span class="guided-demo-item__dot guided-demo-item__dot--warn"></span>Technology: 4 disconnected systems with no shared data layer</div>
-            <div class="guided-demo-item"><span class="guided-demo-item__dot guided-demo-item__dot--warn"></span>Workforce: Role clarity gaps in Finance and Risk functions</div>
-            <div class="guided-demo-item"><span class="guided-demo-item__dot"></span>Governance: Compliance processes documented; execution gaps found</div>
-          </div>
-        </div>
-      </div>
-      <div class="guided-demo-step" data-demo="consulting" data-step="1">
-        <div class="guided-demo-step__eyebrow">Step 2 of 4</div>
-        <h2 class="guided-demo-step__heading">Design: Build the Right Architecture</h2>
-        <p class="guided-demo-step__caption">GCS designs the connected intelligence architecture for your organization &mdash; which platforms, which integrations, which workflows. The design is specific to your context, not a generic playbook.</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-dept-pills">
-            <span class="guided-demo-dept-pill is-selected">&#10003; Nexus configuration</span>
-            <span class="guided-demo-dept-pill">Data integration map</span>
-            <span class="guided-demo-dept-pill">Workflow design</span>
-            <span class="guided-demo-dept-pill">Role &amp; access structure</span>
-            <span class="guided-demo-dept-pill">Governance framework</span>
-          </div>
-        </div>
-      </div>
-      <div class="guided-demo-step" data-demo="consulting" data-step="2">
-        <div class="guided-demo-step__eyebrow">Step 3 of 4</div>
-        <h2 class="guided-demo-step__heading">Implement: Stand Up the Platform</h2>
-        <p class="guided-demo-step__caption">GCS implementation teams configure Nexus, connect data sources, train teams, and launch the platform. Implementation is structured to minimize disruption and maximize adoption.</p>
-        <div class="guided-demo-visual">
-          <div class="guided-demo-kpi-row">
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Typical Launch</div><div class="guided-demo-kpi__val">90 days</div><div class="guided-demo-kpi__delta">From assessment to live</div></div>
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Training Sessions</div><div class="guided-demo-kpi__val">12</div><div class="guided-demo-kpi__delta">Department + leadership tracks</div></div>
-            <div class="guided-demo-kpi"><div class="guided-demo-kpi__lbl">Go-Live Support</div><div class="guided-demo-kpi__val">30 days</div><div class="guided-demo-kpi__delta">Included standard</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="guided-demo-step" data-demo="consulting" data-step="3">
-        <div class="guided-demo-step__eyebrow">Step 4 of 4</div>
-        <h2 class="guided-demo-step__heading">Improve: Continuously Build Better</h2>
-        <p class="guided-demo-step__caption">GCS stays engaged after launch. Quarterly reviews, ongoing optimization, and advisory support help the organization continuously improve &mdash; not just implement once and drift.</p>
-        <div class="guided-demo-visual">
-          <ul class="guided-demo-action-list">
-            <li>Quarterly organizational health reviews with leadership</li>
-            <li>Platform optimization based on usage data and team feedback</li>
-            <li>New department onboarding as organization grows</li>
-            <li>Advisory access for strategic and operational decisions</li>
-          </ul>
-        </div>
-      </div>
-      <div class="guided-demo-cta-row" id="gdfinalcta-consulting" style="display:none">
-        <a href="../consulting/" aria-label="Learn more about GCS Consulting">Learn About Consulting &rarr;</a>
-        <p style="margin-top:0.625rem;font-size:0.8rem;color:rgba(255,255,255,0.45);">No login &bull; Synthetic data &bull; Nothing to install</p>
-      </div>
-      <div class="guided-demo-modal__footer">
-        <p class="guided-demo-modal__disclosure">&#9432; All data shown is entirely synthetic and fictional. No real organizations, employees, or financials are represented.</p>
-        <div class="guided-demo-nav">
-          <button type="button" class="guided-demo-nav-btn" data-demo-back="consulting" aria-label="Previous step">&#8592; Back</button>
-          <button type="button" class="guided-demo-nav-btn guided-demo-nav-btn--primary" data-demo-next="consulting" aria-label="Next step">Next &rarr;</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-  (function() {
-    'use strict';
-    var DEMOS = {
-      overview:   { total: 4 },
-      nexus:      { total: 5 },
-      genesis:    { total: 4 },
-      map:        { total: 4 },
-      consulting: { total: 4 }
-    };
-
-    var state = {};
-    Object.keys(DEMOS).forEach(function(key) { state[key] = 0; });
-
-    function getEls(key) {
-      return {
-        overlay:  document.getElementById('demo-overlay-' + key),
-        fill:     document.getElementById('gdfill-' + key),
-        lbl:      document.getElementById('gdlbl-' + key),
-        dots:     document.querySelectorAll('[data-demo="' + key + '"][data-dot]'),
-        steps:    document.querySelectorAll('[data-demo="' + key + '"][data-step]'),
-        finalCta: document.getElementById('gdfinalcta-' + key),
-        closeBtn: document.querySelector('[data-demo-close="' + key + '"]'),
-        backBtn:  document.querySelector('[data-demo-back="' + key + '"]'),
-        nextBtn:  document.querySelector('[data-demo-next="' + key + '"]'),
-        opener:   document.getElementById('open-demo-' + key)
-      };
-    }
-
-    function renderStep(key) {
-      var cur = state[key];
-      var total = DEMOS[key].total;
-      var els = getEls(key);
-      var pct = Math.round(((cur + 1) / total) * 100);
-
-      if (els.fill)  els.fill.style.width = pct + '%';
-      if (els.lbl)   els.lbl.textContent = 'Step ' + (cur + 1) + ' of ' + total;
-
-      els.dots.forEach(function(d, i) { d.classList.toggle('is-active', i === cur); });
-      els.steps.forEach(function(s, i) { s.classList.toggle('is-active', i === cur); });
-
-      if (els.backBtn) els.backBtn.disabled = (cur === 0);
-      if (els.nextBtn) els.nextBtn.style.display = (cur === total - 1) ? 'none' : '';
-      if (els.finalCta) els.finalCta.style.display = (cur === total - 1) ? '' : 'none';
-    }
-
-    function openDemo(key) {
-      state[key] = 0;
-      renderStep(key);
-      var els = getEls(key);
-      els.overlay.removeAttribute('hidden');
-      els.overlay.classList.add('is-open');
-      document.body.style.overflow = 'hidden';
-      if (els.closeBtn) els.closeBtn.focus();
-    }
-
-    function closeDemo(key) {
-      var els = getEls(key);
-      els.overlay.classList.remove('is-open');
-      els.overlay.setAttribute('hidden', '');
-      document.body.style.overflow = '';
-      if (els.opener) els.opener.focus();
-    }
-
-    // Wire openers
-    Object.keys(DEMOS).forEach(function(key) {
-      var opener = document.getElementById('open-demo-' + key);
-      if (opener) {
-        opener.addEventListener('click', function() { openDemo(key); });
-      }
-
-      var closeBtn = document.querySelector('[data-demo-close="' + key + '"]');
-      if (closeBtn) {
-        closeBtn.addEventListener('click', function() { closeDemo(key); });
-      }
-
-      var backBtn = document.querySelector('[data-demo-back="' + key + '"]');
-      if (backBtn) {
-        backBtn.addEventListener('click', function() {
-          if (state[key] > 0) { state[key]--; renderStep(key); }
-        });
-      }
-
-      var nextBtn = document.querySelector('[data-demo-next="' + key + '"]');
-      if (nextBtn) {
-        nextBtn.addEventListener('click', function() {
-          if (state[key] < DEMOS[key].total - 1) { state[key]++; renderStep(key); }
-        });
-      }
-
-      // Keyboard: Escape closes; trap Tab
-      var overlay = document.getElementById('demo-overlay-' + key);
-      if (overlay) {
-        overlay.addEventListener('keydown', function(e) {
-          if (e.key === 'Escape') { closeDemo(key); return; }
-          if (e.key === 'Tab') {
-            var focusable = overlay.querySelectorAll('button, a, [tabindex]:not([tabindex="-1"])');
-            var first = focusable[0];
-            var last = focusable[focusable.length - 1];
-            if (e.shiftKey) {
-              if (document.activeElement === first) { e.preventDefault(); last.focus(); }
-            } else {
-              if (document.activeElement === last) { e.preventDefault(); first.focus(); }
-            }
-          }
-        });
-      }
-    });
-  })();
-  </script>
 </body>
 </html>

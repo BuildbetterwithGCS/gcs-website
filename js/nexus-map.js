@@ -1,5 +1,5 @@
 /**
- * GCS Nexus Radial Connectivity Map
+ * Nexus Radial Connectivity Map
  * Renders the interactive hub-and-spoke organizational connectivity diagram.
  * Signature graphic: NEXUS at center, every department connected.
  */

@@ -98,11 +98,11 @@
     ['CURRENT STATE', function (industry) { return industry.state; }],
     ['GAP / OPPORTUNITY', function (industry, challenge) { return industry.gap + ' ' + challenges[challenge]; }],
     ['SCENARIOS', function (industry, challenge) { return 'Synthetic scenarios compare conservative, balanced, and accelerated responses for ' + industry.name + ' priorities.'; }],
-    ['RECOMMENDED ACTIONS', function (industry, challengeLabel) { return 'Genesis-supported recommendations prioritize next actions around ' + challengeLabel.replace(/-/g, ' ') + '.'; }],
+    ['RECOMMENDED ACTIONS', function (industry, challengeLabel) { return 'Ask Nexus recommendations prioritize next actions around ' + challengeLabel.replace(/-/g, ' ') + '.'; }],
     ['EXECUTIVE DASHBOARD', function (industry) { return industry.dashboard; }],
     ['ACCOUNTABILITY', function (industry) { return 'Named owners, due dates, approvals, and KPI checkpoints remain visible across ' + industry.name + ' workflows.'; }],
     ['MAP INTELLIGENCE', function (industry) { return 'Synthetic geospatial layers connect location, condition, projects, and service geography for ' + industry.name + '.'; }],
-    ['GENESIS SUPPORT', function (industry) { return 'Governed AI drafts analysis, reporting, documentation, and follow-up while human approval stays in control.'; }]
+    ['ASK NEXUS', function (industry) { return 'Governed AI analysis drafts analysis, reporting, documentation, and follow-up while human approval stays in control.'; }]
   ];
 
   var industryButtons = Array.prototype.slice.call(root.querySelectorAll('[data-industry]'));

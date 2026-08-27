@@ -190,7 +190,8 @@ button { cursor: pointer; background: none; border: none; font: inherit; }
   background: rgba(122,170,53,0.18);
   border-color: rgba(122,170,53,0.5);
 }
-.nav__link--cta {
+.nav__link--cta,
+.nav__link--get-started {
   background: var(--gcs-green);
   color: #fff !important;
   border: none;
@@ -198,7 +199,8 @@ button { cursor: pointer; background: none; border: none; font: inherit; }
   margin-left: 0.5rem;
   padding: 0.5rem 1rem;
 }
-.nav__link--cta:hover {
+.nav__link--cta:hover,
+.nav__link--get-started:hover {
   background: var(--gcs-green-dk);
 }
 /* Hamburger */
@@ -1723,15 +1725,10 @@ noscript .nexus-dept-grid { display: flex; }
 }
 
 /* ============================================================
-   NAV LINK — Get Started (CTA style) in primary nav
+   NAV LINK — CTA alias for legacy markup
    ============================================================ */
-.nav__link--get-started {
-  background: var(--gcs-green); color: #fff !important;
-  padding: 0.4rem 1rem; border-radius: 999px; font-weight: 600;
-  transition: background 0.15s;
-}
-.nav__link--get-started:hover { background: var(--gcs-green-dk); }
 @media (max-width: 900px) {
+  .nav__link--cta,
   .nav__link--get-started { border-radius: 6px; padding: 0.5rem 1rem; }
 }
 
@@ -2413,6 +2410,9 @@ noscript .nexus-dept-grid { display: flex; }
   display: flex;
   pointer-events: all;
 }
+.ndp-player--captions-only .ndp-controls {
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
 .ndp-player[aria-hidden="true"] { display: none !important; }
 
 /* Caption bar */
@@ -2430,6 +2430,18 @@ noscript .nexus-dept-grid { display: flex; }
   display: inline-block;
   max-width: 68ch;
   font-weight: 500;
+}
+
+.ndp-complete {
+  background: rgba(104,152,28,0.12);
+  color: #fff;
+  text-align: center;
+  padding: 0.5rem 1rem;
+}
+.ndp-complete__link {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
 }
 
 /* Speech unavailable note */
@@ -2506,6 +2518,39 @@ noscript .nexus-dept-grid { display: flex; }
   color: #fca5a5;
 }
 .ndp-btn--exit:hover { background: rgba(220,38,38,0.2); border-color: #dc2626; }
+.ndp-btn--audio-unavailable { display: none; }
+
+/* Volume slider — shown only when audio is present */
+.ndp-vol-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 72px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.25);
+  outline: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.ndp-vol-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--gcs-green);
+  cursor: pointer;
+}
+.ndp-vol-slider::-moz-range-thumb {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--gcs-green);
+  cursor: pointer;
+  border: none;
+}
+.ndp-vol-slider:focus-visible {
+  outline: 2px solid var(--gcs-green);
+  outline-offset: 3px;
+}
 
 /* Progress bar */
 .ndp-progress {
@@ -2570,10 +2615,26 @@ noscript .nexus-dept-grid { display: flex; }
     padding: 0.5rem 0.625rem;
   }
   .ndp-controls__center { min-width: 80px; }
-  .ndp-btn { font-size: 0.75rem; padding: 0.5rem 0.625rem; min-height: 2.5rem; min-width: 2.5rem; }
+  .ndp-btn { font-size: 0.75rem; padding: 0.5rem 0.625rem; min-height: 2.75rem; min-width: 2.75rem; }
   .ndp-btn--primary { padding: 0.5rem 0.75rem; }
   .ndp-caption { font-size: 0.875rem; padding: 0.5rem 0.875rem; }
   .ndp-scene-title { font-size: 0.6875rem; }
   .ndp-progress__label { font-size: 0.6875rem; }
   .ndp-watch-btn { font-size: 0.8125rem; padding: 0.5rem 1rem; }
+  /* Volume slider too narrow to use on mobile */
+  .ndp-vol-slider { display: none !important; }
+}
+
+/* Very small screens (390px iPhone) — keep controls on one row */
+@media (max-width: 430px) {
+  .ndp-controls { flex-wrap: nowrap; overflow-x: auto; padding: 0.5rem; gap: 0.25rem; }
+  .ndp-controls::-webkit-scrollbar { height: 0; }
+  .ndp-controls__center { min-width: 60px; }
+  .ndp-btn { padding: 0.5rem 0.5rem; min-height: 2.75rem; min-width: 2.75rem; }
+  .ndp-btn--exit { min-width: auto; }
+  /* Show only icon on primary action buttons */
+  #ndp-btn-play::after,
+  #ndp-btn-pause::after,
+  #ndp-btn-resume::after,
+  #ndp-btn-replay::after { content: none; }
 }

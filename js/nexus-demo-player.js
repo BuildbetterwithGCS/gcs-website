@@ -1,753 +1,532 @@
 /**
  * nexus-demo-player.js
- * GCS Nexus — Narrated Demo Player
+ * Nexus captions-first demo player.
  *
- * Adds a "Watch Demo" experience to the Nexus sandbox.
- * Uses Web Speech API for narration — no external audio files or API keys required.
- * Structured so pre-recorded MP3 narration can replace speech synthesis later.
- *
- * All data is synthetic. No real organizations or individuals represented.
+ * Deterministic timeline with requestAnimationFrame.
+ * All demo data is synthetic. No real organizations or individuals represented.
  */
 (function () {
   'use strict';
 
-  /* ============================================================
-     DEMO SCENES
-     Each scene: { id, title, dept, narration, caption, duration, action, highlight }
-     dept: data-view value to activate that tab, or null to stay on current
-     action: function(done) — called at scene start, call done() when UI action completes
-     highlight: CSS selector of element to pulse-highlight, or null
-     duration: milliseconds to display this scene (narration takes precedence)
-  ============================================================ */
-
-  var SCENES = [
-    // ── Introduction ──────────────────────────────────────────────
-    {
-      id: 'intro',
-      title: 'Welcome to Nexus',
-      dept: 'executive',
-      narration: 'Welcome to GCS Nexus — the operational intelligence platform built for local government and public-sector organizations. In the next few minutes, you\'ll see how Nexus connects every department, surfaces the issues that matter most, and turns operational information into action and measurable value.',
-      caption: 'Welcome to GCS Nexus — operational intelligence for local government.',
-      duration: 9000,
-      action: null,
-      highlight: null
-    },
-
-    // ── Executive Overview ────────────────────────────────────────
-    {
-      id: 'exec-kpis',
-      title: 'Executive Overview — KPIs',
-      dept: 'executive',
-      narration: 'The Executive Dashboard opens to a single view across the entire organization. Budget utilization, open work orders, workforce capacity, and risk items — all in one place, always current.',
-      caption: 'Executive Dashboard: organization-wide KPIs at a glance.',
-      duration: 7000,
-      action: null,
-      highlight: '.dash-kpi-grid'
-    },
-    {
-      id: 'exec-drill',
-      title: 'Executive Overview — KPI Drill-Down',
-      dept: 'executive',
-      narration: 'A leader notices 31 open risk items, four rated high priority. One tap opens the drill-down. Nexus shows which risks have been open the longest, names the recommended action, and estimates the financial exposure if left unaddressed.',
-      caption: 'Tap any KPI to see the full picture — context, cause, and recommended action.',
-      duration: 8000,
-      action: function (done) {
-        var card = document.querySelector('[data-kpi-key="risk-open"]');
-        if (card) {
-          highlightElement(card);
-          setTimeout(function () {
-            if (window.NexusInteractive) window.NexusInteractive.renderKpiDetail('risk-open');
-            done();
-          }, 900);
-        } else { done(); }
-      },
-      highlight: null
-    },
-    {
-      id: 'exec-alerts',
-      title: 'Executive Overview — Priority Alerts',
-      dept: 'executive',
-      narration: 'Below the KPIs, Nexus surfaces the four items currently requiring executive attention. Instead of searching through separate systems, leaders drill directly into the underlying operational record, understand the cause, assign action, and track the outcome.',
-      caption: 'Priority alerts let executives act without leaving the dashboard.',
-      duration: 8000,
-      action: function (done) {
-        if (window.NexusInteractive) window.NexusInteractive.closeDrawer();
-        setTimeout(function () {
-          var row = document.querySelector('#view-executive .dash-expand-row');
-          if (row) {
-            highlightElement(row);
-            setTimeout(function () { row.click(); done(); }, 700);
-          } else { done(); }
-        }, 400);
-      },
-      highlight: null
-    },
-
-    // ── Finance ───────────────────────────────────────────────────
-    {
-      id: 'finance-overview',
-      title: 'Finance — Budget & Revenue',
-      dept: 'finance',
-      narration: 'The Finance view shows the full budget picture. Revenue collected is running six percent above prior year. Accounts payable has fourteen invoices past thirty days — two of them flagging strategic vendors. Nexus identifies the risk before it affects contract negotiations.',
-      caption: 'Finance: budget utilization, revenue, and AP aging in one view.',
-      duration: 8000,
-      action: function (done) {
-        switchTab('finance', done);
-      },
-      highlight: '[data-kpi-key="fin-ap"]'
-    },
-    {
-      id: 'finance-ap',
-      title: 'Finance — AP Drill-Down',
-      dept: 'finance',
-      narration: 'Opening the Accounts Payable KPI reveals the six invoices that are forty-five or more days overdue. Nexus recommends immediate processing and notes that timely payment protects fourteen thousand dollars in annual preferred-vendor discounts.',
-      caption: 'AP drill-down: overdue invoices, vendor risk, and recommended action.',
-      duration: 7000,
-      action: function (done) {
-        var card = document.querySelector('[data-kpi-key="fin-ap"]');
-        if (card) {
-          highlightElement(card);
-          setTimeout(function () {
-            if (window.NexusInteractive) window.NexusInteractive.renderKpiDetail('fin-ap');
-            done();
-          }, 700);
-        } else { done(); }
-      },
-      highlight: null
-    },
-
-    // ── HR / Workforce ────────────────────────────────────────────
-    {
-      id: 'hr-overview',
-      title: 'HR & Workforce',
-      dept: 'hr',
-      narration: 'HR and Workforce shows total headcount at three hundred eighty-four, with twenty-seven open positions — nine of them critical. Average time to fill is fifty-two days. Nexus estimates that filling the five most critical roles reduces overtime exposure by twenty-two thousand dollars per month.',
-      caption: 'HR & Workforce: headcount, open positions, and capacity pressure.',
-      duration: 8000,
-      action: function (done) {
-        if (window.NexusInteractive) window.NexusInteractive.closeDrawer();
-        switchTab('hr', done);
-      },
-      highlight: '[data-kpi-key="hr-openpos"]'
-    },
-    {
-      id: 'hr-filter',
-      title: 'HR — Critical Items Filter',
-      dept: 'hr',
-      narration: 'Using the filter, a manager narrows the list to critical and overdue items only. Nexus instantly surfaces the three issues that require immediate action — compliance filings, outstanding performance reviews, and training renewals.',
-      caption: 'One-click filters surface only what needs your attention.',
-      duration: 7000,
-      action: function (done) {
-        var btn = document.querySelector('.nx-filter-btn[data-filter-val="critical"]');
-        if (btn) {
-          highlightElement(btn);
-          setTimeout(function () { btn.click(); done(); }, 700);
-        } else { done(); }
-      },
-      highlight: null
-    },
-
-    // ── Safety / Risk ─────────────────────────────────────────────
-    {
-      id: 'safety-overview',
-      title: 'Safety & Risk',
-      dept: 'safety',
-      narration: 'Safety shows seven recordable incidents year-to-date — a forty-two percent reduction from the prior year. But fourteen near-miss reports are open, and three remain unresolved in Building 3. Near misses are leading indicators. Nexus flags them before they become incidents.',
-      caption: 'Safety: incidents, near misses, and corrective actions.',
-      duration: 8000,
-      action: function (done) {
-        if (window.NexusInteractive) window.NexusInteractive.closeDrawer();
-        resetFilter();
-        switchTab('safety', done);
-      },
-      highlight: '[data-kpi-key="safety-nearmiss"]'
-    },
-    {
-      id: 'risk-overview',
-      title: 'Risk & Compliance',
-      dept: 'risk',
-      narration: 'The Risk and Compliance view shows thirty-one open items. Two rated high have been open more than thirty days without a named owner or mitigation plan. A water main segment at critical condition and a data privacy compliance gap. Both require executive action this week.',
-      caption: 'Risk & Compliance: unmitigated risks, compliance gaps, open items.',
-      duration: 8000,
-      action: function (done) {
-        if (window.NexusInteractive) window.NexusInteractive.closeDrawer();
-        switchTab('risk', done);
-      },
-      highlight: null
-    },
-
-    // ── Facilities ────────────────────────────────────────────────
-    {
-      id: 'facilities-overview',
-      title: 'Facilities',
-      dept: 'facilities',
-      narration: 'Facilities manages twenty-three buildings. Three have condition scores below forty out of a hundred — the threshold for emergency capital consideration. All three have been deferred from the capital plan for over two years.',
-      caption: 'Facilities: building conditions, work orders, and capital needs.',
-      duration: 7000,
-      action: function (done) {
-        if (window.NexusInteractive) window.NexusInteractive.closeDrawer();
-        switchTab('facilities', done);
-      },
-      highlight: '[data-kpi-key="fac-total"]'
-    },
-    {
-      id: 'facilities-wo',
-      title: 'Facilities — Work Order Action',
-      dept: 'facilities',
-      narration: 'Building 4 has a roof condition score of twenty-eight. Nexus recommends advancing it to capital priority and estimates that early intervention saves three hundred forty thousand dollars compared to emergency replacement. A work order can be created and assigned directly from this view.',
-      caption: 'From insight to action: create a work order without leaving Nexus.',
-      duration: 8000,
-      action: function (done) {
-        var row = document.querySelector('#view-facilities .dash-expand-row');
-        if (row) {
-          highlightElement(row);
-          setTimeout(function () {
-            row.click();
-            setTimeout(function () {
-              var woBtn = document.querySelector('.nx-action-btn[data-action="create-wo"]');
-              if (woBtn) {
-                highlightElement(woBtn);
-                setTimeout(function () { woBtn.click(); done(); }, 600);
-              } else { done(); }
-            }, 800);
-          }, 700);
-        } else { done(); }
-      },
-      highlight: null
-    },
-
-    // ── Fleet ─────────────────────────────────────────────────────
-    {
-      id: 'fleet-overview',
-      title: 'Fleet & Assets',
-      dept: 'fleet',
-      narration: 'Fleet shows eighty-seven units. Eight are currently down for maintenance. Unit A-14 has been in repair for eighteen days — parts delay. Nexus has already run a lease-versus-purchase analysis and flagged the vehicle for replacement review, projecting forty-two hundred dollars in annual savings.',
-      caption: 'Fleet: unit status, maintenance costs, and replacement recommendations.',
-      duration: 8000,
-      action: function (done) {
-        if (window.NexusInteractive) window.NexusInteractive.closeDrawer();
-        switchTab('fleet', done);
-      },
-      highlight: '[data-kpi-key="fleet-serviceable"]'
-    },
-
-    // ── Projects ──────────────────────────────────────────────────
-    {
-      id: 'projects-overview',
-      title: 'Capital Projects',
-      dept: 'projects',
-      narration: 'Projects tracks twenty-four active capital and operational projects. The community center renovation is three weeks behind schedule. A subcontractor staffing shortage is the root cause. Nexus shows the recovery plan adds forty-two thousand dollars to the budget and recommends executive sponsor escalation this week.',
-      caption: 'Projects: schedule, budget, root cause, and escalation paths.',
-      duration: 8000,
-      action: function (done) {
-        if (window.NexusInteractive) window.NexusInteractive.closeDrawer();
-        switchTab('projects', done);
-      },
-      highlight: '[data-kpi-key="proj-active"]'
-    },
-    {
-      id: 'projects-drill',
-      title: 'Projects — Delayed Project',
-      dept: 'projects',
-      narration: 'Opening the community center record shows the full project context — schedule status, cost to date, root cause analysis, and the recommended next action. The executive can assign an escalation directly from Nexus without opening a separate project management system.',
-      caption: 'Project drill-down: status, cost, cause, and corrective action.',
-      duration: 8000,
-      action: function (done) {
-        var delayRow = document.querySelector('#view-projects .dash-expand-row');
-        if (delayRow) {
-          highlightElement(delayRow);
-          setTimeout(function () {
-            delayRow.click();
-            setTimeout(function () {
-              var escalateBtn = document.querySelector('.nx-action-btn[data-action="escalate"]');
-              if (escalateBtn) highlightElement(escalateBtn);
-              done();
-            }, 800);
-          }, 700);
-        } else { done(); }
-      },
-      highlight: null
-    },
-
-    // ── Procurement ───────────────────────────────────────────────
-    {
-      id: 'procurement-overview',
-      title: 'Procurement',
-      dept: 'procurement',
-      narration: 'Procurement shows sixty-eight active purchase orders and eight point seven million in year-to-date spend. Nexus highlights three contracts expiring within sixty days and two that have compliance documentation gaps. Procurement staff can resolve issues before they become delays.',
-      caption: 'Procurement: POs, spend, contract compliance, and expiring agreements.',
-      duration: 8000,
-      action: function (done) {
-        if (window.NexusInteractive) window.NexusInteractive.closeDrawer();
-        switchTab('procurement', done);
-      },
-      highlight: '[data-kpi-key="proc-pos"]'
-    },
-
-    // ── IT & Data ─────────────────────────────────────────────────
-    {
-      id: 'it-overview',
-      title: 'IT & Data',
-      dept: 'it',
-      narration: 'IT and Data surfaces a cybersecurity training gap affecting forty-three percent of staff — flagged as in-progress. Open work orders total fourteen. Nexus tracks data privacy compliance alongside operational IT issues in the same unified view.',
-      caption: 'IT & Data: security posture, compliance gaps, and open tickets.',
-      duration: 7000,
-      action: function (done) {
-        if (window.NexusInteractive) window.NexusInteractive.closeDrawer();
-        switchTab('it', done);
-      },
-      highlight: null
-    },
-
-    // ── Map Intelligence ─────────────────────────────────────────
-    {
-      id: 'map-overview',
-      title: 'Map Intelligence',
-      dept: 'map',
-      narration: 'Map Intelligence places every facility, project, risk item, and fleet asset on a live operational map. Leaders see Building 4 flagged in red — condition critical. The water main risk is pinned on the street where failure is most likely. Every item is clickable for full operational context.',
-      caption: 'Map Intelligence: spatial view of facilities, projects, risks, and fleet.',
-      duration: 8000,
-      action: function (done) {
-        if (window.NexusInteractive) window.NexusInteractive.closeDrawer();
-        switchTab('map', function () {
-          setTimeout(function () {
-            var pin = document.querySelector('.nx-map-pin[data-id="bldg-4"]');
-            if (pin) {
-              highlightElement(pin);
-              setTimeout(function () { pin.click(); done(); }, 900);
-            } else { done(); }
-          }, 600);
-        });
-      },
-      highlight: null
-    },
-    {
-      id: 'map-risk',
-      title: 'Map Intelligence — Risk Layer',
-      dept: 'map',
-      narration: 'Selecting the risk layer isolates infrastructure risk items. The water main segment at thirty-one out of a hundred condition is visible exactly where it runs. Nexus calculates that a planned replacement at one hundred eighty thousand dollars avoids an emergency response costing four hundred twenty thousand.',
-      caption: 'Risk layer: see infrastructure risk geospatially with cost context.',
-      duration: 8000,
-      action: function (done) {
-        var riskPin = document.querySelector('.nx-map-pin[data-id="risk-water"]');
-        if (riskPin) {
-          highlightElement(riskPin);
-          setTimeout(function () { riskPin.click(); done(); }, 900);
-        } else { done(); }
-      },
-      highlight: null
-    },
-
-    // ── Ask Nexus ────────────────────────────────────────────────
-    {
-      id: 'ask-nexus-open',
-      title: 'Ask Nexus — AI Assistant',
-      dept: null,
-      narration: 'Ask Nexus is the organization\'s intelligence assistant. Available across every department, it answers plain-language questions about priorities, risks, financials, and operations — drawing on everything connected to the platform.',
-      caption: 'Ask Nexus: natural language access to operational intelligence.',
-      duration: 7000,
-      action: function (done) {
-        if (window.NexusInteractive) window.NexusInteractive.closeDrawer();
-        setTimeout(function () {
-          if (window.NexusInteractive) window.NexusInteractive.openAskNexus();
-          done();
-        }, 400);
-      },
-      highlight: null
-    },
-    {
-      id: 'ask-nexus-question',
-      title: 'Ask Nexus — Sample Question',
-      dept: null,
-      narration: 'A leader asks: what needs my attention today? Nexus responds within seconds with a prioritized summary drawn from every connected department — no search, no report, no waiting for a briefing.',
-      caption: '"What needs my attention today?" — Nexus responds with a cross-department summary.',
-      duration: 9000,
-      action: function (done) {
-        setTimeout(function () {
-          var suggestBtn = document.querySelector('.nx-chat-suggest');
-          if (suggestBtn) {
-            highlightElement(suggestBtn);
-            setTimeout(function () { suggestBtn.click(); done(); }, 800);
-          } else {
-            var input = document.querySelector('.nx-chat-input');
-            var sendBtn = document.querySelector('.nx-chat-send');
-            if (input && sendBtn) {
-              input.value = 'What needs my attention today?';
-              input.dispatchEvent(new Event('input'));
-              setTimeout(function () { sendBtn.click(); done(); }, 700);
-            } else { done(); }
-          }
-        }, 600);
-      },
-      highlight: null
-    },
-
-    // ── Cross-Department Intelligence ────────────────────────────
-    {
-      id: 'cross-dept',
-      title: 'Cross-Department Intelligence',
-      dept: 'executive',
-      narration: 'Nexus connects every department in a single intelligence layer. When Facilities defers a capital repair, it surfaces in Safety as a near-miss risk, in Finance as a potential budget variance, and in Risk as an open item. Leadership sees the full picture — not department silos.',
-      caption: 'Connected intelligence: one issue, every implication, one platform.',
-      duration: 9000,
-      action: function (done) {
-        if (window.NexusInteractive) {
-          window.NexusInteractive.closeDrawer();
-          // Close Ask Nexus if open
-          var panel = document.getElementById('ask-nexus-panel');
-          if (panel && panel.classList.contains('open')) {
-            var closeBtn = panel.querySelector('.nx-chat-close');
-            if (closeBtn) closeBtn.click();
-          }
-        }
-        switchTab('executive', done);
-      },
-      highlight: '.dash-kpi-grid'
-    },
-
-    // ── Know → Prove → Value ─────────────────────────────────────
-    {
-      id: 'value-framework',
-      title: 'Know → Verify → Decide → Do → Prove → Value',
-      dept: 'executive',
-      narration: 'GCS Nexus is built around a single principle: operational information should produce intelligence, action, accountability, and measurable value. Know what is happening. Verify the facts. Decide what to do. Execute. Prove the outcome. Deliver value. That is what Nexus is built to do.',
-      caption: 'Know → Verify → Decide → Do → Prove → Value. That is what Nexus is built to do.',
-      duration: 10000,
-      action: null,
-      highlight: null
-    },
-
-    // ── Close ────────────────────────────────────────────────────
-    {
-      id: 'close',
-      title: 'Explore Nexus Live',
-      dept: 'executive',
-      narration: 'That concludes the narrated walkthrough. The sandbox you see is fully interactive. Click any KPI, open any drill-down, use the filters, try Ask Nexus, or explore any department. No login, no account, and no email required. Thank you for your time.',
-      caption: 'The sandbox is fully interactive. Explore freely — no login required.',
-      duration: 9000,
-      action: null,
-      highlight: null
-    }
-  ];
-
-  /* ============================================================
-     PLAYER STATE
-  ============================================================ */
-
   var state = {
     active: false,
     playing: false,
+    paused: false,
+    started: false,
+    finished: false,
     currentIndex: 0,
-    muted: false,
     captionsOn: true,
-    speechSupported: false,
-    utterance: null,
-    sceneTimer: null,
-    advanceTimer: null
+    muted: false,
+    volume: 1.0,
+    audioEl: null
   };
 
-  /* ============================================================
-     SPEECH SYNTHESIS
-  ============================================================ */
+  var timeline = {
+    startTime: 0,
+    sceneElapsed: 0,
+    rafId: null,
+    pauseTime: 0,
+    totalPaused: 0
+  };
 
-  function initSpeech() {
-    state.speechSupported = !!(window.speechSynthesis && typeof SpeechSynthesisUtterance !== 'undefined');
+  var SCENES = [
+    {
+      id: 'welcome',
+      title: 'Welcome to Nexus',
+      dept: 'executive',
+      caption: 'Nexus connects the systems and information your organization already uses into one operating picture.',
+      duration: 3600,
+      audioSrc: null,
+      highlight: '#view-executive .dash-row--4',
+      events: [
+        { at: 600, fn: function () { resetInteractiveState(false); } },
+        { at: 1100, fn: function () { highlightElement(document.querySelector('#view-executive .dash-row--4')); } }
+      ]
+    },
+    {
+      id: 'executive-dashboard',
+      title: 'Executive Dashboard',
+      dept: 'executive',
+      caption: 'Leaders can see organization-wide KPIs, open work, workforce pressure, and risk in one place.',
+      duration: 4200,
+      audioSrc: null,
+      highlight: '[data-kpi-key="risk-open"]',
+      events: [
+        { at: 1000, fn: function () { highlightElement(document.querySelector('[data-kpi-key="open-wo"]')); } },
+        { at: 2200, fn: function () { highlightElement(document.querySelector('[data-kpi-key="risk-open"]')); } }
+      ]
+    },
+    {
+      id: 'problem-detected',
+      title: 'Problem Detected',
+      dept: 'executive',
+      caption: 'Nexus identifies a risk that needs attention and lets leaders drill straight into the issue.',
+      duration: 4400,
+      audioSrc: null,
+      events: [
+        { at: 800, fn: function () { renderKpiDetail('risk-open'); } },
+        { at: 1600, fn: function () { highlightElement(document.querySelector('.nx-drawer')); } }
+      ]
+    },
+    {
+      id: 'understand-cause',
+      title: 'Understand Cause and Risk',
+      dept: 'executive',
+      caption: 'The detail drawer shows context, recommended action, and the estimated cost of waiting.',
+      duration: 4200,
+      audioSrc: null,
+      events: [
+        { at: 600, fn: function () { renderKpiDetail('risk-open'); } },
+        { at: 1400, fn: function () { highlightElement(document.querySelector('.nx-action-btn--primary')); } }
+      ]
+    },
+    {
+      id: 'ask-nexus',
+      title: 'Ask Nexus',
+      dept: 'executive',
+      caption: 'Ask Nexus answers plain-language questions using connected operational information.',
+      duration: 5200,
+      audioSrc: null,
+      events: [
+        { at: 400, fn: function () { closeDrawer(); } },
+        { at: 900, fn: function () { openAskNexus(); } },
+        { at: 2000, fn: function () { clickElement(document.querySelector('.nx-chat-suggest')); } },
+        { at: 3200, fn: function () { highlightElement(document.querySelector('#ask-nexus-panel')); } }
+      ]
+    },
+    {
+      id: 'map-context',
+      title: 'Map Context',
+      dept: 'map',
+      caption: 'Map Intelligence adds geographic context so leaders can see where risk, projects, and assets are concentrated.',
+      duration: 4800,
+      audioSrc: null,
+      events: [
+        { at: 1100, fn: function () { clickElement(document.querySelector('.nx-map-pin[data-id="risk-water"]')) || clickElement(document.querySelector('.nx-map-pin[data-id="bldg-4"]')); } },
+        { at: 2200, fn: function () { highlightElement(document.querySelector('.nx-map-pin[data-id="risk-water"]') || document.querySelector('.nx-map-pin[data-id="bldg-4"]')); } }
+      ]
+    },
+    {
+      id: 'finance-view',
+      title: 'Finance View',
+      dept: 'finance',
+      caption: 'Finance leaders can move from budget and AP signals to operational context without leaving Nexus.',
+      duration: 4500,
+      audioSrc: null,
+      events: [
+        { at: 900, fn: function () { renderKpiDetail('fin-ap'); } },
+        { at: 1800, fn: function () { highlightElement(document.querySelector('.nx-drawer')); } }
+      ]
+    },
+    {
+      id: 'assign-action',
+      title: 'Assign Action',
+      dept: 'executive',
+      caption: 'Insight becomes action when leaders assign work, escalate issues, and track accountability from the same environment.',
+      duration: 4600,
+      audioSrc: null,
+      events: [
+        { at: 400, fn: function () { closeDrawer(); closeAskNexus(); } },
+        { at: 1100, fn: function () { renderActionResult('assign', 'Infrastructure failure — Water main'); } },
+        { at: 2200, fn: function () { highlightElement(document.querySelector('.nx-drawer')); } }
+      ]
+    },
+    {
+      id: 'prove-value',
+      title: 'Prove Value',
+      dept: 'reports',
+      caption: 'Nexus helps teams document outcomes, generate reports, and prove value with measurable results.',
+      duration: 4600,
+      audioSrc: null,
+      events: [
+        { at: 1200, fn: function () { renderActionResult('generate-report', 'Quarterly value and ROI scorecard'); } },
+        { at: 2600, fn: function () { highlightElement(document.querySelector('.nx-drawer')); } }
+      ]
+    },
+    {
+      id: 'explore-next',
+      title: 'Explore Nexus',
+      dept: 'executive',
+      caption: 'The guided walkthrough is almost complete. Next, explore Nexus interactively with synthetic data and no login.',
+      duration: 3600,
+      audioSrc: null,
+      events: [
+        { at: 400, fn: function () { closeDrawer(); closeAskNexus(); } },
+        { at: 1000, fn: function () { switchTab('executive'); } },
+        { at: 1700, fn: function () { highlightElement(document.querySelector('#sandbox-nav-wrap')); } }
+      ]
+    }
+  ];
+
+  function cancelFrame() {
+    if (timeline.rafId) {
+      cancelAnimationFrame(timeline.rafId);
+      timeline.rafId = null;
+    }
   }
 
-  function getVoice() {
-    if (!state.speechSupported) return null;
-    var voices = window.speechSynthesis.getVoices();
-    // Prefer natural US English
-    var preferred = [
-      'Samantha', 'Alex', 'Karen', 'Susan', 'Google US English',
-      'Microsoft Aria Online (Natural)', 'Microsoft Guy Online (Natural)'
-    ];
-    for (var i = 0; i < preferred.length; i++) {
-      for (var j = 0; j < voices.length; j++) {
-        if (voices[j].name === preferred[i]) return voices[j];
-      }
-    }
-    // Fall back to any en-US voice
-    for (var k = 0; k < voices.length; k++) {
-      if (voices[k].lang && voices[k].lang.indexOf('en') === 0) return voices[k];
-    }
-    return voices[0] || null;
-  }
-
-  function speak(text, onEnd) {
-    if (!state.speechSupported || state.muted) {
-      if (onEnd) onEnd();
-      return;
-    }
-    try {
-      window.speechSynthesis.cancel();
-    } catch (e) { /* ignore */ }
-
-    var utter = new SpeechSynthesisUtterance(text);
-    utter.rate = 0.92;
-    utter.pitch = 1.0;
-    utter.volume = 1.0;
-
-    var voice = getVoice();
-    if (voice) utter.voice = voice;
-
-    utter.onend = function () {
-      if (state.playing && onEnd) onEnd();
-    };
-    utter.onerror = function (e) {
-      // 'interrupted' is expected on cancel/pause — ignore
-      if (e && e.error !== 'interrupted' && e.error !== 'canceled') {
-        if (onEnd) onEnd();
-      }
-    };
-
-    state.utterance = utter;
-
-    // iOS Safari requires speech on the same tick as a user gesture.
-    // We work around this by calling speak() only from user-initiated
-    // playback flow. An initial no-op utterance is spoken on first Play.
-    try {
-      window.speechSynthesis.speak(utter);
-    } catch (e) {
-      if (onEnd) onEnd();
+  function stopAudio() {
+    if (state.audioEl) {
+      try {
+        state.audioEl.pause();
+      } catch (e) { /* ignore */ }
+      state.audioEl = null;
     }
   }
 
-  function stopSpeech() {
-    state.utterance = null;
-    if (state.speechSupported) {
-      try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
-    }
+  function clearSceneState() {
+    cancelFrame();
+    stopAudio();
+    timeline.sceneElapsed = 0;
+    timeline.pauseTime = 0;
+    timeline.totalPaused = 0;
   }
-
-  function pauseSpeech() {
-    if (state.speechSupported) {
-      try { window.speechSynthesis.pause(); } catch (e) { /* ignore */ }
-    }
-  }
-
-  function resumeSpeech() {
-    if (state.speechSupported) {
-      try { window.speechSynthesis.resume(); } catch (e) { /* ignore */ }
-    }
-  }
-
-  /* ============================================================
-     HELPERS
-  ============================================================ */
 
   function switchTab(viewKey, done) {
-    var btn = document.querySelector('[data-view="' + viewKey + '"]');
-    if (btn) {
-      btn.click();
-      setTimeout(done || function () {}, 300);
-    } else {
+    var btn = document.querySelector('.sandbox-nav-btn[data-view="' + viewKey + '"]');
+    if (!btn) {
       if (done) done();
+      return;
     }
+    btn.click();
+    setTimeout(function () {
+      if (done) done();
+    }, 280);
   }
 
-  function resetFilter() {
-    var allBtn = document.querySelector('.nx-filter-btn[data-filter-val="all"]');
-    if (allBtn && !allBtn.classList.contains('active')) allBtn.click();
+  function clickElement(el) {
+    if (!el) return false;
+    el.click();
+    return true;
   }
 
   function highlightElement(el) {
     if (!el) return;
     el.classList.add('ndp-highlight');
-    setTimeout(function () { el.classList.remove('ndp-highlight'); }, 2200);
+    setTimeout(function () {
+      el.classList.remove('ndp-highlight');
+    }, 1800);
   }
 
-  /* ============================================================
-     SCENE ENGINE
-  ============================================================ */
-
-  function clearTimers() {
-    if (state.sceneTimer) { clearTimeout(state.sceneTimer); state.sceneTimer = null; }
-    if (state.advanceTimer) { clearTimeout(state.advanceTimer); state.advanceTimer = null; }
-  }
-
-  function runScene(index) {
-    if (index < 0 || index >= SCENES.length) return;
-    clearTimers();
-    stopSpeech();
-
-    state.currentIndex = index;
-    var scene = SCENES[index];
-
-    // Switch department tab
-    if (scene.dept) {
-      var targetView = document.getElementById('view-' + scene.dept);
-      var isActive = targetView && targetView.classList.contains('active');
-      if (!isActive) {
-        switchTab(scene.dept, function () { executeSceneContent(scene); });
-      } else {
-        executeSceneContent(scene);
-      }
-    } else {
-      executeSceneContent(scene);
-    }
-  }
-
-  function executeSceneContent(scene) {
-    updatePlayerUI();
-
-    // Scroll sandbox into view
-    var sandboxEl = document.getElementById('sandbox-section') || document.querySelector('.sandbox-shell') || document.querySelector('.sandbox-dept-heading');
-    if (sandboxEl) {
-      sandboxEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    // Run the scene action
-    if (scene.action) {
-      scene.action(function () { afterAction(scene); });
-    } else {
-      afterAction(scene);
-    }
-  }
-
-  function afterAction(scene) {
-    if (!state.playing) return;
-
-    // Highlight target element
-    if (scene.highlight) {
-      var el = document.querySelector(scene.highlight);
-      if (el) highlightElement(el);
-    }
-
-    // Show caption
-    showCaption(scene.caption);
-
-    // Speak narration
-    if (!state.muted && state.speechSupported) {
-      speak(scene.narration, function () {
-        if (state.playing) scheduleAdvance(800);
-      });
-      // Safety: advance after duration even if speech doesn't fire onend
-      state.sceneTimer = setTimeout(function () {
-        if (state.playing) scheduleAdvance(0);
-      }, Math.max(scene.duration, 5000));
-    } else {
-      // No audio: advance after duration
-      state.sceneTimer = setTimeout(function () {
-        if (state.playing) scheduleAdvance(0);
-      }, scene.duration);
-    }
-  }
-
-  function scheduleAdvance(delay) {
-    clearTimers();
-    state.advanceTimer = setTimeout(function () {
-      if (!state.playing) return;
-      var next = state.currentIndex + 1;
-      if (next < SCENES.length) {
-        runScene(next);
-      } else {
-        // Demo finished
-        state.playing = false;
-        updatePlayerUI();
-        showCaption('Demo complete. Tap Replay to watch again or Exit to explore Nexus interactively.');
-      }
-    }, delay);
-  }
-
-  /* ============================================================
-     PLAYER CONTROLS
-  ============================================================ */
-
-  function play() {
-    if (!state.active) return;
-    state.playing = true;
-    updatePlayerUI();
-
-    // Warm up speech synthesis (required for iOS Safari first-gesture constraint)
-    if (state.speechSupported && !state.muted) {
-      try {
-        var warmup = new SpeechSynthesisUtterance('');
-        window.speechSynthesis.speak(warmup);
-      } catch (e) { /* ignore */ }
-    }
-
-    runScene(state.currentIndex);
-  }
-
-  function pause() {
-    if (!state.active || !state.playing) return;
-    state.playing = false;
-    clearTimers();
-    pauseSpeech();
-    updatePlayerUI();
-  }
-
-  function resume() {
-    if (!state.active || state.playing) return;
-    state.playing = true;
-    updatePlayerUI();
-
-    // If speech was mid-utterance on iOS it may not resume reliably.
-    // Re-run the current scene from scratch.
-    resumeSpeech();
-    if (!state.speechSupported || !window.speechSynthesis.speaking) {
-      runScene(state.currentIndex);
-    }
-  }
-
-  function replay() {
-    state.playing = true;
-    state.currentIndex = 0;
-    clearTimers();
-    stopSpeech();
-    updatePlayerUI();
-
-    // Reset UI state
-    if (window.NexusInteractive) {
+  function closeDrawer() {
+    if (window.NexusInteractive && typeof window.NexusInteractive.closeDrawer === 'function') {
       window.NexusInteractive.closeDrawer();
-      window.NexusInteractive.resetFilters();
     }
-    // Close Ask Nexus if open
+  }
+
+  function openAskNexus() {
+    if (window.NexusInteractive && typeof window.NexusInteractive.openAskNexus === 'function') {
+      window.NexusInteractive.openAskNexus();
+    }
+  }
+
+  function closeAskNexus() {
     var panel = document.getElementById('ask-nexus-panel');
     if (panel && panel.classList.contains('open')) {
       var closeBtn = panel.querySelector('.nx-chat-close');
       if (closeBtn) closeBtn.click();
     }
-
-    play();
   }
 
-  function prevScene() {
-    var prev = state.currentIndex - 1;
-    if (prev < 0) prev = 0;
-    state.playing = true;
-    clearTimers();
-    stopSpeech();
+  function renderKpiDetail(key) {
+    if (window.NexusInteractive && typeof window.NexusInteractive.renderKpiDetail === 'function') {
+      window.NexusInteractive.renderKpiDetail(key);
+    }
+  }
+
+  function renderActionResult(action, context) {
+    if (window.NexusInteractive && typeof window.NexusInteractive.renderActionResult === 'function') {
+      window.NexusInteractive.renderActionResult(action, context);
+    }
+  }
+
+  function resetInteractiveState(includeTabReset) {
+    closeDrawer();
+    closeAskNexus();
+    if (window.NexusInteractive && typeof window.NexusInteractive.resetFilters === 'function') {
+      window.NexusInteractive.resetFilters();
+    }
+    if (includeTabReset !== false) {
+      switchTab('executive');
+    }
+  }
+
+  function sceneHasAudio(scene) {
+    return !!(scene && scene.audioSrc);
+  }
+
+  function showCaption(text) {
+    var wrap = document.getElementById('ndp-caption');
+    var textEl = document.getElementById('ndp-caption-text');
+    if (!wrap || !textEl) return;
+    textEl.textContent = text || '';
+    wrap.style.display = state.captionsOn && text ? '' : 'none';
+  }
+
+  function updateCompletionActions(visible) {
+    var complete = document.getElementById('ndp-complete');
+    if (!complete) return;
+    complete.style.display = visible ? '' : 'none';
+  }
+
+  function updateProgress(overallPct) {
+    var pct = Math.max(0, Math.min(100, overallPct));
+    var fill = document.getElementById('ndp-progress-fill');
+    var progress = document.getElementById('ndp-progress');
+    if (fill) fill.style.width = pct + '%';
+    if (progress) progress.setAttribute('aria-valuenow', String(Math.round(pct)));
+  }
+
+  function runSceneEvents(scene, elapsed) {
+    if (!scene.events) return;
+    scene.events.forEach(function (evt) {
+      if (!evt._fired && elapsed >= evt.at) {
+        evt._fired = true;
+        evt.fn();
+      }
+    });
+  }
+
+  function updatePlayerUI() {
+    var scene = SCENES[state.currentIndex] || {};
+    var titleEl = document.getElementById('ndp-scene-title');
+    var labelEl = document.getElementById('ndp-progress-label');
+    var playBtn = document.getElementById('ndp-btn-play');
+    var pauseBtn = document.getElementById('ndp-btn-pause');
+    var resumeBtn = document.getElementById('ndp-btn-resume');
+    var replayBtn = document.getElementById('ndp-btn-replay');
+    var prevBtn = document.getElementById('ndp-btn-prev');
+    var nextBtn = document.getElementById('ndp-btn-next');
+    var capBtn = document.getElementById('ndp-btn-captions');
+    var muteBtn = document.getElementById('ndp-btn-mute');
+    var player = document.getElementById('ndp-player');
+
+    if (titleEl) titleEl.textContent = scene.title || '';
+    if (labelEl) labelEl.textContent = (state.currentIndex + 1) + ' / ' + SCENES.length;
+    if (player) player.classList.toggle('ndp-player--captions-only', !sceneHasAudio(scene));
+
+    if (playBtn) playBtn.style.display = (!state.started && !state.playing && !state.finished) ? '' : 'none';
+    if (pauseBtn) pauseBtn.style.display = state.playing ? '' : 'none';
+    if (resumeBtn) resumeBtn.style.display = (state.paused && !state.finished) ? '' : 'none';
+    if (replayBtn) replayBtn.style.display = state.finished ? '' : 'none';
+
+    if (prevBtn) prevBtn.disabled = state.currentIndex === 0 && !state.started;
+    if (nextBtn) nextBtn.disabled = state.finished || state.currentIndex >= SCENES.length - 1;
+
+    if (capBtn) {
+      capBtn.setAttribute('aria-pressed', state.captionsOn ? 'true' : 'false');
+      capBtn.classList.toggle('ndp-btn--active', state.captionsOn);
+      capBtn.title = state.captionsOn ? 'Hide captions' : 'Show captions';
+    }
+
+    if (muteBtn) {
+      var hasAudio = sceneHasAudio(scene);
+      muteBtn.classList.toggle('ndp-btn--audio-unavailable', !hasAudio);
+      muteBtn.setAttribute('aria-hidden', hasAudio ? 'false' : 'true');
+      muteBtn.tabIndex = hasAudio ? 0 : -1;
+      muteBtn.setAttribute('aria-label', state.muted ? 'Unmute narration' : 'Mute narration');
+      muteBtn.title = state.muted ? 'Unmute' : 'Mute';
+      muteBtn.textContent = state.muted ? '🔇' : '🔊';
+    }
+
+    var volSlider = document.getElementById('ndp-vol');
+    if (volSlider) {
+      var hasAudio2 = sceneHasAudio(scene);
+      volSlider.classList.toggle('ndp-btn--audio-unavailable', !hasAudio2);
+      volSlider.style.display = hasAudio2 ? '' : 'none';
+      volSlider.value = state.muted ? 0 : state.volume;
+    }
+  }
+
+  function finishDemo() {
+    state.playing = false;
+    state.paused = false;
+    state.finished = true;
+    cancelFrame();
+    stopAudio();
+    timeline.sceneElapsed = SCENES[SCENES.length - 1].duration;
+    updateProgress(100);
+    showCaption('Demo complete. Explore Nexus interactively or request a real demonstration.');
+    updateCompletionActions(true);
     updatePlayerUI();
-    runScene(prev);
   }
 
-  function nextScene() {
-    var next = state.currentIndex + 1;
-    if (next >= SCENES.length) next = SCENES.length - 1;
+  function advanceScene() {
+    if (state.currentIndex >= SCENES.length - 1) {
+      finishDemo();
+      return;
+    }
+    startScene(state.currentIndex + 1);
+  }
+
+  function getSceneElapsed(now, scene) {
+    if (state.audioEl && sceneHasAudio(scene) && !state.audioEl.paused) {
+      return state.audioEl.currentTime * 1000;
+    }
+    return now - timeline.startTime - timeline.totalPaused;
+  }
+
+  function tick(now) {
+    if (!state.playing || state.paused) return;
+    var scene = SCENES[state.currentIndex];
+    if (!scene) return;
+
+    timeline.sceneElapsed = getSceneElapsed(now, scene);
+
+    runSceneEvents(scene, timeline.sceneElapsed);
+
+    var scenePct = Math.min(100, (timeline.sceneElapsed / scene.duration) * 100);
+    var overallPct = ((state.currentIndex + (scenePct / 100)) / SCENES.length) * 100;
+    updateProgress(overallPct);
+
+    if (timeline.sceneElapsed >= scene.duration) {
+      advanceScene();
+      return;
+    }
+
+    timeline.rafId = requestAnimationFrame(tick);
+  }
+
+  function prepareScene(scene) {
+    showCaption(scene.caption || '');
+    updateCompletionActions(false);
+
+    if (scene.events) {
+      scene.events.forEach(function (evt) {
+        evt._fired = false;
+      });
+    }
+
+    if (sceneHasAudio(scene)) {
+      state.audioEl = new Audio(scene.audioSrc);
+      state.audioEl.preload = 'auto';
+      state.audioEl.muted = state.muted;
+      state.audioEl.volume = state.volume;
+      state.audioEl.currentTime = 0;
+      state.audioEl.addEventListener('ended', function () {
+        if (state.playing && !state.paused) advanceScene();
+      });
+      state.audioEl.play().catch(function () {
+        stopAudio();
+      });
+    }
+  }
+
+  function startScene(index) {
+    var scene = SCENES[index];
+    if (!scene) return;
+
+    clearSceneState();
+    state.currentIndex = index;
+    state.started = true;
+    state.finished = false;
     state.playing = true;
-    clearTimers();
-    stopSpeech();
-    updatePlayerUI();
-    runScene(next);
+    state.paused = false;
+
+    var afterSwitch = function () {
+      // Start the scene clock only after the tab is visible so events fire at
+      // the correct visual time rather than drifting by the tab-switch delay.
+      timeline.startTime = performance.now();
+      prepareScene(scene);
+      if (scene.highlight) highlightElement(document.querySelector(scene.highlight));
+      updatePlayerUI();
+      timeline.rafId = requestAnimationFrame(tick);
+    };
+
+    if (scene.dept) {
+      switchTab(scene.dept, afterSwitch);
+    } else {
+      afterSwitch();
+    }
   }
 
-  function toggleMute() {
-    state.muted = !state.muted;
-    if (state.muted) {
-      stopSpeech();
-    } else if (state.playing) {
-      // Re-run current scene so narration starts
-      runScene(state.currentIndex);
+  function play() {
+    if (!state.active) return;
+    if (state.finished) {
+      replay();
+      return;
+    }
+    startScene(state.currentIndex || 0);
+  }
+
+  function pause() {
+    if (!state.active || !state.playing) return;
+    state.playing = false;
+    state.paused = true;
+    timeline.pauseTime = performance.now();
+    cancelFrame();
+    if (state.audioEl) {
+      try { state.audioEl.pause(); } catch (e) { /* ignore */ }
     }
     updatePlayerUI();
   }
 
+  function resume() {
+    if (!state.active || !state.paused || state.finished) return;
+    state.playing = true;
+    state.paused = false;
+    timeline.totalPaused += performance.now() - timeline.pauseTime;
+    if (state.audioEl) {
+      state.audioEl.play().catch(function () { /* ignore */ });
+    }
+    updatePlayerUI();
+    timeline.rafId = requestAnimationFrame(tick);
+  }
+
+  function replay() {
+    if (!state.active) return;
+    resetInteractiveState(true);
+    timeline.sceneElapsed = 0;
+    state.currentIndex = 0;
+    state.started = false;
+    state.finished = false;
+    state.paused = false;
+    state.playing = false;
+    updateCompletionActions(false);
+    updateProgress(0);
+    updatePlayerUI();
+    play();
+  }
+
+  function prevScene() {
+    if (!state.active) return;
+    var prev = Math.max(0, state.currentIndex - 1);
+    startScene(prev);
+  }
+
+  function nextScene() {
+    if (!state.active) return;
+    if (state.currentIndex >= SCENES.length - 1) {
+      finishDemo();
+      return;
+    }
+    startScene(state.currentIndex + 1);
+  }
+
   function toggleCaptions() {
     state.captionsOn = !state.captionsOn;
-    var captionEl = document.getElementById('ndp-caption');
-    if (captionEl) captionEl.style.display = state.captionsOn ? '' : 'none';
+    showCaption((SCENES[state.currentIndex] || {}).caption || '');
+    updatePlayerUI();
+  }
+
+  function toggleMute() {
+    state.muted = !state.muted;
+    if (state.audioEl) {
+      state.audioEl.muted = state.muted;
+    }
+    updatePlayerUI();
+  }
+
+  function setVolume(val) {
+    state.volume = Math.max(0, Math.min(1, parseFloat(val) || 1));
+    if (state.audioEl) {
+      state.audioEl.volume = state.volume;
+    }
+    // Auto-unmute when volume is raised
+    if (state.volume > 0 && state.muted) {
+      state.muted = false;
+      if (state.audioEl) state.audioEl.muted = false;
+    }
     updatePlayerUI();
   }
 
@@ -755,135 +534,58 @@
     if (state.active) return;
     state.active = true;
     state.playing = false;
+    state.paused = false;
+    state.started = false;
+    state.finished = false;
     state.currentIndex = 0;
-    state.muted = false;
-    state.captionsOn = true;
+    clearSceneState();
+    resetInteractiveState(true);
 
-    // Show player UI
     var player = document.getElementById('ndp-player');
-    if (player) player.setAttribute('aria-hidden', 'false');
-    if (player) player.classList.add('ndp-player--visible');
+    if (player) {
+      player.setAttribute('aria-hidden', 'false');
+      player.classList.add('ndp-player--visible');
+    }
 
-    // Hide Watch Demo button, show Exit
     var watchBtn = document.getElementById('ndp-watch-btn');
     if (watchBtn) watchBtn.style.display = 'none';
 
-    // Scroll to sandbox
-    var sandboxEl = document.querySelector('.sandbox-shell') || document.querySelector('.sandbox-dept-heading') || document.getElementById('sandbox-section');
+    var sandboxEl = document.getElementById('sandbox-section') || document.querySelector('.sandbox-dept-heading');
     if (sandboxEl) sandboxEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+    showCaption('Press Play to start the guided Nexus walkthrough.');
+    updateCompletionActions(false);
+    updateProgress(0);
     updatePlayerUI();
-    showCaption('Tap Play to start the narrated walkthrough.');
   }
 
   function exitDemoMode() {
+    if (!state.active) return;
     state.active = false;
     state.playing = false;
-    clearTimers();
-    stopSpeech();
+    state.paused = false;
+    state.started = false;
+    state.finished = false;
+    state.currentIndex = 0;
+    clearSceneState();
+    resetInteractiveState(true);
+    showCaption('');
+    updateCompletionActions(false);
+    updateProgress(0);
 
-    // Hide player
     var player = document.getElementById('ndp-player');
     if (player) {
       player.setAttribute('aria-hidden', 'true');
       player.classList.remove('ndp-player--visible');
     }
 
-    // Show Watch Demo button
     var watchBtn = document.getElementById('ndp-watch-btn');
     if (watchBtn) watchBtn.style.display = '';
 
-    // Clear caption
-    showCaption('');
-
-    // Reset sandbox state
-    if (window.NexusInteractive) {
-      window.NexusInteractive.closeDrawer();
-      window.NexusInteractive.resetFilters();
-    }
-    var panel = document.getElementById('ask-nexus-panel');
-    if (panel && panel.classList.contains('open')) {
-      var closeBtn = panel.querySelector('.nx-chat-close');
-      if (closeBtn) closeBtn.click();
-    }
-    switchTab('executive', function () {});
+    updatePlayerUI();
   }
-
-  /* ============================================================
-     UI RENDERING
-  ============================================================ */
-
-  function showCaption(text) {
-    var el = document.getElementById('ndp-caption-text');
-    if (el) el.textContent = text || '';
-    var wrap = document.getElementById('ndp-caption');
-    if (wrap) {
-      wrap.style.display = state.captionsOn && text ? '' : 'none';
-    }
-  }
-
-  function updatePlayerUI() {
-    var scene = SCENES[state.currentIndex] || {};
-
-    // Scene title
-    var titleEl = document.getElementById('ndp-scene-title');
-    if (titleEl) titleEl.textContent = scene.title || '';
-
-    // Progress
-    var progEl = document.getElementById('ndp-progress-fill');
-    var progLabel = document.getElementById('ndp-progress-label');
-    var pct = SCENES.length > 1 ? (state.currentIndex / (SCENES.length - 1)) * 100 : 0;
-    if (progEl) progEl.style.width = pct + '%';
-    if (progLabel) progLabel.textContent = (state.currentIndex + 1) + ' / ' + SCENES.length;
-
-    // Play/Pause button
-    var playBtn = document.getElementById('ndp-btn-play');
-    var pauseBtn = document.getElementById('ndp-btn-pause');
-    var resumeBtn = document.getElementById('ndp-btn-resume');
-    var replayBtn = document.getElementById('ndp-btn-replay');
-
-    var demoFinished = !state.playing && state.currentIndex >= SCENES.length - 1 && state.active;
-
-    if (playBtn) playBtn.style.display = (!state.playing && state.currentIndex === 0 && !demoFinished) ? '' : 'none';
-    if (pauseBtn) pauseBtn.style.display = state.playing ? '' : 'none';
-    if (resumeBtn) resumeBtn.style.display = (!state.playing && state.currentIndex > 0 && !demoFinished) ? '' : 'none';
-    if (replayBtn) replayBtn.style.display = demoFinished ? '' : 'none';
-
-    // Mute button
-    var muteBtn = document.getElementById('ndp-btn-mute');
-    if (muteBtn) {
-      muteBtn.setAttribute('aria-label', state.muted ? 'Unmute narration' : 'Mute narration');
-      muteBtn.title = state.muted ? 'Unmute' : 'Mute';
-      muteBtn.textContent = state.muted ? '🔇' : '🔊';
-    }
-
-    // Captions button
-    var capBtn = document.getElementById('ndp-btn-captions');
-    if (capBtn) {
-      capBtn.setAttribute('aria-pressed', state.captionsOn ? 'true' : 'false');
-      capBtn.title = state.captionsOn ? 'Hide captions' : 'Show captions';
-      capBtn.classList.toggle('ndp-btn--active', state.captionsOn);
-    }
-
-    // Prev/Next
-    var prevBtn = document.getElementById('ndp-btn-prev');
-    var nextBtn = document.getElementById('ndp-btn-next');
-    if (prevBtn) prevBtn.disabled = state.currentIndex === 0;
-    if (nextBtn) nextBtn.disabled = state.currentIndex >= SCENES.length - 1;
-
-    // Speech status note
-    var speechNote = document.getElementById('ndp-speech-note');
-    if (speechNote) {
-      speechNote.style.display = (!state.speechSupported && state.active) ? '' : 'none';
-    }
-  }
-
-  /* ============================================================
-     PLAYER HTML INJECTION
-  ============================================================ */
 
   function injectPlayer() {
-    // Watch Demo button — injected near sandbox header
     var watchBtnContainer = document.getElementById('ndp-watch-btn-container');
     if (!watchBtnContainer) {
       watchBtnContainer = document.createElement('div');
@@ -894,127 +596,138 @@
       watchBtn.type = 'button';
       watchBtn.id = 'ndp-watch-btn';
       watchBtn.className = 'ndp-watch-btn';
-      watchBtn.setAttribute('aria-label', 'Watch narrated Nexus demo');
-      watchBtn.innerHTML = '<span class="ndp-watch-btn__icon" aria-hidden="true">▶</span> Watch Demo';
-      watchBtn.addEventListener('click', function () { enterDemoMode(); });
+      watchBtn.setAttribute('aria-label', 'Watch Nexus Demo');
+      watchBtn.innerHTML = '<span class="ndp-watch-btn__icon" aria-hidden="true">▶</span> Watch Nexus Demo';
+      watchBtn.addEventListener('click', enterDemoMode);
 
       watchBtnContainer.appendChild(watchBtn);
 
-      // Insert after sandbox dept heading
       var heading = document.querySelector('.sandbox-dept-heading');
       if (heading && heading.parentNode) {
         heading.parentNode.insertBefore(watchBtnContainer, heading.nextSibling);
-      } else {
-        var sandboxNav = document.getElementById('sandbox-nav');
-        if (sandboxNav && sandboxNav.parentNode) {
-          sandboxNav.parentNode.insertBefore(watchBtnContainer, sandboxNav);
-        }
       }
     }
 
-    // Demo player bar
     if (document.getElementById('ndp-player')) return;
 
     var player = document.createElement('div');
     player.id = 'ndp-player';
-    player.className = 'ndp-player';
+    player.className = 'ndp-player ndp-player--captions-only';
     player.setAttribute('role', 'region');
-    player.setAttribute('aria-label', 'Narrated Nexus Demo Player');
+    player.setAttribute('aria-label', 'Nexus demo player');
     player.setAttribute('aria-hidden', 'true');
-
     player.innerHTML = [
-      /* Caption */
       '<div id="ndp-caption" class="ndp-caption" role="status" aria-live="polite" aria-atomic="true" style="display:none;">',
       '  <span id="ndp-caption-text" class="ndp-caption__text"></span>',
       '</div>',
-
-      /* Speech unavailable note */
-      '<div id="ndp-speech-note" class="ndp-speech-note" style="display:none;" aria-live="polite">',
-      '  <span>🔇 Narration unavailable in this browser — captions are on.</span>',
+      '<div id="ndp-complete" class="ndp-complete" style="display:none;">',
+      '  <a href="../request-demo/" class="ndp-complete__link">Request a Demonstration</a>',
       '</div>',
-
-      /* Controls bar */
       '<div class="ndp-controls" role="toolbar" aria-label="Demo playback controls">',
-
       '  <div class="ndp-controls__left">',
-      '    <button type="button" id="ndp-btn-play"   class="ndp-btn ndp-btn--primary" aria-label="Play demo"   title="Play">▶ Play</button>',
-      '    <button type="button" id="ndp-btn-pause"  class="ndp-btn ndp-btn--primary" aria-label="Pause demo"  title="Pause" style="display:none;">⏸ Pause</button>',
-      '    <button type="button" id="ndp-btn-resume" class="ndp-btn ndp-btn--primary" aria-label="Resume demo" title="Resume" style="display:none;">▶ Resume</button>',
-      '    <button type="button" id="ndp-btn-replay" class="ndp-btn ndp-btn--primary" aria-label="Replay demo" title="Replay" style="display:none;">↺ Replay</button>',
-      '    <button type="button" id="ndp-btn-prev"   class="ndp-btn" aria-label="Previous scene" title="Previous scene" disabled>&#8592;</button>',
-      '    <button type="button" id="ndp-btn-next"   class="ndp-btn" aria-label="Next scene"     title="Next scene">&#8594;</button>',
+      '    <button type="button" id="ndp-btn-play" class="ndp-btn ndp-btn--primary" aria-label="Play demo">▶ Play</button>',
+      '    <button type="button" id="ndp-btn-pause" class="ndp-btn ndp-btn--primary" aria-label="Pause demo" style="display:none;">⏸ Pause</button>',
+      '    <button type="button" id="ndp-btn-resume" class="ndp-btn ndp-btn--primary" aria-label="Resume demo" style="display:none;">▶ Resume</button>',
+      '    <button type="button" id="ndp-btn-replay" class="ndp-btn ndp-btn--primary" aria-label="Replay demo" style="display:none;">↺ Replay</button>',
+      '    <button type="button" id="ndp-btn-prev" class="ndp-btn" aria-label="Previous scene">&#8592;</button>',
+      '    <button type="button" id="ndp-btn-next" class="ndp-btn" aria-label="Next scene">&#8594;</button>',
       '  </div>',
-
       '  <div class="ndp-controls__center">',
-      '    <div class="ndp-progress" aria-label="Demo progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">',
-      '      <div class="ndp-progress__track">',
-      '        <div id="ndp-progress-fill" class="ndp-progress__fill"></div>',
-      '      </div>',
+      '    <div id="ndp-progress" class="ndp-progress" aria-label="Demo progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">',
+      '      <div class="ndp-progress__track"><div id="ndp-progress-fill" class="ndp-progress__fill"></div></div>',
       '      <span id="ndp-progress-label" class="ndp-progress__label" aria-hidden="true">1 / ' + SCENES.length + '</span>',
       '    </div>',
       '    <div id="ndp-scene-title" class="ndp-scene-title"></div>',
       '  </div>',
-
       '  <div class="ndp-controls__right">',
-      '    <button type="button" id="ndp-btn-mute"     class="ndp-btn" aria-label="Mute narration" title="Mute">🔊</button>',
-      '    <button type="button" id="ndp-btn-captions" class="ndp-btn ndp-btn--active" aria-label="Toggle captions" aria-pressed="true" title="Captions">CC</button>',
-      '    <button type="button" id="ndp-btn-exit"     class="ndp-btn ndp-btn--exit"  aria-label="Exit demo, return to interactive sandbox" title="Exit Demo">✕ Exit</button>',
+      '    <button type="button" id="ndp-btn-mute" class="ndp-btn ndp-btn--audio-unavailable" aria-hidden="true" tabindex="-1">🔊</button>',
+      '    <input type="range" id="ndp-vol" class="ndp-vol-slider" min="0" max="1" step="0.05" value="1" aria-label="Volume" style="display:none;" />',
+      '    <button type="button" id="ndp-btn-captions" class="ndp-btn ndp-btn--active" aria-label="Toggle captions" aria-pressed="true">CC</button>',
+      '    <button type="button" id="ndp-btn-exit" class="ndp-btn ndp-btn--exit" aria-label="Exit demo">✕ Exit</button>',
       '  </div>',
-
       '</div>'
     ].join('');
 
     document.body.appendChild(player);
 
-    // Wire events
-    document.getElementById('ndp-btn-play').addEventListener('click',     function () { play(); });
-    document.getElementById('ndp-btn-pause').addEventListener('click',    function () { pause(); });
-    document.getElementById('ndp-btn-resume').addEventListener('click',   function () { resume(); });
-    document.getElementById('ndp-btn-replay').addEventListener('click',   function () { replay(); });
-    document.getElementById('ndp-btn-prev').addEventListener('click',     function () { prevScene(); });
-    document.getElementById('ndp-btn-next').addEventListener('click',     function () { nextScene(); });
-    document.getElementById('ndp-btn-mute').addEventListener('click',     function () { toggleMute(); });
-    document.getElementById('ndp-btn-captions').addEventListener('click', function () { toggleCaptions(); });
-    document.getElementById('ndp-btn-exit').addEventListener('click',     function () { exitDemoMode(); });
+    document.getElementById('ndp-btn-play').addEventListener('click', play);
+    document.getElementById('ndp-btn-pause').addEventListener('click', pause);
+    document.getElementById('ndp-btn-resume').addEventListener('click', resume);
+    document.getElementById('ndp-btn-replay').addEventListener('click', replay);
+    document.getElementById('ndp-btn-prev').addEventListener('click', prevScene);
+    document.getElementById('ndp-btn-next').addEventListener('click', nextScene);
+    document.getElementById('ndp-btn-captions').addEventListener('click', toggleCaptions);
+    document.getElementById('ndp-btn-mute').addEventListener('click', toggleMute);
+    document.getElementById('ndp-btn-exit').addEventListener('click', exitDemoMode);
 
-    // Keyboard shortcuts while player is active
+    var volEl = document.getElementById('ndp-vol');
+    if (volEl) {
+      volEl.addEventListener('input', function () { setVolume(this.value); });
+    }
+
     document.addEventListener('keydown', function (e) {
       if (!state.active) return;
       if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
       switch (e.key) {
         case ' ':
           e.preventDefault();
-          if (state.playing) pause(); else resume();
+          if (state.finished) { replay(); }
+          else if (state.playing) { pause(); }
+          else if (state.currentIndex === 0 && timeline.sceneElapsed < 100) { play(); }
+          else { resume(); }
           break;
-        case 'ArrowRight': e.preventDefault(); nextScene(); break;
-        case 'ArrowLeft':  e.preventDefault(); prevScene(); break;
-        case 'm': case 'M': e.preventDefault(); toggleMute(); break;
-        case 'c': case 'C': e.preventDefault(); toggleCaptions(); break;
-        case 'Escape': e.preventDefault(); exitDemoMode(); break;
+        case 'ArrowRight':
+          e.preventDefault();
+          nextScene();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          prevScene();
+          break;
+        case 'c':
+        case 'C':
+          e.preventDefault();
+          toggleCaptions();
+          break;
+        case 'm':
+        case 'M':
+          e.preventDefault();
+          toggleMute();
+          break;
+        case 'Escape':
+          e.preventDefault();
+          exitDemoMode();
+          break;
       }
     });
   }
 
-  /* ============================================================
-     INIT
-  ============================================================ */
-
   function init() {
-    initSpeech();
-
-    // Voices may load asynchronously
-    if (state.speechSupported && window.speechSynthesis.onvoiceschanged !== undefined) {
-      window.speechSynthesis.onvoiceschanged = function () { /* voices now available */ };
-    }
-
     injectPlayer();
     updatePlayerUI();
 
-    // Auto-enter demo mode when ?watchdemo=1 query parameter is present.
-    // Note: speech still requires a user gesture before playing; the player
-    // will open in paused state ready for the visitor to tap Play.
-    if (window.location.search && window.location.search.indexOf('watchdemo=1') !== -1) {
-      setTimeout(function () { enterDemoMode(); }, 400);
+    // iPhone Safari / desktop: when the page becomes hidden, pause the RAF clock
+    // so timeline.startTime does not drift when the page returns to focus.
+    document.addEventListener('visibilitychange', function () {
+      if (!state.active || !state.playing) return;
+      if (document.hidden) {
+        // Treat as a pause of the clock without changing play state
+        timeline.pauseTime = performance.now();
+      } else {
+        // Absorb the time the page was hidden
+        timeline.totalPaused += performance.now() - timeline.pauseTime;
+        // Restart RAF if it was cancelled
+        if (!timeline.rafId) {
+          timeline.rafId = requestAnimationFrame(tick);
+        }
+      }
+    });
+
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('watchdemo') === '1') {
+      setTimeout(function () {
+        enterDemoMode();
+      }, 400);
     }
   }
 
@@ -1023,10 +736,6 @@
   } else {
     init();
   }
-
-  /* ============================================================
-     PUBLIC API
-  ============================================================ */
 
   window.NexusDemoPlayer = {
     enter: enterDemoMode,
@@ -1037,8 +746,8 @@
     replay: replay,
     prevScene: prevScene,
     nextScene: nextScene,
+    toggleCaptions: toggleCaptions,
     toggleMute: toggleMute,
-    toggleCaptions: toggleCaptions
+    setVolume: setVolume
   };
-
 })();
