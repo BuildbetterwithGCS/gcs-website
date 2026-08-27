@@ -176,4 +176,6 @@ if (failures.length) {
 }
 console.log('═'.repeat(50));
 
-process.exit(failed > 0 ? 1 : 0);
+test('site acceptance checks pass', () => {
+  expect(failed).toBe(0);
+});
