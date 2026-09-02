@@ -465,25 +465,48 @@
         return;
       }
 
-      var summary = buildSummary();
-      if (summaryEl) summaryEl.textContent = summary;
+      var submitBtn = form.querySelector('[type="submit"]');
+      var originalBtnText = submitBtn ? submitBtn.textContent : '';
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting\u2026'; }
 
-      if (mailtoEl) {
-        mailtoEl.setAttribute(
-          'href',
-          'mailto:info@buildbetterwithgcs.com?subject=' +
-            encodeURIComponent('GCS — ' + kind) +
-            '&body=' + encodeURIComponent(summary)
-        );
-      }
+      var errorEl = form.parentNode ? form.parentNode.querySelector('[data-form-error]') : null;
+      if (errorEl) errorEl.setAttribute('hidden', '');
 
-      if (result) {
-        result.removeAttribute('hidden');
-        result.focus();
-        if (typeof result.scrollIntoView === 'function') {
-          result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      // Collect all form data for Netlify Forms AJAX submission
+      var formData = new FormData(form);
+      var encoded = [];
+      formData.forEach(function (val, key) {
+        encoded.push(encodeURIComponent(key) + '=' + encodeURIComponent(val));
+      });
+      // Ensure checkbox arrays and radios are included
+      $$('input[type="checkbox"]:checked, input[type="radio"]:checked', form).forEach(function (el) {
+        if (!encoded.some(function (s) { return s.startsWith(encodeURIComponent(el.name) + '='); })) {
+          encoded.push(encodeURIComponent(el.name) + '=' + encodeURIComponent(el.value));
         }
-      }
+      });
+
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: encoded.join('&')
+      }).then(function (res) {
+        if (res.ok) {
+          form.hidden = true;
+          if (result) {
+            result.removeAttribute('hidden');
+            result.focus();
+            if (typeof result.scrollIntoView === 'function') {
+              result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+          }
+        } else {
+          throw new Error('HTTP ' + res.status);
+        }
+      }).catch(function () {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
+        if (errorEl) { errorEl.removeAttribute('hidden'); }
+        else { alert('Submission failed. Please try again or write to info@buildbetterwithgcs.com'); }
+      });
     });
 
     if (copyBtn) {

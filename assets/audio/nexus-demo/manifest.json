@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "description": "Nexus guided demo narration audio manifest",
+  "basePath": "/assets/audio/nexus-demo/",
+  "format": "mp3",
+  "status": "AWAITING_PRODUCTION_FILES",
+  "notes": "Drop approved MP3 files into /assets/audio/nexus-demo/ using the filenames below. No code changes are needed — the demo player reads audioSrc from SCENES in js/nexus-demo-player.js and falls back to captions-only if a file is absent or fails to load.",
+  "tracks": [
+    {
+      "scene": "welcome",
+      "filename": "01-welcome.mp3",
+      "durationApprox": "4-5s",
+      "script": "Welcome to Nexus — the GCS operations intelligence platform. In the next minute, you'll see how Nexus connects your organization's information into one operating picture, so leaders can see what's happening, know what needs attention, and act."
+    },
+    {
+      "scene": "executive-dashboard",
+      "filename": "02-executive-dashboard.mp3",
+      "durationApprox": "5-6s",
+      "script": "The executive dashboard gives leadership a live view of the entire organization — budget utilization, open work orders, workforce capacity, and risk exposure — always current, always connected across every department."
+    },
+    {
+      "scene": "problem-detected",
+      "filename": "03-problem-detected.mp3",
+      "durationApprox": "5-6s",
+      "script": "Nexus identifies a risk that needs attention. One tap opens the full picture — context, cause, and recommended action — without searching through separate systems or waiting for a report."
+    },
+    {
+      "scene": "understand-cause",
+      "filename": "04-understand-risk.mp3",
+      "durationApprox": "5-6s",
+      "script": "The detail view shows what's happening, why it matters, and what to do next. Leaders see the recommended action and the estimated cost of leaving it unaddressed — so decisions are informed, not guesswork."
+    },
+    {
+      "scene": "ask-nexus",
+      "filename": "05-ask-nexus.mp3",
+      "durationApprox": "6-8s",
+      "script": "Ask Nexus lets leaders ask plain-language questions across all connected operational data. No analyst required — just ask. The answer comes back in plain language with the numbers to support it."
+    },
+    {
+      "scene": "map-context",
+      "filename": "06-map-context.mp3",
+      "durationApprox": "5-7s",
+      "script": "Map Intelligence adds geographic context — so leaders can see where risk, projects, and assets are concentrated across facilities, sites, and service areas, and act directly from the map."
+    },
+    {
+      "scene": "finance-view",
+      "filename": "07-finance-view.mp3",
+      "durationApprox": "5-6s",
+      "script": "The Finance view connects budget, revenue, and accounts payable signals to the operational picture. Overdue invoices, vendor risk, and spending trends — visible in one place, connected to everything else."
+    },
+    {
+      "scene": "assign-action",
+      "filename": "08-assign-action.mp3",
+      "durationApprox": "5-6s",
+      "script": "From insight to action — leaders can assign work, escalate issues, and track accountability without leaving the Nexus environment. Every action is named, dated, and visible."
+    },
+    {
+      "scene": "prove-value",
+      "filename": "09-prove-value.mp3",
+      "durationApprox": "5-6s",
+      "script": "Nexus helps teams document outcomes, generate performance reports, and prove measurable value from operational improvements — with data, not just claims."
+    },
+    {
+      "scene": "explore-nexus",
+      "filename": "10-explore-nexus.mp3",
+      "durationApprox": "4-5s",
+      "script": "That's the guided walkthrough. Now explore Nexus interactively — move through departments, ask your own questions, open records, and see the platform at your own pace. Synthetic data only. No login required."
+    }
+  ],
+  "productionNotes": {
+    "format": "MP3 128 kbps minimum, AAC preferred",
+    "sampleRate": "44.1 kHz, mono acceptable for voice",
+    "noiseFloor": "Clean — no background noise, no room reverb",
+    "normalization": "-3 dBFS peak, -16 LUFS integrated loudness",
+    "silence": "0.1s lead-in, 0.2s tail on each file",
+    "style": "Professional, calm, confident, executive-friendly. Not robotic. Not sales exaggeration."
+  }
+}

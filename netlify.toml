@@ -1,0 +1,59 @@
+# Netlify configuration — GCS public website
+# https://docs.netlify.com/configure-builds/file-based-configuration/
+
+[build]
+  publish = "."
+
+# ─────────────────────────────────────────────────────────
+# Forms
+# Netlify Forms are used for Contact and Request Demo submissions.
+# Form data is captured by Netlify and delivered via the Netlify Forms dashboard.
+# ─────────────────────────────────────────────────────────
+
+# ─────────────────────────────────────────────────────────
+# Redirects
+# ─────────────────────────────────────────────────────────
+
+[[redirects]]
+  from = "/responsible-ai/"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/responsible-ai"
+  to = "/"
+  status = 301
+  force = true
+
+# ─────────────────────────────────────────────────────────
+# Security and performance headers
+# ─────────────────────────────────────────────────────────
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+# ─────────────────────────────────────────────────────────
+# Netlify Drawer / Badge / Collaboration UI
+#
+# The following settings CANNOT be controlled from netlify.toml.
+# They must be disabled in the Netlify project dashboard:
+#
+#   Site configuration → General → Netlify Badge
+#     → Disable "Show Netlify badge on site"
+#
+#   Site configuration → General → Deploy Previews
+#     → Under "Collaboration" or "Netlify Drawer", disable
+#       "Show deploy preview toolbar" for the production branch.
+#
+#   Alternatively, scope deploy preview toolbar to branch deploys only
+#   and ensure the production branch (main) does not show the toolbar.
+#
+# The GCS production experience must not display any Netlify badge,
+# drawer, feedback widget, or collaboration overlay.
+# ─────────────────────────────────────────────────────────
