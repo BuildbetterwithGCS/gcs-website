@@ -126,7 +126,7 @@
      ============================================================ */
   if ('IntersectionObserver' in window) {
     var animateEls = $$(
-      '.service-card, .industry-card, .value-card, .nexus-module, .reference-card, .founder-card'
+      '.service-card, .industry-card, .value-card, .nexus-module'
     );
 
     // Add initial state
@@ -332,31 +332,6 @@
 
     applyFilters();
   }
-
-  /* ============================================================
-     COMMAND CENTER — local-only queue actions
-     ============================================================ */
-  $$('[data-queue]').forEach(function (queue) {
-    queue.addEventListener('click', function (e) {
-      var btn = e.target.closest('[data-queue-action]');
-      if (!btn) return;
-
-      var item = btn.closest('.queue__item');
-      if (!item || item.classList.contains('is-resolved')) return;
-
-      var action = btn.getAttribute('data-queue-action');
-      item.classList.add('is-resolved');
-
-      var actions = item.querySelector('.queue__actions');
-      if (actions) actions.setAttribute('hidden', '');
-
-      var result = document.createElement('p');
-      result.className = 'queue__result';
-      result.setAttribute('role', 'status');
-      result.textContent = action + ' — recorded in this browser only. This demonstration does not transmit anything.';
-      item.appendChild(result);
-    });
-  });
 
   /* ============================================================
      HONEST FORMS — client-side validation, no server submission

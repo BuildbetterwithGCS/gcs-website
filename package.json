@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Public website for GCS.",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:public-exposure": "node tests/public-exposure.guard.js",
+    "test:links": "node tests/internal-links.check.js"
   },
   "jest": {
     "testEnvironment": "jsdom",

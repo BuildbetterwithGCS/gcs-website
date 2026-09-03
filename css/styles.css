@@ -1348,28 +1348,12 @@ noscript .nexus-dept-grid { display: flex; }
 }
 
 /* ============================================================
-   ABOUT — FOUNDER CARD (kept but de-emphasized)
+   ABOUT
    ============================================================ */
 .about__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; margin-bottom: 4rem; }
 .about__lead { font-size: 1.125rem; font-weight: 500; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.25rem; }
 .about__story p { color: var(--text-muted); margin-bottom: 1rem; line-height: 1.75; }
 .about__values { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
-.about__founder { border-top: 1px solid var(--surface-border); padding-top: 3rem; }
-.founder-card {
-  display: flex; align-items: flex-start; gap: 2rem;
-  background: var(--surface-light); border: 1px solid var(--surface-border);
-  border-radius: var(--radius-xl); padding: 2.5rem;
-  max-width: 820px; margin-inline: auto;
-}
-.founder-card__avatar {
-  width: 5rem; height: 5rem; min-width: 5rem;
-  background: linear-gradient(135deg, var(--gcs-navy), var(--gcs-green));
-  border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: #fff;
-}
-.founder-card__name { font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem; }
-.founder-card__title { font-size: 0.875rem; font-weight: 600; color: var(--gcs-green-dk); margin-bottom: 0.875rem; letter-spacing: 0.02em; }
-.founder-card__bio { font-size: 0.9375rem; color: var(--text-muted); line-height: 1.7; }
 
 /* ============================================================
    FOOTER — Simplified, bright white
@@ -1498,7 +1482,6 @@ noscript .nexus-dept-grid { display: flex; }
   .form-card, .demo-panel, .surface-panel, .callout, .interactive__panel,
   .cta-band, .dash-shell, .sandbox-wrap { border-radius: 14px; }
 
-  .founder-card { flex-direction: column; }
   .tab-nav { overflow-x: auto; flex-wrap: nowrap; }
   .form-card { padding: 1.5rem; }
   .form-card__lead, .page-hero__lead { text-align: left; }

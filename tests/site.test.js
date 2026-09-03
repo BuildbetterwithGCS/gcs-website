@@ -57,13 +57,9 @@ const routes = [
   'departments/index.html',
   'map-intelligence/index.html',
   'solutions/index.html',
-  'genesis/index.html',
   'privacy/index.html',
   'accessibility/index.html',
-  'reference/index.html',
-  'terms/index.html',
-  'founder/index.html',
-  'founder-command-center/index.html'
+  'terms/index.html'
 ];
 
 const home = readFile('index.html');
