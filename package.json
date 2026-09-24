@@ -9,11 +9,13 @@
   },
   "jest": {
     "testEnvironment": "jsdom",
-    "testMatch": ["**/tests/**/*.test.js"]
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ]
   },
   "repository": {
     "type": "git",
-    "url": "http://localhost:26831/BuildbetterwithGCS/gcs-website"
+    "url": "https://github.com/BuildbetterwithGCS/gcs-website.git"
   },
   "license": "ISC",
   "devDependencies": {
