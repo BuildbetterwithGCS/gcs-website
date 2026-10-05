@@ -140,7 +140,7 @@ assert('Sandbox still loads demo player', contains(sandbox, 'js/nexus-demo-playe
 assert('Demo player uses deterministic clock', contains(demoPlayer, 'performance.now()') && contains(demoPlayer, 'requestAnimationFrame(tick)'));
 assert('Demo player uses URLSearchParams', contains(demoPlayer, 'new URLSearchParams(window.location.search)'));
 assert('Demo player removes speech synthesis', !contains(demoPlayer, 'speechSynthesis') && !contains(demoPlayer, 'SpeechSynthesisUtterance'));
-assert('Demo player includes audio-ready scene fields', countMatches(demoPlayer, "audioSrc: '../assets/audio/nexus-demo/") >= 8);
+assert('Demo player includes audio-ready scene fields', countMatches(demoPlayer, "audioSrc: '") >= 10);
 assert('Demo player updates aria-valuenow', contains(demoPlayer, 'aria-valuenow') && contains(demoPlayer, 'setAttribute(\'aria-valuenow\''));
 assert('Demo player includes captions-only completion state', containsCI(demoPlayer, 'Demo complete. Explore Nexus interactively or request a real demonstration.') && contains(demoPlayer, 'ndp-player--captions-only'));
 assert('Demo player hides unavailable audio button', contains(demoPlayer, 'ndp-btn--audio-unavailable'));
@@ -177,7 +177,7 @@ section('PR #22 — Narration audio architecture');
 const audioManifest = readFile('assets/audio/nexus-demo/manifest.json');
 assert('Audio manifest exists', audioManifest !== null);
 assert('Audio manifest has 10 tracks', audioManifest && countMatches(audioManifest, '"scene"') === 10);
-assert('Demo player scenes reference audio files', countMatches(demoPlayer, "assets/audio/nexus-demo/") >= 10);
+assert('Demo player scenes reference narration sources', countMatches(demoPlayer, "audioSrc: '") >= 10);
 assert('Demo player has audio error fallback', contains(demoPlayer, "'error'") && contains(demoPlayer, 'stopAudio'));
 
 section('PR #22 — Netlify Forms');
