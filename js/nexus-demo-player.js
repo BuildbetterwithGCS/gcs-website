@@ -36,7 +36,7 @@
       dept: 'executive',
       caption: 'Nexus connects the systems and information your organization already uses into one operating picture.',
       duration: 3600,
-      audioSrc: '../assets/audio/nexus-demo/01-welcome.mp3',
+      audioSrc: 'https://www.aidocmaker.com/g0/audio?name=483476cfe50345b39046eb0c5f3b9c63',
       highlight: '#view-executive .dash-row--4',
       events: [
         { at: 600, fn: function () { resetInteractiveState(false); } },
@@ -49,7 +49,7 @@
       dept: 'executive',
       caption: 'Leaders can see organization-wide KPIs, open work, workforce pressure, and risk in one place.',
       duration: 4200,
-      audioSrc: '../assets/audio/nexus-demo/02-executive-dashboard.mp3',
+      audioSrc: 'https://www.aidocmaker.com/g0/audio?name=e03390aa6a85478d9908a31b20550eed',
       highlight: '[data-kpi-key="risk-open"]',
       events: [
         { at: 1000, fn: function () { highlightElement(document.querySelector('[data-kpi-key="open-wo"]')); } },
@@ -62,7 +62,7 @@
       dept: 'executive',
       caption: 'Nexus identifies a risk that needs attention and lets leaders drill straight into the issue.',
       duration: 4400,
-      audioSrc: '../assets/audio/nexus-demo/03-problem-detected.mp3',
+      audioSrc: 'https://www.aidocmaker.com/g0/audio?name=5db5909674d945d4aab5de05b76eefbc',
       events: [
         { at: 800, fn: function () { renderKpiDetail('risk-open'); } },
         { at: 1600, fn: function () { highlightElement(document.querySelector('.nx-drawer')); } }
@@ -74,7 +74,7 @@
       dept: 'executive',
       caption: 'The detail drawer shows context, recommended action, and the estimated cost of waiting.',
       duration: 4200,
-      audioSrc: '../assets/audio/nexus-demo/04-understand-risk.mp3',
+      audioSrc: 'https://www.aidocmaker.com/g0/audio?name=9dfdd78e64a04de6aee0c3b23eea201f',
       events: [
         { at: 600, fn: function () { renderKpiDetail('risk-open'); } },
         { at: 1400, fn: function () { highlightElement(document.querySelector('.nx-action-btn--primary')); } }
@@ -86,7 +86,7 @@
       dept: 'executive',
       caption: 'Ask Nexus answers plain-language questions using connected operational information.',
       duration: 5200,
-      audioSrc: '../assets/audio/nexus-demo/05-ask-nexus.mp3',
+      audioSrc: 'https://www.aidocmaker.com/g0/audio?name=10917c745c344fb5b1d73a2df337fc58',
       events: [
         { at: 400, fn: function () { closeDrawer(); } },
         { at: 900, fn: function () { openAskNexus(); } },
@@ -100,7 +100,7 @@
       dept: 'map',
       caption: 'Map Intelligence adds geographic context so leaders can see where risk, projects, and assets are concentrated.',
       duration: 4800,
-      audioSrc: '../assets/audio/nexus-demo/06-map-context.mp3',
+      audioSrc: 'https://www.aidocmaker.com/g0/audio?name=55fd70db0fdb410dacc11da3ff024860',
       events: [
         { at: 1100, fn: function () { clickElement(document.querySelector('.nx-map-pin[data-id="risk-water"]')) || clickElement(document.querySelector('.nx-map-pin[data-id="bldg-4"]')); } },
         { at: 2200, fn: function () { highlightElement(document.querySelector('.nx-map-pin[data-id="risk-water"]') || document.querySelector('.nx-map-pin[data-id="bldg-4"]')); } }
@@ -112,7 +112,7 @@
       dept: 'finance',
       caption: 'Finance leaders can move from budget and AP signals to operational context without leaving Nexus.',
       duration: 4500,
-      audioSrc: '../assets/audio/nexus-demo/07-finance-view.mp3',
+      audioSrc: 'https://www.aidocmaker.com/g0/audio?name=3923cbb0a6b64c4bbf4c523370c0b09a',
       events: [
         { at: 900, fn: function () { renderKpiDetail('fin-ap'); } },
         { at: 1800, fn: function () { highlightElement(document.querySelector('.nx-drawer')); } }
@@ -124,7 +124,7 @@
       dept: 'executive',
       caption: 'Insight becomes action when leaders assign work, escalate issues, and track accountability from the same environment.',
       duration: 4600,
-      audioSrc: '../assets/audio/nexus-demo/08-assign-action.mp3',
+      audioSrc: 'https://www.aidocmaker.com/g0/audio?name=1bdae300ea794a2284e560191bed71bf',
       events: [
         { at: 400, fn: function () { closeDrawer(); closeAskNexus(); } },
         { at: 1100, fn: function () { renderActionResult('assign', 'Infrastructure failure — Water main'); } },
@@ -137,7 +137,7 @@
       dept: 'reports',
       caption: 'Nexus helps teams document outcomes, generate reports, and prove value with measurable results.',
       duration: 4600,
-      audioSrc: '../assets/audio/nexus-demo/09-prove-value.mp3',
+      audioSrc: 'https://www.aidocmaker.com/g0/audio?name=e45949269d664803b6c415b6834f826b',
       events: [
         { at: 1200, fn: function () { renderActionResult('generate-report', 'Quarterly value and ROI scorecard'); } },
         { at: 2600, fn: function () { highlightElement(document.querySelector('.nx-drawer')); } }
@@ -149,7 +149,7 @@
       dept: 'executive',
       caption: 'The guided walkthrough is almost complete. Next, explore Nexus interactively with synthetic data and no login.',
       duration: 3600,
-      audioSrc: '../assets/audio/nexus-demo/10-explore-nexus.mp3',
+      audioSrc: 'https://www.aidocmaker.com/g0/audio?name=d630c2ee41b44b27a5b75b6b3d0e0cb0',
       events: [
         { at: 400, fn: function () { closeDrawer(); closeAskNexus(); } },
         { at: 1000, fn: function () { switchTab('executive'); } },
@@ -400,9 +400,15 @@
     if (sceneHasAudio(scene)) {
       state.audioEl = new Audio(scene.audioSrc);
       state.audioEl.preload = 'auto';
+      state.audioEl.crossOrigin = 'anonymous';
       state.audioEl.muted = state.muted;
       state.audioEl.volume = state.volume;
       state.audioEl.currentTime = 0;
+      state.audioEl.addEventListener('loadedmetadata', function () {
+        if (isFinite(state.audioEl.duration) && state.audioEl.duration > 0) {
+          scene.duration = Math.max(scene.duration, Math.ceil(state.audioEl.duration * 1000) + 250);
+        }
+      });
       state.audioEl.addEventListener('ended', function () {
         if (state.playing && !state.paused) advanceScene();
       });

@@ -3,8 +3,8 @@
   "description": "Nexus guided demo narration audio manifest",
   "basePath": "/assets/audio/nexus-demo/",
   "format": "mp3",
-  "status": "AWAITING_PRODUCTION_FILES",
-  "notes": "Drop approved MP3 files into /assets/audio/nexus-demo/ using the filenames below. No code changes are needed — the demo player reads audioSrc from SCENES in js/nexus-demo-player.js and falls back to captions-only if a file is absent or fails to load.",
+  "status": "GENERATED_REMOTE_NATURAL_VOICE",
+  "notes": "Natural professional narration generated for all 10 guided-demo scenes and wired in js/nexus-demo-player.js. Captions remain as fallback if audio cannot load.",
   "tracks": [
     {
       "scene": "welcome",
@@ -73,6 +73,6 @@
     "noiseFloor": "Clean — no background noise, no room reverb",
     "normalization": "-3 dBFS peak, -16 LUFS integrated loudness",
     "silence": "0.1s lead-in, 0.2s tail on each file",
-    "style": "Professional, calm, confident, executive-friendly. Not robotic. Not sales exaggeration."
+    "style": "Natural, conversational, calm, confident, executive-friendly. Avoid robotic cadence and exaggerated sales delivery."
   }
 }
