@@ -2608,18 +2608,20 @@ noscript .nexus-dept-grid { display: flex; }
   .ndp-vol-slider { display: none !important; }
 }
 
-/* Very small screens (390px iPhone) — keep controls on one row */
+/* Small screens: all playback controls stay visible without horizontal scrolling. */
 @media (max-width: 430px) {
-  .ndp-controls { flex-wrap: nowrap; overflow-x: auto; padding: 0.5rem; gap: 0.25rem; }
-  .ndp-controls::-webkit-scrollbar { height: 0; }
-  .ndp-controls__center { min-width: 60px; }
+  .ndp-controls { display: grid; grid-template-columns: 1fr 1fr; overflow: visible; padding: 0.5rem; gap: 0.25rem; }
+  .ndp-controls__center { grid-column: 1 / -1; grid-row: 1; min-width: 0; }
+  .ndp-controls__left, .ndp-controls__right { grid-row: 2; gap: 0.25rem; }
+  .ndp-controls__right { justify-content: flex-end; }
   .ndp-btn { padding: 0.5rem 0.5rem; min-height: 2.75rem; min-width: 2.75rem; }
-  .ndp-btn--exit { min-width: auto; }
-  /* Show only icon on primary action buttons */
-  #ndp-btn-play::after,
-  #ndp-btn-pause::after,
-  #ndp-btn-resume::after,
-  #ndp-btn-replay::after { content: none; }
+  /* Accessible labels remain on these icon buttons. */
+  .ndp-btn--primary, .ndp-btn--exit { font-size: 0; width: 2.75rem; padding: 0.5rem; }
+  .ndp-btn--primary::before, .ndp-btn--exit::before { font-size: 0.875rem; }
+  #ndp-btn-play::before, #ndp-btn-resume::before { content: '▶'; }
+  #ndp-btn-pause::before { content: '⏸'; }
+  #ndp-btn-replay::before { content: '↺'; }
+  #ndp-btn-exit::before { content: '✕'; }
 }
 
 /* Mobile org selector — show only primary 4 orgs initially on small screens */
