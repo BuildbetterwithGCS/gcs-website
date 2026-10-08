@@ -178,7 +178,7 @@ const audioManifest = readFile('assets/audio/nexus-demo/manifest.json');
 assert('Audio manifest exists', audioManifest !== null);
 assert('Audio manifest has 10 tracks', audioManifest && countMatches(audioManifest, '"scene"') === 10);
 assert('Demo player scenes reference narration sources', countMatches(demoPlayer, "audioSrc: '") >= 10);
-assert('Demo player has audio error fallback', contains(demoPlayer, "'error'") && contains(demoPlayer, 'stopAudio'));
+assert('Demo player has audio error fallback', contains(demoPlayer, 'audio.onerror = unavailable') && contains(demoPlayer, 'stopAudio'));
 
 section('PR #22 — Netlify Forms');
 const contactHtml = readFile('contact/index.html');
