@@ -141,16 +141,16 @@
           </ul>
 
           <h2 id="forms">5. Website Forms and Submission</h2>
-          <p>This website is a static site. The contact and demo request forms perform validation entirely inside your browser and <strong>do not transmit your entry to a GCS server</strong>. After validation, the page presents a summary of what you entered along with an email link so that you can send the information to us yourself. This means:</p>
+          <p>The contact and demonstration-request forms are processed by <strong>Netlify Forms</strong>, our website hosting provider. When you submit a form, the information you enter is transmitted to Netlify and made available to authorized GCS personnel so we can respond to your request.</p>
           <ul>
-            <li>Nothing you type into a form on this site is stored by GCS unless and until you send it to us by email.</li>
-            <li>No hidden analytics call, tracking pixel, or third-party endpoint receives your form entries.</li>
-            <li>If you close the page without sending the email, the information is discarded with the page.</li>
+            <li>Required fields are limited to the business contact and scoping information shown on the form.</li>
+            <li>A honeypot field and server-side form handling are used to reduce automated spam.</li>
+            <li>Do not submit passwords, account numbers, protected health information, Social Security numbers, law-enforcement-sensitive information, or confidential records through a website form.</li>
           </ul>
-          <p>Once you email us, that message is handled by our email provider and retained as described in Section 11.</p>
+          <p>Form submissions are used only to evaluate and respond to the inquiry. More sensitive exchanges require an engagement-specific, approved transfer method. See our <a href="../security/">Data Security &amp; Public Records Handling</a> page for the current website and engagement boundaries.</p>
 
           <h2 id="hosting">6. Hosting, Logs, and Third-Party Services</h2>
-          <p>This website is hosted on <strong>GitHub Pages</strong>. GitHub processes standard request logs for delivery, security, and abuse prevention, in accordance with its own privacy statement. GCS does not have access to individual visitor identities through this hosting arrangement.</p>
+          <p>This website is deployed through <strong>Netlify</strong>. Netlify processes form submissions and standard request logs for delivery, security, and abuse prevention under its own privacy and data-processing terms. GCS does not use those logs to build visitor profiles.</p>
           <p>Web fonts are requested from <strong>Google Fonts</strong>. That request necessarily discloses your IP address and user agent to Google in order to deliver the font files. No other third-party resources are loaded by this site &mdash; there is no advertising network, no session recording, no chat widget, and no social media tracking script.</p>
 
           <h2 id="cookies">7. Cookies and Similar Technologies</h2>
@@ -193,7 +193,7 @@
           </ul>
 
           <h2 id="security">12. Security</h2>
-          <p>GCS applies administrative, technical, and physical safeguards proportionate to the sensitivity of the information we hold. These include access control on a least-privilege basis, encryption of data in transit, multi-factor authentication on business systems, separation of client environments, background-appropriate confidentiality agreements, and periodic review of access rights.</p>
+          <p>GCS applies administrative, technical, and physical safeguards proportionate to the sensitivity of the information we hold. Safeguards are selected for the information and the agreed engagement scope. Current public-site measures include HTTPS in transit, restrictive browser headers, spam controls on forms, and separation between the public demonstration and client records. Engagement-specific controls, access roles, storage locations, retention, and transfer methods are documented before GCS receives sensitive client information.</p>
           <p>No method of transmission or storage is perfectly secure. We ask that you avoid sending sensitive information &mdash; credentials, financial account numbers, or personal identifiers &mdash; through unencrypted email or through a website form.</p>
 
           <h2 id="rights">13. Your Privacy Rights</h2>
@@ -255,6 +255,7 @@
           <div class="footer__nav"><a href="../nexus/">Nexus</a><a href="../consulting/">Consulting</a><a href="../industries/">Industries</a><a href="../about/">About</a><a href="../contact/">Contact</a><a href="../request-demo/">Request Demo</a></div>
           <div class="footer__nav" style="margin-top:1rem;">
             <a href="../privacy/">Privacy</a>
+            <a href="../security/">Security</a>
             <a href="../accessibility/">Accessibility</a>
           </div>
         </div>
