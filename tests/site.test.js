@@ -81,6 +81,7 @@ routes.forEach((route) => {
   assert(route + ' nav includes Contact', containsCI(html, '>Contact</a>'));
   assert(route + ' nav includes Request Demo CTA', containsCI(html, 'nav__link nav__link--cta'));
   assert(route + ' footer includes Request Demo', containsCI(html, 'request-demo/') && containsCI(html, '>Request Demo<'));
+  assert(route + ' footer includes Security', containsCI(html, '>Security</a>'));
   assert(route + ' removes old nav labels', !containsCI(html, '>Platform</a></li>') && !containsCI(html, '>Demos</a></li>') && !containsCI(html, 'Explore Nexus Live') && !containsCI(html, 'Get Started'));
 });
 
