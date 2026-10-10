@@ -1,78 +1,80 @@
 {
-  "version": 1,
-  "description": "Nexus guided demo narration audio manifest",
+  "version": 2,
+  "description": "Nexus synthetic guided demonstration narration",
   "basePath": "/assets/audio/nexus-demo/",
   "format": "mp3",
-  "status": "GENERATED_REMOTE_NATURAL_VOICE",
-  "notes": "Natural professional narration generated for all 10 guided-demo scenes and wired in js/nexus-demo-player.js. Captions remain as fallback if audio cannot load.",
+  "status": "SELF_HOSTED_AUDIO_VERIFIED",
+  "voiceStyle": "clear",
   "tracks": [
     {
       "scene": "welcome",
       "filename": "01-welcome.mp3",
-      "durationApprox": "4-5s",
-      "script": "Welcome to Nexus — the GCS operations intelligence platform. In the next minute, you'll see how Nexus connects your organization's information into one operating picture, so leaders can see what's happening, know what needs attention, and act."
+      "durationSeconds": 10.08,
+      "sha256": "94ec041813e34816a764a608741ee0adf304532c674921cfc9bc60b1ee43d56b",
+      "script": "Welcome to Nexus, the GCS operations intelligence platform. This walkthrough uses synthetic sample data to show how leaders can see what needs attention and act."
     },
     {
       "scene": "executive-dashboard",
       "filename": "02-executive-dashboard.mp3",
-      "durationApprox": "5-6s",
-      "script": "The executive dashboard gives leadership a live view of the entire organization — budget utilization, open work orders, workforce capacity, and risk exposure — always current, always connected across every department."
+      "durationSeconds": 9.936,
+      "sha256": "c5db9d0fbd9c8593ee4d0a5b4120c4fef8a631cc5cb34be087e0c5ffd80a5a9a",
+      "script": "The executive dashboard brings budgets, open work, workforce capacity, and risk into one view. Choose a department to explore the information behind its numbers."
     },
     {
       "scene": "problem-detected",
       "filename": "03-problem-detected.mp3",
-      "durationApprox": "5-6s",
-      "script": "Nexus identifies a risk that needs attention. One tap opens the full picture — context, cause, and recommended action — without searching through separate systems or waiting for a report."
+      "durationSeconds": 8.976,
+      "sha256": "d3c1383f6a999e5c7633fd26e78e39e791cd04a0b0c8f997219725762bae6023",
+      "script": "A risk needs attention. Open the record to see the issue, its context, and the recommended next step, without searching through separate reports."
     },
     {
       "scene": "understand-cause",
       "filename": "04-understand-risk.mp3",
-      "durationApprox": "5-6s",
-      "script": "The detail view shows what's happening, why it matters, and what to do next. Leaders see the recommended action and the estimated cost of leaving it unaddressed — so decisions are informed, not guesswork."
+      "durationSeconds": 9.912,
+      "sha256": "5a0047bcaeaa74601925faaf8e7083b0acf60e5c9e032a5c9498eafe536b2478",
+      "script": "The detail view connects the problem with its operational impact and a suggested response. These sample estimates illustrate how a team can compare priorities."
     },
     {
       "scene": "ask-nexus",
       "filename": "05-ask-nexus.mp3",
-      "durationApprox": "6-8s",
-      "script": "Ask Nexus lets leaders ask plain-language questions across all connected operational data. No analyst required — just ask. The answer comes back in plain language with the numbers to support it."
+      "durationSeconds": 9.936,
+      "sha256": "484f585da3c262976b7a54ac9e96fcfee9022345a484871b4898c4e3e31219a7",
+      "script": "Ask Nexus turns a plain-language question into a clear answer. This demonstration uses scripted responses and synthetic numbers to show the intended workflow."
     },
     {
       "scene": "map-context",
       "filename": "06-map-context.mp3",
-      "durationApprox": "5-7s",
-      "script": "Map Intelligence adds geographic context — so leaders can see where risk, projects, and assets are concentrated across facilities, sites, and service areas, and act directly from the map."
+      "durationSeconds": 9.936,
+      "sha256": "2e9fc4188348c27b0cc854fc2a1133c51bf105cda457ebee16cb8f2796165102",
+      "script": "Map Intelligence adds location to the operating picture. See where sample projects, facilities, and risks are concentrated, then open a record for more context."
     },
     {
       "scene": "finance-view",
       "filename": "07-finance-view.mp3",
-      "durationApprox": "5-6s",
-      "script": "The Finance view connects budget, revenue, and accounts payable signals to the operational picture. Overdue invoices, vendor risk, and spending trends — visible in one place, connected to everything else."
+      "durationSeconds": 9.504,
+      "sha256": "f407c354fe0452a8c9ae37f4e58486109ecfaa7682132b7a7e2fd20d42300fda",
+      "script": "The finance view connects budgets, revenue, and accounts payable with operations. Explore the sample invoices and spending signals behind the dashboard."
     },
     {
       "scene": "assign-action",
       "filename": "08-assign-action.mp3",
-      "durationApprox": "5-6s",
-      "script": "From insight to action — leaders can assign work, escalate issues, and track accountability without leaving the Nexus environment. Every action is named, dated, and visible."
+      "durationSeconds": 11.064,
+      "sha256": "46f0c5f5f57287992f798f2610a7aec883026dd0c7637d486dffb1bb1f2eeceb",
+      "script": "Move from insight to action. Assign responsibility, record a due date, and track the next step. Actions in this sandbox demonstrate the workflow without sending real assignments."
     },
     {
       "scene": "prove-value",
       "filename": "09-prove-value.mp3",
-      "durationApprox": "5-6s",
-      "script": "Nexus helps teams document outcomes, generate performance reports, and prove measurable value from operational improvements — with data, not just claims."
+      "durationSeconds": 10.344,
+      "sha256": "4ca3beecbdf6b815dcd47b64a872d824b1c0e63c7fadc5c1dea400f8d8aa1a21",
+      "script": "Reports help a team track outcomes and review improvement over time. The values shown here are illustrative; results depend on the work performed and the data available."
     },
     {
-      "scene": "explore-nexus",
+      "scene": "explore-next",
       "filename": "10-explore-nexus.mp3",
-      "durationApprox": "4-5s",
-      "script": "That's the guided walkthrough. Now explore Nexus interactively — move through departments, ask your own questions, open records, and see the platform at your own pace. Synthetic data only. No login required."
+      "durationSeconds": 9.768,
+      "sha256": "8cf446ee0ea774d45c3f068d7e96c43607999725bd401b9f4fd61b89c5aa390a",
+      "script": "Now explore Nexus at your own pace. Choose a department, open a record, or try a sample question. To discuss your organization, request a demonstration with GCS."
     }
-  ],
-  "productionNotes": {
-    "format": "MP3 128 kbps minimum, AAC preferred",
-    "sampleRate": "44.1 kHz, mono acceptable for voice",
-    "noiseFloor": "Clean — no background noise, no room reverb",
-    "normalization": "-3 dBFS peak, -16 LUFS integrated loudness",
-    "silence": "0.1s lead-in, 0.2s tail on each file",
-    "style": "Natural, conversational, calm, confident, executive-friendly. Avoid robotic cadence and exaggerated sales delivery."
-  }
+  ]
 }
