@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <title>Data Security &amp; Public Records Handling | GCS</title>
+  <meta name="title" content="Data Security &amp; Public Records Handling | GCS" />
+  <meta name="description" content="How GCS handles website submissions, client information, public records, retention, AI-assisted work, and engagement-specific security boundaries." />
+  <meta name="author" content="GCS" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://buildbetterwithgcs.com/security/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="GCS" />
+  <meta property="og:url" content="https://buildbetterwithgcs.com/privacy/" />
+  <meta property="og:title" content="Data Security &amp; Public Records Handling | GCS" />
+  <meta property="og:description" content="How GCS handles website submissions, client information, public records, retention, AI-assisted work, and engagement-specific security boundaries." />
+  <meta property="og:image" content="https://buildbetterwithgcs.com/assets/og-image.png" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Data Security &amp; Public Records Handling | GCS" />
+  <meta name="twitter:description" content="How GCS handles website submissions, client information, public records, retention, AI-assisted work, and engagement-specific security boundaries." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="../assets/favicon.svg" />
+  <meta name="theme-color" content="#ffffff" />
+  <noscript><style>.reveal{opacity:1 !important;transform:none !important;}</style></noscript>
+</head>
+<body>
+
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <!-- ===================== SITE HEADER ===================== -->
+  <header class="site-header" role="banner">
+    <nav class="nav container" aria-label="Primary navigation">
+      <a href="../" class="nav__logo" aria-label="GCS home">
+        <span class="nav__logo-plate">
+          <img src="../assets/gcs-logo.svg" alt="GCS — Build Better Organizations" class="nav__logo-img" width="168" height="56" />
+        </span>
+      </a>
+      <button class="nav__toggle" type="button" aria-controls="nav-menu" aria-expanded="false" aria-label="Open navigation menu">
+        <span class="hamburger" aria-hidden="true"></span>
+        <span class="hamburger" aria-hidden="true"></span>
+        <span class="hamburger" aria-hidden="true"></span>
+      </button>
+      <ul class="nav__links" id="nav-menu" role="list">
+        <li><a href="../" class="nav__link">Home</a></li>
+        <li><a href="../nexus/" class="nav__link">Nexus</a></li>
+        <li><a href="../consulting/" class="nav__link">Consulting</a></li>
+        <li><a href="../industries/" class="nav__link">Industries</a></li>
+        <li><a href="../about/" class="nav__link">About</a></li>
+        <li><a href="../contact/" class="nav__link">Contact</a></li>
+        <li><a href="../request-demo/" class="nav__link nav__link--cta">Request Demo</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ===================== MAIN ===================== -->
+  <main id="main-content">
+    <section class="page-hero">
+      <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <a href="../">Home</a>
+          <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+          <span aria-current="page">Data Security &amp; Public Records</span>
+        </nav>
+        <div class="page-hero__inner">
+          <span class="page-hero__eyebrow">Trust &amp; Governance</span>
+          <h1 class="page-hero__title">Data Security &amp; Public Records Handling</h1>
+          <p class="page-hero__lead">A plain-language description of how GCS handles information, what this public website does, and what must be defined in writing before client data is accepted.</p>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="container">
+        <div class="prose">
+          <p class="prose__meta">Last reviewed: October 10, 2026</p>
+          <nav class="prose__toc" aria-label="On this page">
+            <h2>On This Page</h2>
+            <ol>
+              <li><a href="#scope">Scope and current state</a></li>
+              <li><a href="#website">Public website and forms</a></li>
+              <li><a href="#engagements">Client engagement controls</a></li>
+              <li><a href="#records">Public records and retention</a></li>
+              <li><a href="#ai">AI-assisted work</a></li>
+              <li><a href="#incidents">Suspected incidents</a></li>
+            </ol>
+          </nav>
+
+          <h2 id="scope">1. Scope and Current State</h2>
+          <p>This page describes GCS&rsquo;s current public website and the minimum handling rules used when scoping consulting work. It is not a claim that GCS holds a certification, has completed a third-party security audit, or provides a one-size-fits-all hosted client environment. Any engagement-specific security commitments belong in the signed scope of work or data-handling addendum.</p>
+          <p>The Nexus experience available on this website is a demonstration using synthetic data. It is not connected to a client&rsquo;s live systems.</p>
+
+          <h2 id="website">2. Public Website and Forms</h2>
+          <ul>
+            <li>The public site is deployed through Netlify and served over HTTPS.</li>
+            <li>Security headers restrict framing, content-type sniffing, referrer detail, and browser access to camera, microphone, and geolocation.</li>
+            <li>Contact and demonstration-request forms are processed by Netlify Forms and use a honeypot field to reduce automated spam.</li>
+            <li>Form submissions are intended only for ordinary business contact and initial scoping.</li>
+          </ul>
+          <p><strong>Do not submit sensitive records through a website form.</strong> That includes passwords, financial account numbers, Social Security numbers, protected health information, criminal-justice information, student records, export-controlled data, or confidential public-safety records.</p>
+
+          <h2 id="engagements">3. Client Engagement Controls</h2>
+          <p>Before GCS accepts sensitive client information, the parties should document the specific data involved, its owner, approved users, storage and transfer method, retention period, required return or destruction, incident contacts, and any legal or contractual restrictions. Access should be limited to the information required for the written scope.</p>
+          <p>GCS does not treat a sales conversation, demonstration, or unsigned proposal as permission to collect or connect to production systems. Credentials must not be placed in email, website forms, source code, tickets, or public repositories.</p>
+
+          <h2 id="records">4. Public Records and Retention</h2>
+          <p>For public-sector work, the client remains responsible for identifying applicable public-records, records-retention, litigation-hold, and disclosure obligations. GCS will follow the written retention and disposition instructions in the engagement documents and will not promise deletion when law, audit, insurance, or a valid hold requires preservation.</p>
+          <p>Publicly available information can still contain personal, security-sensitive, or operationally sensitive details. GCS reviews intended use and distribution rather than assuming that every public record should be republished.</p>
+
+          <h2 id="ai">5. AI-Assisted Work</h2>
+          <p>GCS may use AI-assisted tools for analysis and drafting within an approved scope. Client information is not used to train public general-purpose models. Consequential recommendations remain subject to human review. A live integration, automated action, or continuous monitoring service is not implied unless it is expressly included and tested in the signed engagement.</p>
+
+          <h2 id="incidents">6. Questions or Suspected Incidents</h2>
+          <p>If you believe information was submitted to GCS in error or a security incident may involve GCS, contact <a href="mailto:sam@buildbetterwithgcs.com">sam@buildbetterwithgcs.com</a>. Include a callback number and a general description, but do not send passwords, sensitive records, or exploit details in the first email.</p>
+          <p>For privacy rights and general retention information, review the <a href="../privacy/">Privacy Policy</a>.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <!-- ===================== SITE FOOTER ===================== -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <div class="footer__brand">
+            <a href="../" class="nav__logo" aria-label="GCS home">
+              <span class="nav__logo-plate">
+                <img src="../assets/gcs-logo.svg" alt="GCS" class="nav__logo-img nav__logo-img--sm" width="120" height="40" />
+              </span>
+            </a>
+            <div>
+              <div class="footer__company-name">GCS — Build Better Organizations</div>
+              <div class="footer__tagline">Build Better Organizations.</div>
+            </div>
+          </div>
+          <p class="footer__subtext" style="margin-top:1rem;max-width:36rem;">GCS helps organizations connect operations, assets, financials, geography, and governed AI into one accountable operating picture.</p>
+        </div>
+        <div>
+          <div class="footer__nav"><a href="../nexus/">Nexus</a><a href="../consulting/">Consulting</a><a href="../industries/">Industries</a><a href="../about/">About</a><a href="../contact/">Contact</a><a href="../request-demo/">Request Demo</a></div>
+          <div class="footer__nav" style="margin-top:1rem;">
+            <a href="../privacy/">Privacy</a>
+            <a href="../security/">Security</a>
+            <a href="../accessibility/">Accessibility</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>&copy; <span id="footer-year"></span> GCS. All rights reserved.</span>
+        <span>Build Better Organizations.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>
