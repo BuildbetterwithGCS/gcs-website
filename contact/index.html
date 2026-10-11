@@ -323,6 +323,7 @@
 
       var data = {
         'form-name': 'contact',
+        'bot-field': (form.elements['bot-field'].value || '').trim(),
         'name': (document.getElementById('contact-name').value || '').trim(),
         'organization': (document.getElementById('contact-org').value || '').trim(),
         'email': (document.getElementById('contact-email').value || '').trim(),
