@@ -377,7 +377,7 @@
 
     function validate() {
       var firstBad = null;
-      $('[required], [maxlength]', form).forEach(function (field) {
+      $$('[required], [maxlength]', form).forEach(function (field) {
         var value = (field.value || '').trim();
         var message = '';
         if (field.hasAttribute('required') && !value) {
@@ -395,7 +395,7 @@
       return firstBad;
     }
 
-    $('[required], [maxlength]', form).forEach(function (field) {
+    $$('[required], [maxlength]', form).forEach(function (field) {
       field.addEventListener('blur', function () {
         var value = (field.value || '').trim();
         if (!value) return;
