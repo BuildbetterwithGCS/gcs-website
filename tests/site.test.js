@@ -206,6 +206,12 @@ assert('Contact form uses Netlify Forms', contains(contactHtml, 'data-netlify="t
 assert('Contact form has honeypot field', contains(contactHtml, 'bot-field'));
 assert('Contact AJAX payload forwards honeypot value', contains(contactHtml, "'bot-field': (form.elements['bot-field'].value || '').trim()"));
 assert('Contact form has success state', contains(contactHtml, 'contact-success'));
+assert('Contact confirmation describes website submission without an inbox-delivery claim',
+  containsCI(contactHtml, 'submitted through the GCS website') &&
+  !containsCI(contactHtml, 'received by GCS'));
+assert('Contact page does not promise an unverified response time',
+  !containsCI(contactHtml, 'within two business days') &&
+  containsCI(contactHtml, 'response timing depends on availability'));
 assert('Contact form exposes focusable success and error status',
   contains(contactHtml, 'id="contact-success" hidden role="status" aria-live="polite" tabindex="-1"') &&
   contains(contactHtml, 'id="contact-error" hidden role="alert" aria-live="assertive" tabindex="-1"'));
