@@ -122,6 +122,9 @@ assert('Consulting eyebrow updated', containsCI(consulting, 'GCS Consulting Serv
 assert('Consulting hero headline updated', containsCI(consulting, 'Expertise and technology working together.'));
 assert('Consulting lead updated', containsCI(consulting, 'GCS combines operational consulting with Nexus'));
 assert('Consulting hero explore CTA updated', contains(consulting, 'href="../sandbox/" class="btn btn--outline">Explore Nexus</a>'));
+assert('Consulting states paid written-scope boundary', containsCI(consulting, 'Paid work begins with a written scope.') && containsCI(consulting, 'fee, and exclusions'));
+assert('Consulting requires written approval for added work', containsCI(consulting, 'require written approval before GCS performs the additional paid work'));
+assert('Consulting avoids assumed integrations', containsCI(consulting, 'No assumed integrations') && !containsCI(consulting, 'connected to existing systems'));
 
 section('Platform redirect page');
 assert('Platform canonical points to /nexus/', contains(platform, 'href="https://buildbetterwithgcs.com/nexus/"'));
@@ -200,6 +203,10 @@ assert('Request Demo form uses Netlify Forms', contains(demoHtml, 'data-netlify=
 assert('Request Demo form has honeypot field', contains(demoHtml, 'bot-field'));
 assert('Request Demo success state says received by GCS', containsCI(demoHtml, 'received by GCS'));
 assert('Request Demo removes honest-form mailto disclosure', !containsCI(demoHtml, 'Submitting this form does'));
+assert('Request Demo offers a paid assessment starting point', containsCI(demoHtml, 'Paid operational assessment'));
+assert('Request Demo warns against sensitive submissions', containsCI(demoHtml, 'Do not include passwords'));
+assert('Request Demo labels synthetic demonstration data', containsCI(demoHtml, 'synthetic example data') && !containsCI(demoHtml, 'Working software, live.'));
+assert('Request Demo avoids unsupported workflow-automation copy', !containsCI(demoHtml, 'Workflow Automation'));
 
 section('PR #22 — Terminology');
 assert('Contact form uses Operations Intelligence not Enterprise Intelligence', !contains(contactHtml, 'Nexus Enterprise Intelligence'));
