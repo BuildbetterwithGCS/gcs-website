@@ -92,6 +92,10 @@ requireMarkup(demo, 'demo form notification attributes changed', 'netlify-honeyp
 });
 requireMarkup(demo, 'demo success state changed', 'data-form-result hidden role="status" aria-live="polite" tabindex="-1"');
 requireMarkup(demo, 'demo error state changed', 'data-form-error hidden role="alert" aria-live="assertive" tabindex="-1"');
+requireMarkup(demo, 'demo confirmation overstates provider receipt', 'Your demonstration request was submitted through the GCS website.');
+if (/received by GCS/i.test(demo)) {
+  violations.push('demo page contains an unverified inbox-delivery claim');
+}
 requireMarkup(main, 'demo submission handler changed', "$$('[data-honest-form]').forEach(function (form)");
 requireMarkup(main, 'demo Netlify submission changed', "fetch('/', {");
 requireMarkup(demo, 'demo governed-AI scope notice missing', 'AI-assisted work is not assumed. Any proposed use is described, bounded, and scoped separately for the engagement.');
