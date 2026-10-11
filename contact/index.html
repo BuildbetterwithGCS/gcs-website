@@ -153,13 +153,13 @@
                 </div>
               </form>
 
-              <div id="contact-success" hidden aria-live="polite" style="padding:2rem;background:var(--bg-muted,#f4f6f9);border-radius:0.75rem;text-align:center;">
+              <div id="contact-success" hidden role="status" aria-live="polite" tabindex="-1" style="padding:2rem;background:var(--bg-muted,#f4f6f9);border-radius:0.75rem;text-align:center;">
                 <p style="font-size:1.5rem;margin-bottom:0.5rem;">&#10003;</p>
                 <h3 style="margin-bottom:0.5rem;">Message received.</h3>
                 <p>Thank you. Your message has been received by GCS. We typically respond within two business days.</p>
               </div>
 
-              <div id="contact-error" hidden aria-live="polite" style="padding:1.25rem;background:#fff3f3;border:1px solid #f5c6c6;border-radius:0.5rem;margin-top:1rem;">
+              <div id="contact-error" hidden role="alert" aria-live="assertive" tabindex="-1" style="padding:1.25rem;background:#fff3f3;border:1px solid #f5c6c6;border-radius:0.5rem;margin-top:1rem;">
                 <p><strong>Something went wrong.</strong> Your message could not be submitted. Please try again, or write directly to <a href="mailto:sam@buildbetterwithgcs.com">sam@buildbetterwithgcs.com</a>.</p>
               </div>
             </div>
@@ -343,7 +343,13 @@
         }
       }).catch(function () {
         if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Contact GCS'; }
-        if (errorEl) errorEl.hidden = false;
+        if (errorEl) {
+          errorEl.hidden = false;
+          errorEl.focus();
+          if (typeof errorEl.scrollIntoView === 'function') {
+            errorEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }
       });
     });
   }());
