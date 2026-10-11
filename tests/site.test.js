@@ -72,11 +72,18 @@ const sandbox = readFile('sandbox/index.html');
 const security = readFile('security/index.html');
 const privacy = readFile('privacy/index.html');
 const terms = readFile('terms/index.html');
+const sitemap = readFile('sitemap.xml');
 const css = readFile('css/styles.css');
+const mainJs = readFile('js/main.js');
 const demoPlayer = readFile('js/nexus-demo-player.js');
 
 section('Routes');
 routes.forEach((route) => assert(route + ' exists', readFile(route) !== null));
+
+section('Sitemap');
+assert('Sitemap includes paid consulting page', contains(sitemap, 'https://buildbetterwithgcs.com/consulting/'));
+assert('Sitemap includes current solutions page', contains(sitemap, 'https://buildbetterwithgcs.com/solutions/'));
+assert('Sitemap excludes permanent redirect targets', !contains(sitemap, 'https://buildbetterwithgcs.com/responsible-ai/'));
 
 section('Sitewide navigation and footer');
 routes.forEach((route) => {
@@ -207,7 +214,14 @@ const contactHtml = readFile('contact/index.html');
 const demoHtml = readFile('request-demo/index.html');
 assert('Contact form uses Netlify Forms', contains(contactHtml, 'data-netlify="true"') && contains(contactHtml, 'name="contact"'));
 assert('Contact form has honeypot field', contains(contactHtml, 'bot-field'));
+assert('Contact AJAX payload forwards honeypot value', contains(contactHtml, "'bot-field': (form.elements['bot-field'].value || '').trim()"));
 assert('Contact form has success state', contains(contactHtml, 'contact-success'));
+assert('Contact confirmation describes website submission without an inbox-delivery claim',
+  containsCI(contactHtml, 'submitted through the GCS website') &&
+  !containsCI(contactHtml, 'received by GCS'));
+assert('Contact page does not promise an unverified response time',
+  !containsCI(contactHtml, 'within two business days') &&
+  containsCI(contactHtml, 'response timing depends on availability'));
 assert('Contact form exposes focusable success and error status',
   contains(contactHtml, 'id="contact-success" hidden role="status" aria-live="polite" tabindex="-1"') &&
   contains(contactHtml, 'id="contact-error" hidden role="alert" aria-live="assertive" tabindex="-1"'));
@@ -217,6 +231,15 @@ assert('Request Demo form exposes focusable success and error status',
 assert('Contact form does not open mailto directly on submit', !contains(contactHtml, "window.location.href = 'mailto:"));
 assert('Request Demo form uses Netlify Forms', contains(demoHtml, 'data-netlify="true"') && contains(demoHtml, 'name="demo-request"'));
 assert('Request Demo form has honeypot field', contains(demoHtml, 'bot-field'));
+assert('Contact intake fields have bounded lengths',
+  contains(contactHtml, 'id="contact-name" name="name" autocomplete="name" maxlength="120"') &&
+  contains(contactHtml, 'id="contact-challenge" name="challenge" rows="7" maxlength="2000"'));
+assert('Request Demo intake fields have bounded lengths',
+  contains(demoHtml, 'id="demo-name" name="name" autocomplete="name" maxlength="120"') &&
+  contains(demoHtml, 'id="demo-goals" name="goals" rows="6" maxlength="2000"'));
+assert('Shared form handler enforces declared length limits',
+  contains(mainJs, "$"+"$"+"('[required], [maxlength]', form)") &&
+  containsCI(mainJs, 'characters or fewer'));
 assert('Request Demo success state says received by GCS', containsCI(demoHtml, 'received by GCS'));
 assert('Request Demo removes honest-form mailto disclosure', !containsCI(demoHtml, 'Submitting this form does'));
 assert('Request Demo offers a paid assessment starting point', containsCI(demoHtml, 'Paid operational assessment'));

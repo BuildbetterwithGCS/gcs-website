@@ -94,26 +94,26 @@
                 <div class="form-grid">
                 <div class="form-group">
                   <label for="demo-name">Full name <span aria-hidden="true">*</span></label>
-                  <input type="text" id="demo-name" name="name" autocomplete="name" required aria-describedby="demo-name-error" />
+                  <input type="text" id="demo-name" name="name" autocomplete="name" maxlength="120" required aria-describedby="demo-name-error" />
                   <p class="form-error" id="demo-name-error" role="alert"></p>
                 </div>
                 <div class="form-group">
                   <label for="demo-email">Work email <span aria-hidden="true">*</span></label>
-                  <input type="email" id="demo-email" name="email" autocomplete="email" required aria-describedby="demo-email-error" />
+                  <input type="email" id="demo-email" name="email" autocomplete="email" maxlength="254" required aria-describedby="demo-email-error" />
                   <p class="form-error" id="demo-email-error" role="alert"></p>
                 </div>
                 <div class="form-group">
                   <label for="demo-phone">Phone <span class="form-optional">(optional)</span></label>
-                  <input type="tel" id="demo-phone" name="phone" autocomplete="tel" />
+                  <input type="tel" id="demo-phone" name="phone" autocomplete="tel" maxlength="40" />
                 </div>
                 <div class="form-group">
                   <label for="demo-org">Organization <span aria-hidden="true">*</span></label>
-                  <input type="text" id="demo-org" name="organization" autocomplete="organization" required aria-describedby="demo-org-error" />
+                  <input type="text" id="demo-org" name="organization" autocomplete="organization" maxlength="160" required aria-describedby="demo-org-error" />
                   <p class="form-error" id="demo-org-error" role="alert"></p>
                 </div>
                 <div class="form-group">
                   <label for="demo-role">Role or title <span class="form-optional">(optional)</span></label>
-                  <input type="text" id="demo-role" name="role" autocomplete="organization-title" />
+                  <input type="text" id="demo-role" name="role" autocomplete="organization-title" maxlength="120" />
                 </div>
                 <div class="form-group">
                   <label for="demo-type">Organization type <span aria-hidden="true">*</span></label>
@@ -135,7 +135,7 @@
                 </div>
                   <div class="form-group form-group--full">
                     <label for="demo-size">Approximate scale of operation <span class="form-optional">(optional)</span></label>
-                    <input type="text" id="demo-size" name="scale" placeholder="e.g. 26,000 residents; 480,000 sq ft; 6 facilities" />
+                    <input type="text" id="demo-size" name="scale" maxlength="200" placeholder="e.g. 26,000 residents; 480,000 sq ft; 6 facilities" />
                   </div>
                 </div>
 
@@ -216,7 +216,7 @@
 
                 <div class="form-group form-group--full">
                   <label for="demo-goals">What are you trying to solve? <span aria-hidden="true">*</span></label>
-                  <textarea id="demo-goals" name="goals" rows="6" required aria-describedby="demo-goals-error demo-goals-hint" placeholder="For example: we cannot produce a defensible capital plan because our asset condition data lives in three places and nobody trusts any of them."></textarea>
+                  <textarea id="demo-goals" name="goals" rows="6" maxlength="2000" required aria-describedby="demo-goals-error demo-goals-hint" placeholder="For example: we cannot produce a defensible capital plan because our asset condition data lives in three places and nobody trusts any of them."></textarea>
                   <p class="form-hint" id="demo-goals-hint">Describe the actual difficulty, not the software category. That is what makes the session worth your time.</p>
                   <p class="form-error" id="demo-goals-error" role="alert"></p>
                 </div>
