@@ -57,6 +57,7 @@ const routes = [
   'departments/index.html',
   'map-intelligence/index.html',
   'solutions/index.html',
+  'security/index.html',
   'privacy/index.html',
   'accessibility/index.html',
   'terms/index.html'
@@ -68,6 +69,7 @@ const consulting = readFile('consulting/index.html');
 const demos = readFile('demos/index.html');
 const platform = readFile('platform/index.html');
 const sandbox = readFile('sandbox/index.html');
+const security = readFile('security/index.html');
 const css = readFile('css/styles.css');
 const demoPlayer = readFile('js/nexus-demo-player.js');
 
@@ -152,6 +154,12 @@ assert('CTA nav class styled', contains(css, '.nav__link--cta'));
 assert('Legacy get-started class aliased', contains(css, '.nav__link--get-started'));
 assert('Captions-only player modifier styled', contains(css, '.ndp-player--captions-only'));
 assert('Audio unavailable button hidden', contains(css, '.ndp-btn--audio-unavailable { display: none; }'));
+
+section('Security page');
+assert('Security page uses general customer-facing title', containsCI(security, 'Security &amp; Privacy'));
+assert('Security page states a general commitment', containsCI(security, 'earning and maintaining client trust'));
+assert('Security page avoids public-records process detail', !containsCI(security, 'public-records') && !containsCI(security, 'records-retention'));
+assert('Security page avoids implementation detail', !containsCI(security, 'Netlify Forms') && !containsCI(security, 'access roles') && !containsCI(security, 'storage locations') && !containsCI(security, 'transfer methods'));
 
 section('Public copy and safety');
 const allHtml = routes.map(readFile).filter(Boolean).join('\n');
