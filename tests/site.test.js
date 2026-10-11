@@ -70,11 +70,17 @@ const demos = readFile('demos/index.html');
 const platform = readFile('platform/index.html');
 const sandbox = readFile('sandbox/index.html');
 const security = readFile('security/index.html');
+const sitemap = readFile('sitemap.xml');
 const css = readFile('css/styles.css');
 const demoPlayer = readFile('js/nexus-demo-player.js');
 
 section('Routes');
 routes.forEach((route) => assert(route + ' exists', readFile(route) !== null));
+
+section('Sitemap');
+assert('Sitemap includes paid consulting page', contains(sitemap, 'https://buildbetterwithgcs.com/consulting/'));
+assert('Sitemap includes current solutions page', contains(sitemap, 'https://buildbetterwithgcs.com/solutions/'));
+assert('Sitemap excludes permanent redirect targets', !contains(sitemap, 'https://buildbetterwithgcs.com/responsible-ai/'));
 
 section('Sitewide navigation and footer');
 routes.forEach((route) => {
