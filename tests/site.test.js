@@ -198,6 +198,12 @@ const demoHtml = readFile('request-demo/index.html');
 assert('Contact form uses Netlify Forms', contains(contactHtml, 'data-netlify="true"') && contains(contactHtml, 'name="contact"'));
 assert('Contact form has honeypot field', contains(contactHtml, 'bot-field'));
 assert('Contact form has success state', contains(contactHtml, 'contact-success'));
+assert('Contact form exposes focusable success and error status',
+  contains(contactHtml, 'id="contact-success" hidden role="status" aria-live="polite" tabindex="-1"') &&
+  contains(contactHtml, 'id="contact-error" hidden role="alert" aria-live="assertive" tabindex="-1"'));
+assert('Request Demo form exposes focusable success and error status',
+  contains(demoHtml, 'data-form-result hidden role="status" aria-live="polite" tabindex="-1"') &&
+  contains(demoHtml, 'data-form-error hidden role="alert" aria-live="assertive" tabindex="-1"'));
 assert('Contact form does not open mailto directly on submit', !contains(contactHtml, "window.location.href = 'mailto:"));
 assert('Request Demo form uses Netlify Forms', contains(demoHtml, 'data-netlify="true"') && contains(demoHtml, 'name="demo-request"'));
 assert('Request Demo form has honeypot field', contains(demoHtml, 'bot-field'));
