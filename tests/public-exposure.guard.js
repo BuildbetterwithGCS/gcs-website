@@ -84,7 +84,10 @@ requireMarkup(demo, 'demo form notification attributes changed', 'netlify-honeyp
 requireMarkup(demo, 'demo success state changed', 'data-form-result hidden tabindex="-1"');
 requireMarkup(main, 'demo submission handler changed', "$$('[data-honest-form]').forEach(function (form)");
 requireMarkup(main, 'demo Netlify submission changed', "fetch('/', {");
-requireMarkup(demo, 'demo governed-AI notice missing', 'AI-assisted capabilities are available only within governed GCS engagements and are described at the level appropriate to the client’s needs.');
+requireMarkup(demo, 'demo governed-AI scope notice missing', 'AI-assisted work is not assumed. Any proposed use is described, bounded, and scoped separately for the engagement.');
+if (demo.includes('Working software, live.') || demo.includes('Workflow Automation')) {
+  violations.push('demo contains unsupported live-software or workflow-automation copy');
+}
 
 if (violations.length) {
   console.error('Public-exposure guard failed:\n' + violations.map((violation) => '  - ' + violation).join('\n'));
