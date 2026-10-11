@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const source = fs.readFileSync(path.join(__dirname, '../js/nexus-demo-player.js'), 'utf8');
 
 describe('guided demo narration', () => {
@@ -73,13 +74,27 @@ describe('guided demo narration', () => {
   });
 });
 
-test('all ten narration files are shipped with the site', () => {
+test('all ten narration files are shipped with the site and match the manifest', () => {
   const root = path.join(__dirname, '../assets/audio/nexus-demo');
   const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
   expect(manifest.tracks).toHaveLength(10);
+  expect(new Set(manifest.tracks.map(track => track.filename)).size).toBe(10);
+
   for (const track of manifest.tracks) {
     const bytes = fs.readFileSync(path.join(root, track.filename));
+    const digest = crypto.createHash('sha256').update(bytes).digest('hex');
     expect(bytes.length).toBeGreaterThan(10000);
     expect(bytes.subarray(0, 15).toString()).not.toContain('<!DOCTYPE');
+    expect(digest).toBe(track.sha256);
+    expect(track.durationSeconds).toBeGreaterThan(0);
+    expect(track.script.trim().length).toBeGreaterThan(20);
   }
+});
+
+test('player narration sources stay aligned with the verified manifest order', () => {
+  const root = path.join(__dirname, '../assets/audio/nexus-demo');
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
+  const playerSources = [...source.matchAll(/audioSrc: '([^']+)'/g)].map(match => match[1]);
+  const manifestSources = manifest.tracks.map(track => manifest.basePath + track.filename);
+  expect(playerSources).toEqual(manifestSources);
 });
