@@ -70,6 +70,8 @@ const demos = readFile('demos/index.html');
 const platform = readFile('platform/index.html');
 const sandbox = readFile('sandbox/index.html');
 const security = readFile('security/index.html');
+const privacy = readFile('privacy/index.html');
+const terms = readFile('terms/index.html');
 const css = readFile('css/styles.css');
 const demoPlayer = readFile('js/nexus-demo-player.js');
 
@@ -163,6 +165,14 @@ assert('Security page uses general customer-facing title', containsCI(security, 
 assert('Security page states a general commitment', containsCI(security, 'earning and maintaining client trust'));
 assert('Security page avoids public-records process detail', !containsCI(security, 'public-records') && !containsCI(security, 'records-retention'));
 assert('Security page avoids implementation detail', !containsCI(security, 'Netlify Forms') && !containsCI(security, 'access roles') && !containsCI(security, 'storage locations') && !containsCI(security, 'transfer methods'));
+
+section('Privacy and terms consistency');
+assert('Privacy identifies Netlify form processing', containsCI(privacy, 'processed by <strong>Netlify Forms</strong>'));
+assert('Privacy limits form use to inquiry response', containsCI(privacy, 'Form submissions are used only to evaluate and respond to the inquiry.'));
+assert('Terms disclose contact and demo data transmission', containsCI(terms, 'transmitted to Netlify Forms') && contains(terms, 'href="../privacy/"'));
+assert('Terms limits submission use to evaluation and response', containsCI(terms, 'use it only to evaluate and respond to your request'));
+assert('Terms removes false no-data-transmission statement', !containsCI(terms, 'no client data is transmitted to GCS through this Site'));
+assert('Terms removes broad service-improvement license', !containsCI(terms, 'responding to you and improving our services'));
 
 section('Public copy and safety');
 const allHtml = routes.map(readFile).filter(Boolean).join('\n');
