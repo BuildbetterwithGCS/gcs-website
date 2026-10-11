@@ -77,6 +77,7 @@ requireMarkup(contact, 'contact form notification attributes changed', 'netlify-
 requireMarkup(contact, 'contact success state changed', 'id="contact-success" hidden role="status" aria-live="polite" tabindex="-1"');
 requireMarkup(contact, 'contact error state changed', 'id="contact-error" hidden role="alert" aria-live="assertive" tabindex="-1"');
 requireMarkup(contact, 'contact submission handler changed', "form.addEventListener('submit', function (e)");
+requireMarkup(contact, 'contact honeypot omitted from AJAX payload', "'bot-field': (form.elements['bot-field'].value || '').trim()");
 requireMarkup(demo, 'demo form name changed', 'id="demo-form" name="demo-request" method="POST" data-netlify="true"');
 requireMarkup(demo, 'demo form notification attributes changed', 'netlify-honeypot="bot-field" data-honest-form data-form-kind="Demonstration request"');
 ['demo-name', 'demo-email', 'demo-org', 'demo-type', 'demo-goals'].forEach((id) => {
