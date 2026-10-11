@@ -94,26 +94,26 @@
                 <div class="form-grid">
                 <div class="form-group">
                   <label for="contact-name">Name <span aria-hidden="true">*</span></label>
-                  <input type="text" id="contact-name" name="name" autocomplete="name" required aria-describedby="contact-name-error" />
+                  <input type="text" id="contact-name" name="name" autocomplete="name" maxlength="120" required aria-describedby="contact-name-error" />
                   <p class="form-error" id="contact-name-error" role="alert"></p>
                 </div>
                 <div class="form-group">
                   <label for="contact-org">Organization <span aria-hidden="true">*</span></label>
-                  <input type="text" id="contact-org" name="organization" autocomplete="organization" required aria-describedby="contact-org-error" />
+                  <input type="text" id="contact-org" name="organization" autocomplete="organization" maxlength="160" required aria-describedby="contact-org-error" />
                   <p class="form-error" id="contact-org-error" role="alert"></p>
                 </div>
                 <div class="form-group">
                   <label for="contact-email">Email <span aria-hidden="true">*</span></label>
-                  <input type="email" id="contact-email" name="email" autocomplete="email" required aria-describedby="contact-email-error" />
+                  <input type="email" id="contact-email" name="email" autocomplete="email" maxlength="254" required aria-describedby="contact-email-error" />
                   <p class="form-error" id="contact-email-error" role="alert"></p>
                 </div>
                 <div class="form-group">
                   <label for="contact-phone">Phone <span class="form-optional">(optional)</span></label>
-                  <input type="tel" id="contact-phone" name="phone" autocomplete="tel" />
+                  <input type="tel" id="contact-phone" name="phone" autocomplete="tel" maxlength="40" />
                 </div>
                 <div class="form-group">
                   <label for="contact-industry">Industry <span aria-hidden="true">*</span></label>
-                  <input type="text" id="contact-industry" name="industry" required aria-describedby="contact-industry-error" />
+                  <input type="text" id="contact-industry" name="industry" maxlength="120" required aria-describedby="contact-industry-error" />
                   <p class="form-error" id="contact-industry-error" role="alert"></p>
                 </div>
                 <div class="form-group">
@@ -143,7 +143,7 @@
 
                 <div class="form-group form-group--full" style="margin-top:1.25rem">
                   <label for="contact-challenge">Describe Your Operational Challenge <span aria-hidden="true">*</span></label>
-                  <textarea id="contact-challenge" name="challenge" rows="7" required aria-describedby="contact-challenge-error" placeholder="Describe what you are trying to accomplish, what is currently getting in the way, and where your organization needs greater visibility, coordination, or accountability."></textarea>
+                  <textarea id="contact-challenge" name="challenge" rows="7" maxlength="2000" required aria-describedby="contact-challenge-error" placeholder="Describe what you are trying to accomplish, what is currently getting in the way, and where your organization needs greater visibility, coordination, or accountability."></textarea>
                   <p class="form-error" id="contact-challenge-error" role="alert"></p>
                 </div>
 
@@ -294,6 +294,8 @@
           msg = 'Please enter a valid email address.';
         } else if (kind === 'textarea' && val.length < 20) {
           msg = 'Please add a little more detail.';
+        } else if (field.maxLength > 0 && val.length > field.maxLength) {
+          msg = 'Please keep this field to ' + field.maxLength + ' characters or fewer.';
         }
         setError(eid, msg);
         if (msg) ok = false;
