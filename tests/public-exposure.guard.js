@@ -74,14 +74,16 @@ requireMarkup(contact, 'contact form notification attributes changed', 'netlify-
 ['contact-name', 'contact-org', 'contact-email', 'contact-industry', 'contact-interest', 'contact-challenge'].forEach((id) => {
   requireRequiredField(contact, 'contact required field changed: ' + id, id);
 });
-requireMarkup(contact, 'contact success state changed', 'id="contact-success" hidden aria-live="polite"');
+requireMarkup(contact, 'contact success state changed', 'id="contact-success" hidden role="status" aria-live="polite" tabindex="-1"');
+requireMarkup(contact, 'contact error state changed', 'id="contact-error" hidden role="alert" aria-live="assertive" tabindex="-1"');
 requireMarkup(contact, 'contact submission handler changed', "form.addEventListener('submit', function (e)");
 requireMarkup(demo, 'demo form name changed', 'id="demo-form" name="demo-request" method="POST" data-netlify="true"');
 requireMarkup(demo, 'demo form notification attributes changed', 'netlify-honeypot="bot-field" data-honest-form data-form-kind="Demonstration request"');
 ['demo-name', 'demo-email', 'demo-org', 'demo-type', 'demo-goals'].forEach((id) => {
   requireRequiredField(demo, 'demo required field changed: ' + id, id);
 });
-requireMarkup(demo, 'demo success state changed', 'data-form-result hidden tabindex="-1"');
+requireMarkup(demo, 'demo success state changed', 'data-form-result hidden role="status" aria-live="polite" tabindex="-1"');
+requireMarkup(demo, 'demo error state changed', 'data-form-error hidden role="alert" aria-live="assertive" tabindex="-1"');
 requireMarkup(main, 'demo submission handler changed', "$$('[data-honest-form]').forEach(function (form)");
 requireMarkup(main, 'demo Netlify submission changed', "fetch('/', {");
 requireMarkup(demo, 'demo governed-AI scope notice missing', 'AI-assisted work is not assumed. Any proposed use is described, bounded, and scoped separately for the engagement.');

@@ -479,8 +479,13 @@
         }
       }).catch(function () {
         if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
-        if (errorEl) { errorEl.removeAttribute('hidden'); }
-        else { alert('Submission failed. Please try again or write to sam@buildbetterwithgcs.com'); }
+        if (errorEl) {
+          errorEl.removeAttribute('hidden');
+          errorEl.focus();
+          if (typeof errorEl.scrollIntoView === 'function') {
+            errorEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        } else { alert('Submission failed. Please try again or write to sam@buildbetterwithgcs.com'); }
       });
     });
 
