@@ -204,6 +204,7 @@ const contactHtml = readFile('contact/index.html');
 const demoHtml = readFile('request-demo/index.html');
 assert('Contact form uses Netlify Forms', contains(contactHtml, 'data-netlify="true"') && contains(contactHtml, 'name="contact"'));
 assert('Contact form has honeypot field', contains(contactHtml, 'bot-field'));
+assert('Contact AJAX payload forwards honeypot value', contains(contactHtml, "'bot-field': (form.elements['bot-field'].value || '').trim()"));
 assert('Contact form has success state', contains(contactHtml, 'contact-success'));
 assert('Contact form exposes focusable success and error status',
   contains(contactHtml, 'id="contact-success" hidden role="status" aria-live="polite" tabindex="-1"') &&
