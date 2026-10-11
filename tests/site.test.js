@@ -240,7 +240,9 @@ assert('Request Demo intake fields have bounded lengths',
 assert('Shared form handler enforces declared length limits',
   contains(mainJs, "$"+"$"+"('[required], [maxlength]', form)") &&
   containsCI(mainJs, 'characters or fewer'));
-assert('Request Demo success state says received by GCS', containsCI(demoHtml, 'received by GCS'));
+assert('Request Demo confirmation describes website submission without an inbox-delivery claim',
+  containsCI(demoHtml, 'submitted through the GCS website') &&
+  !containsCI(demoHtml, 'received by GCS'));
 assert('Request Demo removes honest-form mailto disclosure', !containsCI(demoHtml, 'Submitting this form does'));
 assert('Request Demo offers a paid assessment starting point', containsCI(demoHtml, 'Paid operational assessment'));
 assert('Request Demo warns against sensitive submissions', containsCI(demoHtml, 'Do not include passwords'));
