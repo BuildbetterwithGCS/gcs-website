@@ -72,6 +72,7 @@ const sandbox = readFile('sandbox/index.html');
 const security = readFile('security/index.html');
 const sitemap = readFile('sitemap.xml');
 const css = readFile('css/styles.css');
+const mainJs = readFile('js/main.js');
 const demoPlayer = readFile('js/nexus-demo-player.js');
 
 section('Routes');
@@ -213,6 +214,15 @@ assert('Request Demo form exposes focusable success and error status',
 assert('Contact form does not open mailto directly on submit', !contains(contactHtml, "window.location.href = 'mailto:"));
 assert('Request Demo form uses Netlify Forms', contains(demoHtml, 'data-netlify="true"') && contains(demoHtml, 'name="demo-request"'));
 assert('Request Demo form has honeypot field', contains(demoHtml, 'bot-field'));
+assert('Contact intake fields have bounded lengths',
+  contains(contactHtml, 'id="contact-name" name="name" autocomplete="name" maxlength="120"') &&
+  contains(contactHtml, 'id="contact-challenge" name="challenge" rows="7" maxlength="2000"'));
+assert('Request Demo intake fields have bounded lengths',
+  contains(demoHtml, 'id="demo-name" name="name" autocomplete="name" maxlength="120"') &&
+  contains(demoHtml, 'id="demo-goals" name="goals" rows="6" maxlength="2000"'));
+assert('Shared form handler enforces declared length limits',
+  contains(mainJs, "$('[required], [maxlength]', form)") &&
+  containsCI(mainJs, 'characters or fewer'));
 assert('Request Demo success state says received by GCS', containsCI(demoHtml, 'received by GCS'));
 assert('Request Demo removes honest-form mailto disclosure', !containsCI(demoHtml, 'Submitting this form does'));
 assert('Request Demo offers a paid assessment starting point', containsCI(demoHtml, 'Paid operational assessment'));
