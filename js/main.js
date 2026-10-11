@@ -377,14 +377,16 @@
 
     function validate() {
       var firstBad = null;
-      $$('[required]', form).forEach(function (field) {
+      $$('[required], [maxlength]', form).forEach(function (field) {
         var value = (field.value || '').trim();
         var message = '';
-        if (!value) {
+        if (field.hasAttribute('required') && !value) {
           message = 'Please complete this field.';
-        } else if (field.type === 'email' && !isEmail(value)) {
+        } else if (value && field.type === 'email' && !isEmail(value)) {
           message = 'Please enter a valid email address.';
-        } else if (field.tagName === 'TEXTAREA' && value.length < 20) {
+        } else if (field.maxLength > 0 && value.length > field.maxLength) {
+          message = 'Please keep this field to ' + field.maxLength + ' characters or fewer.';
+        } else if (field.tagName === 'TEXTAREA' && value && value.length < 20) {
           message = 'Please add a little more detail — at least a sentence or two.';
         }
         setError(field, message);
@@ -393,12 +395,14 @@
       return firstBad;
     }
 
-    $$('[required]', form).forEach(function (field) {
+    $$('[required], [maxlength]', form).forEach(function (field) {
       field.addEventListener('blur', function () {
         var value = (field.value || '').trim();
         if (!value) return;
         if (field.type === 'email' && !isEmail(value)) {
           setError(field, 'Please enter a valid email address.');
+        } else if (field.maxLength > 0 && value.length > field.maxLength) {
+          setError(field, 'Please keep this field to ' + field.maxLength + ' characters or fewer.');
         } else {
           setError(field, '');
         }
