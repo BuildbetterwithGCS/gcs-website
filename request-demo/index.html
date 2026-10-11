@@ -225,13 +225,13 @@
                 <button type="submit" class="btn btn--primary btn--lg" style="margin-top:1rem;">Submit Demonstration Request</button>
               </form>
 
-              <div class="form-result" data-form-result hidden tabindex="-1" style="padding:2rem;background:var(--bg-muted,#f4f6f9);border-radius:0.75rem;text-align:center;">
+              <div class="form-result" data-form-result hidden role="status" aria-live="polite" tabindex="-1" style="padding:2rem;background:var(--bg-muted,#f4f6f9);border-radius:0.75rem;text-align:center;">
                 <p style="font-size:1.5rem;margin-bottom:0.5rem;">&#10003;</p>
                 <h3 style="margin-bottom:0.5rem;">Request received.</h3>
                 <p>Thank you. Your demonstration request has been received by GCS.</p>
               </div>
 
-              <div data-form-error hidden style="padding:1.25rem;background:#fff3f3;border:1px solid #f5c6c6;border-radius:0.5rem;margin-top:1rem;">
+              <div data-form-error hidden role="alert" aria-live="assertive" tabindex="-1" style="padding:1.25rem;background:#fff3f3;border:1px solid #f5c6c6;border-radius:0.5rem;margin-top:1rem;">
                 <p><strong>Something went wrong.</strong> Your request could not be submitted. Please try again, or write directly to <a href="mailto:sam@buildbetterwithgcs.com">sam@buildbetterwithgcs.com</a>.</p>
               </div>
             </div>
