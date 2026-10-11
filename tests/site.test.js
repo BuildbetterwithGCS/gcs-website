@@ -221,7 +221,7 @@ assert('Request Demo intake fields have bounded lengths',
   contains(demoHtml, 'id="demo-name" name="name" autocomplete="name" maxlength="120"') &&
   contains(demoHtml, 'id="demo-goals" name="goals" rows="6" maxlength="2000"'));
 assert('Shared form handler enforces declared length limits',
-  contains(mainJs, "$('[required], [maxlength]', form)") &&
+  contains(mainJs, "$"+"$"+"('[required], [maxlength]', form)") &&
   containsCI(mainJs, 'characters or fewer'));
 assert('Request Demo success state says received by GCS', containsCI(demoHtml, 'received by GCS'));
 assert('Request Demo removes honest-form mailto disclosure', !containsCI(demoHtml, 'Submitting this form does'));
