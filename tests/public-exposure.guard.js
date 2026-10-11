@@ -59,6 +59,8 @@ prohibitedRoutes.forEach((route) => {
 const contact = fs.readFileSync(path.join(ROOT, 'contact/index.html'), 'utf8');
 const demo = fs.readFileSync(path.join(ROOT, 'request-demo/index.html'), 'utf8');
 const main = fs.readFileSync(path.join(ROOT, 'js/main.js'), 'utf8');
+const privacy = fs.readFileSync(path.join(ROOT, 'privacy/index.html'), 'utf8');
+const terms = fs.readFileSync(path.join(ROOT, 'terms/index.html'), 'utf8');
 
 function requireMarkup(content, description, markup) {
   if (!content.includes(markup)) violations.push(description);
@@ -87,6 +89,15 @@ requireMarkup(demo, 'demo error state changed', 'data-form-error hidden role="al
 requireMarkup(main, 'demo submission handler changed', "$$('[data-honest-form]').forEach(function (form)");
 requireMarkup(main, 'demo Netlify submission changed', "fetch('/', {");
 requireMarkup(demo, 'demo governed-AI scope notice missing', 'AI-assisted work is not assumed. Any proposed use is described, bounded, and scoped separately for the engagement.');
+requireMarkup(privacy, 'privacy form-processing disclosure changed', 'processed by <strong>Netlify Forms</strong>');
+requireMarkup(privacy, 'privacy inquiry-use boundary changed', 'Form submissions are used only to evaluate and respond to the inquiry.');
+requireMarkup(terms, 'terms form-transmission disclosure missing', 'transmitted to Netlify Forms');
+requireMarkup(terms, 'terms inquiry-use boundary missing', 'use it only to evaluate and respond to your request');
+if (terms.includes('no client data is transmitted to GCS through this Site') ||
+    terms.includes('responding to you and improving our services')) {
+  violations.push('terms contradict live form handling or privacy use limits');
+}
+
 if (demo.includes('Working software, live.') || demo.includes('Workflow Automation')) {
   violations.push('demo contains unsupported live-software or workflow-automation copy');
 }
