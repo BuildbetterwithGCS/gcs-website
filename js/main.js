@@ -334,7 +334,7 @@
   }
 
   /* ============================================================
-     HONEST FORMS — client-side validation, no server submission
+     CLIENT INTAKE FORMS — validation and Netlify submission
      ============================================================ */
   function labelFor(field, form) {
     var id = field.id;
@@ -480,7 +480,7 @@
       }).catch(function () {
         if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
         if (errorEl) { errorEl.removeAttribute('hidden'); }
-        else { alert('Submission failed. Please try again or write to info@buildbetterwithgcs.com'); }
+        else { alert('Submission failed. Please try again or write to sam@buildbetterwithgcs.com'); }
       });
     });
 
