@@ -188,6 +188,11 @@ assert('No Get Started remains in site copy', !containsCI(allHtml, 'Get Started'
 assert('Synthetic demo data remains labeled', containsCI(allHtml, 'SYNTHETIC DEMO DATA') || containsCI(allHtml, 'SYNTHETIC DATA'));
 assert('No credential-like strings introduced', !(/password\s*[:=]\s*['"][^'"]{3,}/i.test(allHtml)));
 assert('No non-public email addresses introduced', !(/[a-z0-9._%+-]+@(?!buildbetterwithgcs\.com)[a-z0-9-]+\.[a-z]{2,}/i.test(allHtml)));
+assert('Public intake uses verified business inbox',
+  !containsCI(allHtml, 'sam@buildbetterwithgcs.com') &&
+  containsCI(contactHtml, 'info@buildbetterwithgcs.com') &&
+  containsCI(demoHtml, 'info@buildbetterwithgcs.com'));
+
 
 section('PR #22 — Responsible AI removal');
 const responsibleAi = readFile('responsible-ai/index.html');
