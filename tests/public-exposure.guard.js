@@ -29,6 +29,7 @@ const prohibited = [
   phrase('founder', '-command-center'),
   phrase('Jefferson ', 'Township'),
   phrase('RI-', '001'),
+  phrase('sam@', 'buildbetterwithgcs.com'),
   phrase('internal ', 'command center'),
   phrase('AI ', 'workforce'),
   phrase('/gen', 'esis/'),
