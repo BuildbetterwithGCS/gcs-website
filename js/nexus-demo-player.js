@@ -41,7 +41,7 @@
       title: 'Welcome to Nexus',
       dept: 'executive',
       caption: 'Nexus connects the systems and information your organization already uses into one operating picture.',
-      duration: 3600,
+      duration: 10580,
       audioSrc: '/assets/audio/nexus-demo/01-welcome.mp3',
       highlight: '#view-executive .dash-row--4',
       events: [
@@ -54,7 +54,7 @@
       title: 'Executive Dashboard',
       dept: 'executive',
       caption: 'Leaders can see organization-wide KPIs, open work, workforce pressure, and risk in one place.',
-      duration: 4200,
+      duration: 10436,
       audioSrc: '/assets/audio/nexus-demo/02-executive-dashboard.mp3',
       highlight: '[data-kpi-key="risk-open"]',
       events: [
@@ -67,7 +67,7 @@
       title: 'Problem Detected',
       dept: 'executive',
       caption: 'Nexus identifies a risk that needs attention and lets leaders drill straight into the issue.',
-      duration: 4400,
+      duration: 9476,
       audioSrc: '/assets/audio/nexus-demo/03-problem-detected.mp3',
       events: [
         { at: 800, fn: function () { renderKpiDetail('risk-open'); } },
@@ -79,7 +79,7 @@
       title: 'Understand Cause and Risk',
       dept: 'executive',
       caption: 'The detail drawer shows context, recommended action, and the estimated cost of waiting.',
-      duration: 4200,
+      duration: 10412,
       audioSrc: '/assets/audio/nexus-demo/04-understand-risk.mp3',
       events: [
         { at: 600, fn: function () { renderKpiDetail('risk-open'); } },
@@ -91,7 +91,7 @@
       title: 'Ask Nexus',
       dept: 'executive',
       caption: 'Ask Nexus answers plain-language questions using connected operational information.',
-      duration: 5200,
+      duration: 10436,
       audioSrc: '/assets/audio/nexus-demo/05-ask-nexus.mp3',
       events: [
         { at: 400, fn: function () { closeDrawer(); } },
@@ -105,7 +105,7 @@
       title: 'Map Context',
       dept: 'map',
       caption: 'Map Intelligence adds geographic context so leaders can see where risk, projects, and assets are concentrated.',
-      duration: 4800,
+      duration: 10436,
       audioSrc: '/assets/audio/nexus-demo/06-map-context.mp3',
       events: [
         { at: 1100, fn: function () { clickElement(document.querySelector('.nx-map-pin[data-id="risk-water"]')) || clickElement(document.querySelector('.nx-map-pin[data-id="bldg-4"]')); } },
@@ -117,7 +117,7 @@
       title: 'Finance View',
       dept: 'finance',
       caption: 'Finance leaders can move from budget and AP signals to operational context without leaving Nexus.',
-      duration: 4500,
+      duration: 10004,
       audioSrc: '/assets/audio/nexus-demo/07-finance-view.mp3',
       events: [
         { at: 900, fn: function () { renderKpiDetail('fin-ap'); } },
@@ -129,7 +129,7 @@
       title: 'Assign Action',
       dept: 'executive',
       caption: 'Insight becomes action when leaders assign work, escalate issues, and track accountability from the same environment.',
-      duration: 4600,
+      duration: 11564,
       audioSrc: '/assets/audio/nexus-demo/08-assign-action.mp3',
       events: [
         { at: 400, fn: function () { closeDrawer(); closeAskNexus(); } },
@@ -142,7 +142,7 @@
       title: 'Prove Value',
       dept: 'reports',
       caption: 'Nexus helps teams document outcomes, generate reports, and prove value with measurable results.',
-      duration: 4600,
+      duration: 10844,
       audioSrc: '/assets/audio/nexus-demo/09-prove-value.mp3',
       events: [
         { at: 1200, fn: function () { renderActionResult('generate-report', 'Quarterly value and ROI scorecard'); } },
@@ -154,7 +154,7 @@
       title: 'Explore Nexus',
       dept: 'executive',
       caption: 'The guided walkthrough is almost complete. Next, explore Nexus interactively with synthetic data and no login.',
-      duration: 3600,
+      duration: 10268,
       audioSrc: '/assets/audio/nexus-demo/10-explore-nexus.mp3',
       events: [
         { at: 400, fn: function () { closeDrawer(); closeAskNexus(); } },
