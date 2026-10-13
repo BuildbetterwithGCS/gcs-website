@@ -489,7 +489,7 @@
           if (typeof errorEl.scrollIntoView === 'function') {
             errorEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           }
-        } else { alert('Submission failed. Please try again or write to sam@buildbetterwithgcs.com'); }
+        } else { alert('Submission failed. Please try again or write to info@buildbetterwithgcs.com'); }
       });
     });
 
