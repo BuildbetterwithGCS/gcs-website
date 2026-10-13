@@ -98,3 +98,16 @@ test('player narration sources stay aligned with the verified manifest order', (
   const manifestSources = manifest.tracks.map(track => manifest.basePath + track.filename);
   expect(playerSources).toEqual(manifestSources);
 });
+
+
+test('narration baselines cover shipped audio before metadata loads', () => {
+  const root = path.join(__dirname, '../assets/audio/nexus-demo');
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
+  const pairs = [...source.matchAll(/duration: (\d+),\s*audioSrc: '([^']+)'/g)];
+  const durations = new Map(pairs.map(match => [match[2], Number(match[1])]));
+  for (const track of manifest.tracks) {
+    const pathToAudio = manifest.basePath + track.filename;
+    expect(durations.has(pathToAudio)).toBe(true);
+    expect(durations.get(pathToAudio)).toBeGreaterThanOrEqual(Math.ceil(track.durationSeconds * 1000) + 250);
+  }
+});
