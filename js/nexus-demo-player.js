@@ -40,7 +40,7 @@
       id: 'welcome',
       title: 'Welcome to Nexus',
       dept: 'executive',
-      caption: 'Nexus connects the systems and information your organization already uses into one operating picture.',
+      caption: 'This synthetic walkthrough illustrates how existing systems and information could be brought into one operating picture.',
       duration: 10580,
       audioSrc: '/assets/audio/nexus-demo/01-welcome.mp3',
       highlight: '#view-executive .dash-row--4',
@@ -53,7 +53,7 @@
       id: 'executive-dashboard',
       title: 'Executive Dashboard',
       dept: 'executive',
-      caption: 'Leaders can see organization-wide KPIs, open work, workforce pressure, and risk in one place.',
+      caption: 'This sample dashboard illustrates KPIs, open work, workforce pressure, and risk in one place.',
       duration: 10436,
       audioSrc: '/assets/audio/nexus-demo/02-executive-dashboard.mp3',
       highlight: '[data-kpi-key="risk-open"]',
@@ -66,7 +66,7 @@
       id: 'problem-detected',
       title: 'Problem Detected',
       dept: 'executive',
-      caption: 'Nexus identifies a risk that needs attention and lets leaders drill straight into the issue.',
+      caption: 'A scripted example flags a sample risk and lets you open its details.',
       duration: 9476,
       audioSrc: '/assets/audio/nexus-demo/03-problem-detected.mp3',
       events: [
@@ -78,7 +78,7 @@
       id: 'understand-cause',
       title: 'Understand Cause and Risk',
       dept: 'executive',
-      caption: 'The detail drawer shows context, recommended action, and the estimated cost of waiting.',
+      caption: 'This sample detail drawer shows context, a suggested action, and illustrative costs.',
       duration: 10412,
       audioSrc: '/assets/audio/nexus-demo/04-understand-risk.mp3',
       events: [
@@ -90,7 +90,7 @@
       id: 'ask-nexus',
       title: 'Ask Nexus',
       dept: 'executive',
-      caption: 'Ask Nexus answers plain-language questions using connected operational information.',
+      caption: 'Ask Nexus uses scripted answers and synthetic numbers here; no live client systems are connected.',
       duration: 10436,
       audioSrc: '/assets/audio/nexus-demo/05-ask-nexus.mp3',
       events: [
@@ -104,7 +104,7 @@
       id: 'map-context',
       title: 'Map Context',
       dept: 'map',
-      caption: 'Map Intelligence adds geographic context so leaders can see where risk, projects, and assets are concentrated.',
+      caption: 'Sample map records illustrate how location could help compare risks, projects, and assets.',
       duration: 10436,
       audioSrc: '/assets/audio/nexus-demo/06-map-context.mp3',
       events: [
@@ -116,7 +116,7 @@
       id: 'finance-view',
       title: 'Finance View',
       dept: 'finance',
-      caption: 'Finance leaders can move from budget and AP signals to operational context without leaving Nexus.',
+      caption: 'Sample finance data illustrates how budget and accounts-payable signals could relate to operations.',
       duration: 10004,
       audioSrc: '/assets/audio/nexus-demo/07-finance-view.mp3',
       events: [
@@ -128,7 +128,7 @@
       id: 'assign-action',
       title: 'Assign Action',
       dept: 'executive',
-      caption: 'Insight becomes action when leaders assign work, escalate issues, and track accountability from the same environment.',
+      caption: 'This sandbox illustrates assigning and tracking work; no real assignments or notifications are sent.',
       duration: 11564,
       audioSrc: '/assets/audio/nexus-demo/08-assign-action.mp3',
       events: [
@@ -141,7 +141,7 @@
       id: 'prove-value',
       title: 'Prove Value',
       dept: 'reports',
-      caption: 'Nexus helps teams document outcomes, generate reports, and prove value with measurable results.',
+      caption: 'Sample reports illustrate how outcomes could be measured; results are not verified customer savings.',
       duration: 10844,
       audioSrc: '/assets/audio/nexus-demo/09-prove-value.mp3',
       events: [
