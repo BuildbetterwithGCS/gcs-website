@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const ROOT = path.resolve(__dirname, '..');
 
@@ -211,11 +212,51 @@ assert('Sandbox bypasses orientation modal on watchdemo', contains(sandbox, 'ori
 assert('Sandbox has More Demonstration Organizations button', contains(sandbox, 'org-show-more') && containsCI(sandbox, 'More Demonstration Organizations'));
 assert('Sandbox secondary orgs use data-org-secondary attribute', contains(sandbox, 'data-org-secondary'));
 
-section('PR #22 — Narration audio architecture');
+section('PR #22 — Narration audio integrity');
 const audioManifest = readFile('assets/audio/nexus-demo/manifest.json');
 assert('Audio manifest exists', audioManifest !== null);
-assert('Audio manifest has 10 tracks', audioManifest && countMatches(audioManifest, '"scene"') === 10);
-assert('Demo player scenes reference narration sources', countMatches(demoPlayer, "audioSrc: '") >= 10);
+
+let parsedAudioManifest = null;
+try {
+  parsedAudioManifest = JSON.parse(audioManifest);
+} catch (error) {
+  // The assertion below reports malformed or missing JSON without aborting the suite.
+}
+const audioTracks = parsedAudioManifest && Array.isArray(parsedAudioManifest.tracks)
+  ? parsedAudioManifest.tracks
+  : [];
+assert('Audio manifest parses with a tracks array', audioTracks.length > 0);
+assert('Audio manifest has exactly 10 tracks', audioTracks.length === 10);
+
+const audioScenes = new Set();
+const audioFiles = new Set();
+audioTracks.forEach((track, index) => {
+  const label = 'Narration track ' + (index + 1);
+  const filename = typeof track.filename === 'string' ? track.filename : '';
+  const scene = track.scene;
+  const safeFilename = filename.length > 0 && path.basename(filename) === filename;
+  const relativePath = safeFilename ? path.join('assets/audio/nexus-demo', filename) : '';
+  const fullPath = relativePath ? path.join(ROOT, relativePath) : '';
+  const exists = Boolean(fullPath) && fs.existsSync(fullPath);
+  const bytes = exists ? fs.readFileSync(fullPath) : Buffer.alloc(0);
+  const digest = bytes.length
+    ? crypto.createHash('sha256').update(bytes).digest('hex')
+    : '';
+  const hasId3Header = bytes.length >= 3 && bytes.subarray(0, 3).toString('ascii') === 'ID3';
+  const hasFrameSync = bytes.length >= 2 && bytes[0] === 0xff && (bytes[1] & 0xe0) === 0xe0;
+
+  assert(label + ' has a unique integer scene', Number.isInteger(scene) && !audioScenes.has(scene));
+  assert(label + ' has a safe unique filename', safeFilename && !audioFiles.has(filename));
+  assert(label + ' declares a positive duration', Number(track.durationSeconds) > 0);
+  assert(label + ' file exists', exists, relativePath || 'missing or unsafe filename');
+  assert(label + ' file is nonempty', bytes.length > 10000, bytes.length + ' bytes');
+  assert(label + ' has an MP3 header', hasId3Header || hasFrameSync);
+  assert(label + ' matches its SHA-256', typeof track.sha256 === 'string' && digest === track.sha256);
+  assert(label + ' is referenced by the demo player', filename && contains(demoPlayer, filename));
+
+  audioScenes.add(scene);
+  audioFiles.add(filename);
+});
 assert('Demo player has audio error fallback', contains(demoPlayer, 'audio.onerror = unavailable') && contains(demoPlayer, 'stopAudio'));
 
 section('PR #22 — Netlify Forms');
