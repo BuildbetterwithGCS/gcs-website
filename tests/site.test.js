@@ -245,7 +245,7 @@ audioTracks.forEach((track, index) => {
   const hasId3Header = bytes.length >= 3 && bytes.subarray(0, 3).toString('ascii') === 'ID3';
   const hasFrameSync = bytes.length >= 2 && bytes[0] === 0xff && (bytes[1] & 0xe0) === 0xe0;
 
-  assert(label + ' has a unique integer scene', Number.isInteger(scene) && !audioScenes.has(scene));
+  assert(label + ' has a unique scene ID', typeof scene === 'string' && scene.length > 0 && !audioScenes.has(scene));
   assert(label + ' has a safe unique filename', safeFilename && !audioFiles.has(filename));
   assert(label + ' declares a positive duration', Number(track.durationSeconds) > 0);
   assert(label + ' file exists', exists, relativePath || 'missing or unsafe filename');
