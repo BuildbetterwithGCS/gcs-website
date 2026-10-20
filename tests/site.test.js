@@ -168,10 +168,14 @@ assert('Captions-only player modifier styled', contains(css, '.ndp-player--capti
 assert('Audio unavailable button hidden', contains(css, '.ndp-btn--audio-unavailable { display: none; }'));
 
 section('Security page');
-assert('Security page uses general customer-facing title', containsCI(security, 'Security &amp; Privacy'));
-assert('Security page states a general commitment', containsCI(security, 'earning and maintaining client trust'));
-assert('Security page avoids public-records process detail', !containsCI(security, 'public-records') && !containsCI(security, 'records-retention'));
-assert('Security page avoids implementation detail', !containsCI(security, 'Netlify Forms') && !containsCI(security, 'access roles') && !containsCI(security, 'storage locations') && !containsCI(security, 'transfer methods'));
+assert('Security page names public-record handling', containsCI(security, 'Data Security &amp; Public-Record Handling'));
+assert('Security page distinguishes public website and client records', containsCI(security, 'What the public website handles') && containsCI(security, 'Public records and client records'));
+assert('Security page keeps legal record determinations with the client', containsCI(security, 'government client remains responsible') && containsCI(security, 'does not make that legal determination'));
+assert('Security page separates source records from derived work', containsCI(security, 'Source records remain attributable') && containsCI(security, 'derived work products'));
+assert('Security page requires written handling instructions before sensitive receipt', containsCI(security, 'must be documented for the engagement before sensitive client information is received'));
+assert('Security page preserves written approval for added paid work', containsCI(security, 'requires written approval before the additional paid work begins'));
+assert('Security page lists only supportable public-site measures', containsCI(security, 'HTTPS') && containsCI(security, 'restrictive browser headers') && containsCI(security, 'bounded form fields') && containsCI(security, 'spam controls'));
+assert('Security page disclaims unsupported certifications', containsCI(security, 'does not claim SOC 2') && containsCI(security, 'ISO 27001') && containsCI(security, 'FedRAMP') && containsCI(security, 'HIPAA'));
 
 section('Privacy and terms consistency');
 assert('Privacy identifies Netlify form processing', containsCI(privacy, 'processed by <strong>Netlify Forms</strong>'));
