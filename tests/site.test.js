@@ -133,7 +133,8 @@ assert('Consulting hero headline updated', containsCI(consulting, 'Expertise and
 assert('Consulting lead updated', containsCI(consulting, 'GCS combines operational consulting with Nexus'));
 assert('Consulting hero explore CTA updated', contains(consulting, 'href="../sandbox/" class="btn btn--outline">Explore Nexus</a>'));
 assert('Consulting states paid written-scope boundary', containsCI(consulting, 'Paid work begins with a written scope.') && containsCI(consulting, 'fee, and exclusions'));
-assert('Consulting requires written approval for added work', containsCI(consulting, 'require written approval before GCS performs the additional paid work'));
+assert('Consulting documents deliverable acceptance', containsCI(consulting, 'how the deliverables will be reviewed and accepted'));
+assert('Consulting documents changed scope and requires written approval', containsCI(consulting, 'deliverable, schedule, responsibility, or fee impact') && containsCI(consulting, 'require written approval before GCS performs the changed or additional paid work'));
 assert('Consulting avoids assumed integrations', containsCI(consulting, 'No assumed integrations') && !containsCI(consulting, 'connected to existing systems'));
 
 section('Platform redirect page');
