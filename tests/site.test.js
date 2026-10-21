@@ -71,6 +71,7 @@ const demos = readFile('demos/index.html');
 const platform = readFile('platform/index.html');
 const sandbox = readFile('sandbox/index.html');
 const security = readFile('security/index.html');
+const requestDemo = readFile('request-demo/index.html');
 const privacy = readFile('privacy/index.html');
 const terms = readFile('terms/index.html');
 const sitemap = readFile('sitemap.xml');
@@ -168,6 +169,13 @@ assert('CTA nav class styled', contains(css, '.nav__link--cta'));
 assert('Legacy get-started class aliased', contains(css, '.nav__link--get-started'));
 assert('Captions-only player modifier styled', contains(css, '.ndp-player--captions-only'));
 assert('Audio unavailable button hidden', contains(css, '.ndp-btn--audio-unavailable { display: none; }'));
+
+section('Private-sector intake');
+assert('Request form includes construction and specialty contractors', containsCI(requestDemo, 'Construction or specialty contractor'));
+assert('Request form captures expected licensed-user scale', contains(requestDemo, 'name="expectedUsers"') && contains(requestDemo, 'min="1"') && contains(requestDemo, 'max="100000"'));
+assert('Request form captures project and work-order interest', containsCI(requestDemo, 'Projects &amp; Work Orders'));
+assert('Request form captures bid and estimate workflow interest', containsCI(requestDemo, 'Bid &amp; Estimate Workflow'));
+assert('Request form limits invoice interest to status and follow-up', containsCI(requestDemo, 'Invoice Status &amp; Follow-Up') && !containsCI(requestDemo, 'Execute payment'));
 
 section('Security page');
 assert('Security page names public-record handling', containsCI(security, 'Data Security &amp; Public-Record Handling'));
