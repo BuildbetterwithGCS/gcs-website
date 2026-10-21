@@ -131,6 +131,7 @@
                     <option value="School district or higher education">School district or higher education</option>
                     <option value="Healthcare organization">Healthcare organization</option>
                     <option value="Manufacturing or industrial">Manufacturing or industrial</option>
+                    <option value="Construction or specialty contractor">Construction or specialty contractor</option>
                     <option value="Commercial real estate">Commercial real estate</option>
                     <option value="Property management">Property management</option>
                     <option value="Data center or critical facility">Data center or critical facility</option>
@@ -140,9 +141,13 @@
                   </select>
                   <p class="form-error" id="demo-type-error" role="alert"></p>
                 </div>
-                  <div class="form-group form-group--full">
+                    <div class="form-group">
+                    <label for="demo-users">Expected platform users <span class="form-optional">(optional)</span></label>
+                    <input type="number" id="demo-users" name="expectedUsers" min="1" max="100000" inputmode="numeric" placeholder="e.g. 12" />
+                  </div>
+                  <div class="form-group">
                     <label for="demo-size">Approximate scale of operation <span class="form-optional">(optional)</span></label>
-                    <input type="text" id="demo-size" name="scale" maxlength="200" placeholder="e.g. 26,000 residents; 480,000 sq ft; 6 facilities" />
+                    <input type="text" id="demo-size" name="scale" maxlength="200" placeholder="e.g. 25 employees; 8 active projects; 6 facilities" />
                   </div>
                 </div>
 
@@ -152,6 +157,18 @@
                     <label class="checkbox-item">
                       <input type="checkbox" name="interest" value="ops" />
                       <span>Operations Intelligence</span>
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" name="interest" value="projects" />
+                      <span>Projects &amp; Work Orders</span>
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" name="interest" value="bids" />
+                      <span>Bid &amp; Estimate Workflow</span>
+                    </label>
+                    <label class="checkbox-item">
+                      <input type="checkbox" name="interest" value="invoices" />
+                      <span>Invoice Status &amp; Follow-Up</span>
                     </label>
                     <label class="checkbox-item">
                       <input type="checkbox" name="interest" value="facilities" />
