@@ -100,7 +100,7 @@ routes.forEach((route) => {
 
 section('Homepage');
 assert('Homepage title updated', contains(home, '<title>GCS | Build Better Organizations</title>'));
-assert('Homepage meta description updated', containsCI(home, 'GCS combines operational expertise with Nexus'));
+assert('Homepage meta description updated', containsCI(home, 'GCS pairs operational consulting with Nexus') && containsCI(home, 'synthetic-data demonstration'));
 assert('Homepage hero headline', containsCI(home, 'Build Better Organizations.'));
 assert('Homepage hero CTA See Nexus', contains(home, 'href="nexus/" class="btn btn--primary btn--lg">See Nexus</a>'));
 assert('Homepage hero CTA Talk to GCS', contains(home, 'href="contact/" class="btn btn--ghost btn--lg">Talk to GCS</a>'));
