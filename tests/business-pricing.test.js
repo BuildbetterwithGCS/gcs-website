@@ -1,7 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const { JSDOM } = require('jsdom');
-
 const ROOT = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(ROOT, 'business', 'index.html'), 'utf8');
 const pricingScript = fs.readFileSync(
@@ -10,9 +8,11 @@ const pricingScript = fs.readFileSync(
 );
 
 function loadBuilder() {
-  const dom = new JSDOM(html, { runScripts: 'outside-only' });
-  dom.window.eval(pricingScript);
-  return dom.window.document;
+  document.open();
+  document.write(html);
+  document.close();
+  window.eval(pricingScript);
+  return document;
 }
 
 describe('proposed modular subscription builder', () => {
