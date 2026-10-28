@@ -77,6 +77,37 @@ test('retries only a server-reported expired provider session', () => {
   expect(app.checkoutNeedsRetry(null, now)).toBe(false);
 });
 
+test('uses a new key to reset the same expired intent and no other intent', async () => {
+  const send = jest.fn().mockResolvedValue({
+    intent_id: 'checkout-1', status: 'READY_FOR_PROVIDER', expires_at: null,
+  });
+  const expired = {
+    intent_id: 'checkout-1', status: 'PROVIDER_SESSION',
+    expires_at: '2026-10-28T17:59:59+00:00',
+  };
+  const recovered = await app.retryExpiredCheckout(
+    expired, 'checkout-1', send, bytes => { bytes.fill(0xcd); return bytes; },
+    Date.parse('2026-10-28T18:00:00Z'),
+  );
+  expect(send).toHaveBeenCalledWith('/subscription/checkout-intent/retry', {
+    method: 'POST', body: {
+      intent_id: 'checkout-1', idempotency_key: 'nexus-' + 'cd'.repeat(24),
+    },
+  });
+  expect(recovered).toEqual({
+    intent: { intent_id: 'checkout-1', status: 'READY_FOR_PROVIDER', expires_at: null },
+    idempotency_key: 'nexus-' + 'cd'.repeat(24),
+  });
+
+  send.mockClear();
+  const current = { ...expired, expires_at: '2026-10-28T18:00:01+00:00' };
+  await expect(app.retryExpiredCheckout(
+    current, 'checkout-1', send, () => { throw new Error('must not run'); },
+    Date.parse('2026-10-28T18:00:00Z'),
+  )).resolves.toEqual({ intent: current, idempotency_key: null });
+  expect(send).not.toHaveBeenCalled();
+});
+
 test('portal source contains no live billing, payroll or availability claim', () => {
   document.body.innerHTML = '<main></main>';
   expect(app.API).toBe('/api/nexus');
