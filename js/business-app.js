@@ -73,6 +73,15 @@
     return url.href;
   }
 
+  function checkoutNeedsRetry(intent, now = Date.now()) {
+    if (!intent || intent.status !== 'PROVIDER_SESSION'
+      || typeof intent.expires_at !== 'string') return false;
+    const expiresAt = Date.parse(intent.expires_at);
+    const currentTime = Number(now);
+    return Number.isFinite(expiresAt) && Number.isFinite(currentTime)
+      && expiresAt <= currentTime;
+  }
+
   function init(doc) {
     if (!doc) return;
     const status = doc.getElementById('app-status');
@@ -190,6 +199,18 @@
         intent = await request('/subscription/checkout-intent/status', {
           method: 'POST', body: { intent_id: savedIntent },
         });
+        if (checkoutNeedsRetry(intent)) {
+          const retryKey = idempotencyKey(view.crypto.getRandomValues.bind(view.crypto));
+          intent = await request('/subscription/checkout-intent/retry', {
+            method: 'POST', body: {
+              intent_id: savedIntent,
+              idempotency_key: retryKey,
+            },
+          });
+          view.sessionStorage.setItem(IDEMPOTENCY_KEY, retryKey);
+          checkoutState.textContent =
+            'Expired checkout reset safely. Secure checkout is being prepared.';
+        }
       } else {
         let key = view.sessionStorage.getItem(IDEMPOTENCY_KEY);
         if (!key) {
@@ -217,5 +238,5 @@
   }
 
   return { API, csrfToken, dollarsToCents, idempotencyKey,
-    validatedCheckoutUrl, request, init };
+    validatedCheckoutUrl, checkoutNeedsRetry, request, init };
 });
