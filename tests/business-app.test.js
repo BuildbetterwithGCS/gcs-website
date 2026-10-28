@@ -77,6 +77,21 @@ test('retries only a server-reported expired provider session', () => {
   expect(app.checkoutNeedsRetry(null, now)).toBe(false);
 });
 
+test('accepts only the exact current staged selection for checkout resume', () => {
+  const current = {
+    intent_id: 'checkout-1', selection_revision: 3, selection_current: true,
+  };
+  expect(app.checkoutIntentIsCurrent(current, 3)).toBe(true);
+  expect(app.checkoutIntentIsCurrent({ ...current, selection_revision: 2 }, 3))
+    .toBe(false);
+  expect(app.checkoutIntentIsCurrent({ ...current, selection_current: false }, 3))
+    .toBe(false);
+  expect(app.checkoutIntentIsCurrent({
+    intent_id: 'checkout-1', selection_revision: 3,
+  }, 3)).toBe(false);
+  expect(app.checkoutIntentIsCurrent(current, null)).toBe(false);
+});
+
 test('uses a new key to reset the same expired intent and no other intent', async () => {
   const send = jest.fn().mockResolvedValue({
     intent_id: 'checkout-1', status: 'READY_FOR_PROVIDER', expires_at: null,
