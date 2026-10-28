@@ -82,6 +82,21 @@
       && expiresAt <= currentTime;
   }
 
+  async function retryExpiredCheckout(intent, intentId, send, getRandomValues,
+    now = Date.now()) {
+    if (!checkoutNeedsRetry(intent, now)) {
+      return { intent, idempotency_key: null };
+    }
+    const key = idempotencyKey(getRandomValues);
+    const retried = await send('/subscription/checkout-intent/retry', {
+      method: 'POST', body: {
+        intent_id: intentId,
+        idempotency_key: key,
+      },
+    });
+    return { intent: retried, idempotency_key: key };
+  }
+
   function init(doc) {
     if (!doc) return;
     const status = doc.getElementById('app-status');
@@ -199,17 +214,11 @@
         intent = await request('/subscription/checkout-intent/status', {
           method: 'POST', body: { intent_id: savedIntent },
         });
-        if (checkoutNeedsRetry(intent)) {
-          const retryKey = idempotencyKey(view.crypto.getRandomValues.bind(view.crypto));
-          intent = await request('/subscription/checkout-intent/retry', {
-            method: 'POST', body: {
-              intent_id: savedIntent,
-              idempotency_key: retryKey,
-            },
-          });
-          view.sessionStorage.setItem(IDEMPOTENCY_KEY, retryKey);
-          checkoutState.textContent =
-            'Expired checkout reset safely. Secure checkout is being prepared.';
+        const recovery = await retryExpiredCheckout(intent, savedIntent, request,
+          view.crypto.getRandomValues.bind(view.crypto));
+        intent = recovery.intent;
+        if (recovery.idempotency_key) {
+          view.sessionStorage.setItem(IDEMPOTENCY_KEY, recovery.idempotency_key);
         }
       } else {
         let key = view.sessionStorage.getItem(IDEMPOTENCY_KEY);
@@ -238,5 +247,5 @@
   }
 
   return { API, csrfToken, dollarsToCents, idempotencyKey,
-    validatedCheckoutUrl, checkoutNeedsRetry, request, init };
+    validatedCheckoutUrl, checkoutNeedsRetry, retryExpiredCheckout, request, init };
 });
