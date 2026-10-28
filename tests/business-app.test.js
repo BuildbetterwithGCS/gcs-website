@@ -57,6 +57,26 @@ test('accepts only plain HTTPS checkout handoffs', () => {
   }
 });
 
+test('retries only a server-reported expired provider session', () => {
+  const now = Date.parse('2026-10-28T18:00:00Z');
+  expect(app.checkoutNeedsRetry({
+    status: 'PROVIDER_SESSION', expires_at: '2026-10-28T17:59:59+00:00',
+  }, now)).toBe(true);
+  expect(app.checkoutNeedsRetry({
+    status: 'PROVIDER_SESSION', expires_at: '2026-10-28T18:00:00+00:00',
+  }, now)).toBe(true);
+  expect(app.checkoutNeedsRetry({
+    status: 'PROVIDER_SESSION', expires_at: '2026-10-28T18:00:01+00:00',
+  }, now)).toBe(false);
+  expect(app.checkoutNeedsRetry({
+    status: 'READY_FOR_PROVIDER', expires_at: '2026-10-28T17:00:00+00:00',
+  }, now)).toBe(false);
+  expect(app.checkoutNeedsRetry({
+    status: 'PROVIDER_SESSION', expires_at: 'not-a-date',
+  }, now)).toBe(false);
+  expect(app.checkoutNeedsRetry(null, now)).toBe(false);
+});
+
 test('portal source contains no live billing, payroll or availability claim', () => {
   document.body.innerHTML = '<main></main>';
   expect(app.API).toBe('/api/nexus');
