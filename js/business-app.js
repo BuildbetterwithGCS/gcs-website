@@ -82,6 +82,14 @@
       && expiresAt <= currentTime;
   }
 
+  function checkoutIntentIsCurrent(intent, stagedRevision) {
+    return Boolean(intent)
+      && intent.selection_current === true
+      && Number.isInteger(stagedRevision)
+      && stagedRevision > 0
+      && intent.selection_revision === stagedRevision;
+  }
+
   async function retryExpiredCheckout(intent, intentId, send, getRandomValues,
     now = Date.now()) {
     if (!checkoutNeedsRetry(intent, now)) {
@@ -214,11 +222,25 @@
         intent = await request('/subscription/checkout-intent/status', {
           method: 'POST', body: { intent_id: savedIntent },
         });
-        const recovery = await retryExpiredCheckout(intent, savedIntent, request,
-          view.crypto.getRandomValues.bind(view.crypto));
-        intent = recovery.intent;
-        if (recovery.idempotency_key) {
-          view.sessionStorage.setItem(IDEMPOTENCY_KEY, recovery.idempotency_key);
+        if (!checkoutIntentIsCurrent(intent, stagedRevision)) {
+          view.sessionStorage.removeItem(INTENT_KEY);
+          view.sessionStorage.removeItem(IDEMPOTENCY_KEY);
+          const key = idempotencyKey(view.crypto.getRandomValues.bind(view.crypto));
+          view.sessionStorage.setItem(IDEMPOTENCY_KEY, key);
+          intent = await request('/subscription/checkout-intent', {
+            method: 'POST', body: {
+              expected_selection_revision: stagedRevision,
+              idempotency_key: key,
+            },
+          });
+          view.sessionStorage.setItem(INTENT_KEY, intent.intent_id);
+        } else {
+          const recovery = await retryExpiredCheckout(intent, savedIntent, request,
+            view.crypto.getRandomValues.bind(view.crypto));
+          intent = recovery.intent;
+          if (recovery.idempotency_key) {
+            view.sessionStorage.setItem(IDEMPOTENCY_KEY, recovery.idempotency_key);
+          }
         }
       } else {
         let key = view.sessionStorage.getItem(IDEMPOTENCY_KEY);
@@ -247,5 +269,6 @@
   }
 
   return { API, csrfToken, dollarsToCents, idempotencyKey,
-    validatedCheckoutUrl, checkoutNeedsRetry, retryExpiredCheckout, request, init };
+    validatedCheckoutUrl, checkoutNeedsRetry, checkoutIntentIsCurrent,
+    retryExpiredCheckout, request, init };
 });
