@@ -154,3 +154,78 @@ test('clears only verified completed checkout state', () => {
   }
   expect(removed).toHaveLength(2);
 });
+
+
+test('validates only non-empty xlsx workbooks within the 5 MB cap', () => {
+  const valid = new File(['PK synthetic'], 'assets.xlsx', {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+  expect(app.validateAssetWorkbook(valid)).toBe(valid);
+  expect(() => app.validateAssetWorkbook(new File(['x'], 'assets.csv', {
+    type: 'text/csv',
+  }))).toThrow('Excel .xlsx');
+  expect(() => app.validateAssetWorkbook({
+    type: valid.type, size: 0,
+  })).toThrow('between 1 byte and 5 MB');
+  expect(() => app.validateAssetWorkbook({
+    type: valid.type, size: (5 * 1024 * 1024) + 1,
+  })).toThrow('between 1 byte and 5 MB');
+});
+
+test('uploads the exact xlsx privately without JSON or tenant identity fields', async () => {
+  const file = new File(['PK synthetic'], 'assets.xlsx', {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+  fetch.mockResolvedValue({
+    ok: true,
+    json: async () => ({ data: {
+      receipt_id: 'xpr_' + 'a'.repeat(32), accepted_rows: 1,
+      error_count: 0, errors: [],
+    } }),
+  });
+  const value = await app.assetRequest('/imports/assets/preview', {
+    method: 'POST', file,
+  });
+  expect(value.accepted_rows).toBe(1);
+  expect(fetch).toHaveBeenCalledWith('/api/nexus/imports/assets/preview',
+    expect.objectContaining({
+      method: 'POST', body: file, credentials: 'same-origin',
+      cache: 'no-store', mode: 'same-origin', redirect: 'error',
+      referrerPolicy: 'no-referrer',
+      headers: expect.objectContaining({
+        Accept: 'application/json',
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'X-CSRF-Token': 'csrf-token-value',
+      }),
+    }));
+  const options = fetch.mock.calls[0][1];
+  expect(JSON.stringify(options.headers)).not.toMatch(/tenant|actor|role|provider/i);
+});
+
+test('downloads value-free errors only with the bounded preview receipt', async () => {
+  const file = new File(['PK synthetic'], 'assets.xlsx', {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+  const csv = new Blob(['row,column,code\r\n2,status,invalid_choice\r\n'], {
+    type: 'text/csv',
+  });
+  fetch.mockResolvedValue({
+    ok: true,
+    blob: async () => csv,
+    headers: { get: name => name === 'X-Nexus-Errors-Truncated' ? 'false' : null },
+  });
+  const receipt = 'xpr_' + 'b'.repeat(32);
+  const value = await app.assetRequest('/imports/assets/errors', {
+    method: 'POST', file, receipt, download: true,
+  });
+  expect(value.blob).toBe(csv);
+  expect(value.truncated).toBe(false);
+  expect(fetch.mock.calls[0][1].headers).toEqual(expect.objectContaining({
+    'X-Nexus-Preview-Receipt': receipt,
+    'X-CSRF-Token': 'csrf-token-value',
+  }));
+  await expect(app.assetRequest('/imports/assets/errors', {
+    method: 'POST', file, receipt: 'customer-supplied-path', download: true,
+  })).rejects.toThrow('expired');
+  expect(fetch).toHaveBeenCalledTimes(1);
+});
