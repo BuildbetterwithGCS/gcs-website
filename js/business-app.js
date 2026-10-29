@@ -122,6 +122,31 @@
     }
   }
 
+  function clearAssetPreview(doc, options = {}) {
+    const input = doc.getElementById('asset-workbook');
+    const preview = doc.getElementById('asset-preview');
+    const summary = doc.getElementById('asset-preview-summary');
+    const errors = doc.getElementById('asset-errors');
+    const download = doc.getElementById('asset-error-download');
+    if (options.clearFile !== false) input.value = '';
+    preview.hidden = true;
+    summary.textContent = '';
+    errors.replaceChildren();
+    download.hidden = true;
+    if (options.focus === true) input.focus();
+  }
+
+  function assetFailureMessage(error) {
+    if (error && (error.status === 401 || error.status === 403)) {
+      return 'Your spreadsheet check expired or your access changed. Choose the file again.';
+    }
+    const message = error && typeof error.message === 'string' ? error.message : '';
+    if (message.startsWith('Choose') || message.startsWith('Spreadsheet')) {
+      return message;
+    }
+    return 'This spreadsheet task is not available yet. Try again later.';
+  }
+
   function dollarsToCents(value) {
     if (!/^\d+(\.\d{1,2})?$/.test(String(value).trim())) {
       throw new Error('Enter a valid dollar amount');
@@ -306,13 +331,10 @@
         assetStatus.textContent = success;
         return value;
       } catch (error) {
-        assetStatus.textContent = error.status === 403
-          ? 'Your secure session does not allow this task.'
-          : error.message.startsWith('Choose') || error.message.startsWith('Spreadsheet')
-            ? error.message
-            : 'This spreadsheet task is not available yet. Try again later.';
         assetReceipt = null;
-        assetErrorDownload.hidden = true;
+        assetWorkbook = null;
+        clearAssetPreview(doc, { focus: true });
+        assetStatus.textContent = assetFailureMessage(error);
         return null;
       }
     }
@@ -329,6 +351,9 @@
     doc.getElementById('asset-preview-form').addEventListener('submit', event => {
       event.preventDefault();
       const selected = doc.getElementById('asset-workbook').files[0];
+      assetReceipt = null;
+      assetWorkbook = null;
+      clearAssetPreview(doc, { clearFile: false });
       assetRun(async () => {
         assetWorkbook = validateAssetWorkbook(selected);
         const preview = await assetRequest('/imports/assets/preview', {
@@ -442,5 +467,5 @@
     validatedCheckoutUrl, checkoutNeedsRetry, checkoutIntentIsCurrent,
     subscriptionIsVerifiedActive, clearCompletedCheckout,
     retryExpiredCheckout, validateAssetWorkbook, assetRequest, saveDownload,
-    request, init };
+    clearAssetPreview, assetFailureMessage, request, init };
 });
