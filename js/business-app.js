@@ -90,6 +90,20 @@
       && intent.selection_revision === stagedRevision;
   }
 
+  function subscriptionIsVerifiedActive(subscription) {
+    return Boolean(subscription)
+      && subscription.status === 'active'
+      && subscription.billing_verified === true
+      && subscription.grants_access === true;
+  }
+
+  function clearCompletedCheckout(subscription, storage) {
+    if (!subscriptionIsVerifiedActive(subscription)) return false;
+    storage.removeItem(INTENT_KEY);
+    storage.removeItem(IDEMPOTENCY_KEY);
+    return true;
+  }
+
   async function retryExpiredCheckout(intent, intentId, send, getRandomValues,
     now = Date.now()) {
     if (!checkoutNeedsRetry(intent, now)) {
