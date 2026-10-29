@@ -21,7 +21,7 @@
 
   <nav class="task-nav" aria-label="Workspace tasks">
     <a href="#today">Today</a><a href="#time">My time</a><a href="#leave">Time off</a>
-    <a href="#work">Work orders</a><a href="#invoices">Invoices</a><a href="#subscription">Subscription</a>
+    <a href="#work">Work orders</a><a href="#invoices">Invoices</a><a href="#assets">Assets</a><a href="#subscription">Subscription</a>
   </nav>
 
   <main id="main">
@@ -59,6 +59,26 @@
       <label for="customer-name">Customer name</label><input id="customer-name" maxlength="200" required>
       <label for="amount">Amount in dollars</label><input id="amount" inputmode="decimal" placeholder="125.00" required><button type="submit">Save draft</button></form>
       <p class="fine-print">Saving a draft does not send an invoice or collect payment.</p>
+    </section>
+
+    <section id="assets" class="panel" aria-labelledby="assets-heading">
+      <p class="step">Administrator task</p><h2 id="assets-heading">Bring in my asset list</h2>
+      <p>Use the GCS spreadsheet, check it for problems, and fix the listed cells before importing. Previewing does not save any assets.</p>
+      <ol class="asset-steps">
+        <li><button id="asset-template" type="button" class="secondary">1. Download blank spreadsheet</button></li>
+        <li><form id="asset-preview-form">
+          <label for="asset-workbook">2. Choose the completed spreadsheet</label>
+          <input id="asset-workbook" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required>
+          <button type="submit">3. Check spreadsheet</button>
+        </form></li>
+      </ol>
+      <p id="asset-status" class="fine-print" role="status" aria-live="polite">No spreadsheet checked.</p>
+      <div id="asset-preview" hidden>
+        <p><strong id="asset-preview-summary"></strong></p>
+        <ul id="asset-errors" class="error-list"></ul>
+        <button id="asset-error-download" type="button" class="secondary" hidden>Download error list</button>
+      </div>
+      <p class="fine-print">This development preview does not import, overwrite, or synchronize customer records. Do not use real customer data.</p>
     </section>
 
     <section id="subscription" class="panel" aria-labelledby="subscription-heading">
