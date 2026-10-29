@@ -13,6 +13,9 @@
   const API = '/api/nexus';
   const INTENT_KEY = 'nexus.checkout.intent';
   const IDEMPOTENCY_KEY = 'nexus.checkout.idempotency';
+  const XLSX_CONTENT_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+  const MAX_WORKBOOK_BYTES = 5 * 1024 * 1024;
+  const PREVIEW_RECEIPT_HEADER = 'X-Nexus-Preview-Receipt';
 
   function csrfToken(cookie) {
     const prefix = '__Host-nexus-csrf=';
@@ -43,6 +46,80 @@
       throw error;
     }
     return payload.data;
+  }
+
+  function validateAssetWorkbook(file) {
+    if (!file || file.type !== XLSX_CONTENT_TYPE) {
+      throw new Error('Choose an Excel .xlsx spreadsheet');
+    }
+    if (!Number.isInteger(file.size) || file.size < 1
+      || file.size > MAX_WORKBOOK_BYTES) {
+      throw new Error('Spreadsheet must be between 1 byte and 5 MB');
+    }
+    return file;
+  }
+
+  async function assetRequest(path, options = {}) {
+    const method = options.method || 'GET';
+    const headers = {
+      Accept: options.download ? 'application/octet-stream' : 'application/json',
+    };
+    let body;
+    if (options.file !== undefined) {
+      body = validateAssetWorkbook(options.file);
+      headers['Content-Type'] = XLSX_CONTENT_TYPE;
+    }
+    if (options.receipt !== undefined) {
+      if (!/^xpr_[A-Za-z0-9_-]{32}$/.test(options.receipt)) {
+        throw new Error('Spreadsheet check has expired');
+      }
+      headers[PREVIEW_RECEIPT_HEADER] = options.receipt;
+    }
+    if (method !== 'GET') {
+      headers['X-CSRF-Token'] = csrfToken(document.cookie);
+    }
+    const response = await fetch(API + path, {
+      method,
+      credentials: 'same-origin',
+      cache: 'no-store',
+      mode: 'same-origin',
+      redirect: 'error',
+      referrerPolicy: 'no-referrer',
+      headers,
+      body,
+    });
+    if (!response.ok) {
+      let payload = {};
+      try { payload = await response.json(); } catch (_error) {}
+      const error = new Error(payload.error || 'workspace_unavailable');
+      error.status = response.status;
+      throw error;
+    }
+    if (options.download) {
+      return {
+        blob: await response.blob(),
+        truncated: response.headers.get('X-Nexus-Errors-Truncated') === 'true',
+      };
+    }
+    const payload = await response.json();
+    return payload.data;
+  }
+
+  function saveDownload(doc, blob, filename) {
+    const view = doc && doc.defaultView;
+    if (!view || !view.URL || typeof view.URL.createObjectURL !== 'function') {
+      throw new Error('Secure download is not supported in this browser');
+    }
+    const url = view.URL.createObjectURL(blob);
+    try {
+      const link = doc.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.rel = 'noopener';
+      link.click();
+    } finally {
+      view.URL.revokeObjectURL(url);
+    }
   }
 
   function dollarsToCents(value) {
@@ -126,6 +203,8 @@
     const checkoutState = doc.getElementById('checkout-state');
     const view = doc.defaultView;
     let stagedRevision = null;
+    let assetReceipt = null;
+    let assetWorkbook = null;
 
     function message(text, error = false) {
       status.textContent = text;
@@ -214,6 +293,79 @@
       } }), 'Invoice draft saved.');
     });
 
+    const assetStatus = doc.getElementById('asset-status');
+    const assetPreview = doc.getElementById('asset-preview');
+    const assetSummary = doc.getElementById('asset-preview-summary');
+    const assetErrors = doc.getElementById('asset-errors');
+    const assetErrorDownload = doc.getElementById('asset-error-download');
+
+    async function assetRun(action, success) {
+      try {
+        assetStatus.textContent = 'Checking…';
+        const value = await action();
+        assetStatus.textContent = success;
+        return value;
+      } catch (error) {
+        assetStatus.textContent = error.status === 403
+          ? 'Your secure session does not allow this task.'
+          : error.message.startsWith('Choose') || error.message.startsWith('Spreadsheet')
+            ? error.message
+            : 'This spreadsheet task is not available yet. Try again later.';
+        assetReceipt = null;
+        assetErrorDownload.hidden = true;
+        return null;
+      }
+    }
+
+    doc.getElementById('asset-template').addEventListener('click', () =>
+      assetRun(async () => {
+        const result = await assetRequest('/imports/assets/template', {
+          download: true,
+        });
+        saveDownload(doc, result.blob, 'nexus-assets-v1.xlsx');
+        return result;
+      }, 'Blank spreadsheet downloaded.'));
+
+    doc.getElementById('asset-preview-form').addEventListener('submit', event => {
+      event.preventDefault();
+      const selected = doc.getElementById('asset-workbook').files[0];
+      assetRun(async () => {
+        assetWorkbook = validateAssetWorkbook(selected);
+        const preview = await assetRequest('/imports/assets/preview', {
+          method: 'POST', file: assetWorkbook,
+        });
+        assetReceipt = preview.receipt_id;
+        assetPreview.hidden = false;
+        assetSummary.textContent = preview.error_count
+          ? preview.error_count + ' problem(s) found. No assets were saved.'
+          : preview.accepted_rows + ' row(s) ready. No assets were saved.';
+        assetErrors.replaceChildren();
+        for (const item of preview.errors || []) {
+          const row = doc.createElement('li');
+          row.textContent = 'Row ' + item.row + ', ' + item.column
+            + ': ' + item.code;
+          assetErrors.appendChild(row);
+        }
+        assetErrorDownload.hidden = !(preview.error_count > 0);
+        return preview;
+      }, 'Spreadsheet check finished.');
+    });
+
+    assetErrorDownload.addEventListener('click', () =>
+      assetRun(async () => {
+        if (!assetWorkbook || !assetReceipt) {
+          throw new Error('Spreadsheet check has expired');
+        }
+        const result = await assetRequest('/imports/assets/errors', {
+          method: 'POST',
+          file: assetWorkbook,
+          receipt: assetReceipt,
+          download: true,
+        });
+        saveDownload(doc, result.blob, 'nexus-assets-v1-errors.csv');
+        return result;
+      }, 'Error list downloaded.'));
+
     doc.getElementById('subscription-form').addEventListener('submit', event => {
       event.preventDefault();
       const modules = [...doc.querySelectorAll('input[name="module"]:checked')]
@@ -289,5 +441,6 @@
   return { API, csrfToken, dollarsToCents, idempotencyKey,
     validatedCheckoutUrl, checkoutNeedsRetry, checkoutIntentIsCurrent,
     subscriptionIsVerifiedActive, clearCompletedCheckout,
-    retryExpiredCheckout, request, init };
+    retryExpiredCheckout, validateAssetWorkbook, assetRequest, saveDownload,
+    request, init };
 });
