@@ -132,12 +132,14 @@
       status.classList.toggle('error', error);
     }
 
-    function checkoutReady(revision) {
+    function checkoutReady(revision, active = false) {
       stagedRevision = Number.isInteger(revision) && revision > 0 ? revision : null;
-      checkoutButton.disabled = stagedRevision === null;
-      checkoutState.textContent = stagedRevision === null
-        ? 'Save your business tools before continuing.'
-        : 'Your selection is saved. Billing is still unverified.';
+      checkoutButton.disabled = active || stagedRevision === null;
+      checkoutState.textContent = active
+        ? 'Subscription access is active. No checkout is needed.'
+        : stagedRevision === null
+          ? 'Save your business tools before continuing.'
+          : 'Your selection is saved. Billing is still unverified.';
     }
 
     async function run(action, success) {
