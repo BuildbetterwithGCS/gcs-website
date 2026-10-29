@@ -1,4 +1,6 @@
 /** @jest-environment jsdom */
+const fs = require('fs');
+const path = require('path');
 const app = require('../js/business-app.js');
 
 beforeEach(() => {
@@ -228,4 +230,63 @@ test('downloads value-free errors only with the bounded preview receipt', async 
     method: 'POST', file, receipt: 'customer-supplied-path', download: true,
   })).rejects.toThrow('expired');
   expect(fetch).toHaveBeenCalledTimes(1);
+});
+
+
+test('clears stale preview details and returns keyboard focus to the file chooser', () => {
+  document.body.innerHTML = `
+    <input id="asset-workbook" type="file">
+    <p id="asset-status" role="status" aria-live="polite">Old status</p>
+    <div id="asset-preview">
+      <strong id="asset-preview-summary">2 problems found</strong>
+      <ul id="asset-errors"><li>Row 2, status: invalid_choice</li></ul>
+      <button id="asset-error-download" type="button">Download error list</button>
+    </div>`;
+  const input = document.getElementById('asset-workbook');
+  app.clearAssetPreview(document, { focus: true });
+  expect(document.getElementById('asset-preview').hidden).toBe(true);
+  expect(document.getElementById('asset-preview-summary').textContent).toBe('');
+  expect(document.getElementById('asset-errors').children).toHaveLength(0);
+  expect(document.getElementById('asset-error-download').hidden).toBe(true);
+  expect(document.activeElement).toBe(input);
+  expect(document.getElementById('asset-status').getAttribute('role')).toBe('status');
+  expect(document.getElementById('asset-status').getAttribute('aria-live')).toBe('polite');
+});
+
+test('uses an actionable status for expiry or authorization loss', () => {
+  expect(app.assetFailureMessage({ status: 401, message: 'request_denied' }))
+    .toBe('Your spreadsheet check expired or your access changed. Choose the file again.');
+  expect(app.assetFailureMessage({ status: 403, message: 'operation_denied' }))
+    .toBe('Your spreadsheet check expired or your access changed. Choose the file again.');
+  expect(app.assetFailureMessage(new Error('Spreadsheet check has expired')))
+    .toBe('Spreadsheet check has expired');
+  expect(app.assetFailureMessage(new Error('network failed')))
+    .toBe('This spreadsheet task is not available yet. Try again later.');
+});
+
+test('does not retry a denied stale preview receipt', async () => {
+  const file = new File(['PK synthetic'], 'assets.xlsx', {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+  fetch.mockResolvedValue({
+    ok: false,
+    status: 403,
+    json: async () => ({ error: 'operation_denied' }),
+  });
+  await expect(app.assetRequest('/imports/assets/errors', {
+    method: 'POST',
+    file,
+    receipt: 'xpr_' + 'c'.repeat(32),
+    download: true,
+  })).rejects.toMatchObject({ status: 403, message: 'operation_denied' });
+  expect(fetch).toHaveBeenCalledTimes(1);
+});
+
+test('asset panel source preserves screen-reader status and noindex preview boundary', () => {
+  const html = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  expect(html).toMatch(/<meta name="robots" content="noindex,nofollow">/);
+  expect(html).toMatch(/id="asset-status"[^>]*role="status"[^>]*aria-live="polite"/);
+  expect(html).toMatch(/id="asset-workbook" type="file"/);
+  expect(html).toMatch(/Do not use real customer data/);
 });
