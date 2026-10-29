@@ -167,10 +167,12 @@
       }
       const subscription = await run(() => request('/subscription'), 'Workspace updated.');
       if (subscription) {
-        doc.getElementById('subscription-state').textContent = subscription.status === 'active'
+        const active = subscriptionIsVerifiedActive(subscription);
+        doc.getElementById('subscription-state').textContent = active
           ? 'Subscription active.'
           : 'Selection saved; billing verification is still required.';
-        checkoutReady(subscription.status === 'active' ? null : subscription.staged_revision);
+        if (active) clearCompletedCheckout(subscription, view.sessionStorage);
+        checkoutReady(active ? null : subscription.staged_revision, active);
       }
     }
 
