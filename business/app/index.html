@@ -77,6 +77,11 @@
         <p><strong id="asset-preview-summary"></strong></p>
         <ul id="asset-errors" class="error-list"></ul>
         <button id="asset-error-download" type="button" class="secondary" hidden>Download error list</button>
+        <div id="asset-commit" class="commit-confirmation" hidden>
+          <p><strong>Ready to add these new assets.</strong> Existing assets will not be changed or deleted.</p>
+          <label for="asset-confirm"><input id="asset-confirm" type="checkbox"> I understand this adds new assets to this workspace.</label>
+          <button id="asset-import" type="button" disabled>Import new assets</button>
+        </div>
       </div>
       <p class="fine-print">This development preview does not import, overwrite, or synchronize customer records. Do not use real customer data.</p>
     </section>
