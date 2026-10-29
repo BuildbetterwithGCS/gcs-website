@@ -128,3 +128,29 @@ test('portal source contains no live billing, payroll or availability claim', ()
   expect(app.API).toBe('/api/nexus');
   expect(String(app.request)).not.toMatch(/bank|password|payment method/i);
 });
+
+
+test('clears only verified completed checkout state', () => {
+  const removed = [];
+  const storage = { removeItem: key => removed.push(key) };
+  const active = {
+    status: 'active', billing_verified: true, grants_access: true,
+  };
+  expect(app.subscriptionIsVerifiedActive(active)).toBe(true);
+  expect(app.clearCompletedCheckout(active, storage)).toBe(true);
+  expect(removed).toEqual([
+    'nexus.checkout.intent', 'nexus.checkout.idempotency',
+  ]);
+
+  for (const incomplete of [
+    { ...active, status: 'pending_billing' },
+    { ...active, billing_verified: false },
+    { ...active, grants_access: false },
+    { status: 'active' },
+    null,
+  ]) {
+    expect(app.subscriptionIsVerifiedActive(incomplete)).toBe(false);
+    expect(app.clearCompletedCheckout(incomplete, storage)).toBe(false);
+  }
+  expect(removed).toHaveLength(2);
+});
