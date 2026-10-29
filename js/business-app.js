@@ -288,5 +288,6 @@
 
   return { API, csrfToken, dollarsToCents, idempotencyKey,
     validatedCheckoutUrl, checkoutNeedsRetry, checkoutIntentIsCurrent,
+    subscriptionIsVerifiedActive, clearCompletedCheckout,
     retryExpiredCheckout, request, init };
 });
