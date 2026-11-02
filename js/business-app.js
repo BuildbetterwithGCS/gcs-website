@@ -128,6 +128,12 @@
     const summary = doc.getElementById('asset-preview-summary');
     const errors = doc.getElementById('asset-errors');
     const download = doc.getElementById('asset-error-download');
+    const commit = doc.getElementById('asset-commit');
+    const confirmation = doc.getElementById('asset-confirm');
+    const importButton = doc.getElementById('asset-import');
+    if (commit) commit.hidden = true;
+    if (confirmation) confirmation.checked = false;
+    if (importButton) importButton.disabled = true;
     if (options.clearFile !== false) input.value = '';
     preview.hidden = true;
     summary.textContent = '';
@@ -145,6 +151,16 @@
       return message;
     }
     return 'This spreadsheet task is not available yet. Try again later.';
+  }
+
+  function canCommitAssetPreview(preview) {
+    return Boolean(preview)
+      && Number.isInteger(preview.error_count)
+      && preview.error_count === 0
+      && Number.isInteger(preview.accepted_rows)
+      && preview.accepted_rows > 0
+      && typeof preview.receipt_id === 'string'
+      && /^xpr_[a-f0-9]{32}$/.test(preview.receipt_id);
   }
 
   function dollarsToCents(value) {
@@ -230,6 +246,8 @@
     let stagedRevision = null;
     let assetReceipt = null;
     let assetWorkbook = null;
+    let assetPreviewReady = false;
+    let assetCommitPending = false;
 
     function message(text, error = false) {
       status.textContent = text;
@@ -323,6 +341,9 @@
     const assetSummary = doc.getElementById('asset-preview-summary');
     const assetErrors = doc.getElementById('asset-errors');
     const assetErrorDownload = doc.getElementById('asset-error-download');
+    const assetCommit = doc.getElementById('asset-commit');
+    const assetConfirm = doc.getElementById('asset-confirm');
+    const assetImport = doc.getElementById('asset-import');
 
     async function assetRun(action, success) {
       try {
@@ -333,6 +354,8 @@
       } catch (error) {
         assetReceipt = null;
         assetWorkbook = null;
+        assetPreviewReady = false;
+        assetCommitPending = false;
         clearAssetPreview(doc, { focus: true });
         assetStatus.textContent = assetFailureMessage(error);
         return null;
@@ -353,6 +376,8 @@
       const selected = doc.getElementById('asset-workbook').files[0];
       assetReceipt = null;
       assetWorkbook = null;
+      assetPreviewReady = false;
+      assetCommitPending = false;
       clearAssetPreview(doc, { clearFile: false });
       assetRun(async () => {
         assetWorkbook = validateAssetWorkbook(selected);
@@ -360,6 +385,10 @@
           method: 'POST', file: assetWorkbook,
         });
         assetReceipt = preview.receipt_id;
+        assetPreviewReady = canCommitAssetPreview(preview);
+        assetCommit.hidden = !assetPreviewReady;
+        assetConfirm.checked = false;
+        assetImport.disabled = true;
         assetPreview.hidden = false;
         assetSummary.textContent = preview.error_count
           ? preview.error_count + ' problem(s) found. No assets were saved.'
@@ -390,6 +419,35 @@
         saveDownload(doc, result.blob, 'nexus-assets-v1-errors.csv');
         return result;
       }, 'Error list downloaded.'));
+
+    assetConfirm.addEventListener('change', () => {
+      assetImport.disabled = !assetPreviewReady
+        || !assetConfirm.checked || assetCommitPending;
+    });
+
+    assetImport.addEventListener('click', () => {
+      if (!assetPreviewReady || !assetConfirm.checked || !assetReceipt
+        || !assetWorkbook || assetCommitPending || assetImport.disabled) return;
+      assetCommitPending = true;
+      assetImport.disabled = true;
+      assetRun(async () => {
+        const imported = await assetRequest('/imports/assets/commit', {
+          method: 'POST',
+          file: assetWorkbook,
+          receipt: assetReceipt,
+        });
+        if (!imported || !Number.isInteger(imported.total_rows)
+          || imported.total_rows < 1) {
+          throw new Error('The import confirmation was not available');
+        }
+        assetReceipt = null;
+        assetWorkbook = null;
+        assetPreviewReady = false;
+        clearAssetPreview(doc);
+        return imported;
+      }, 'New assets added. Refresh your asset list to see them.')
+        .finally(() => { assetCommitPending = false; });
+    });
 
     doc.getElementById('subscription-form').addEventListener('submit', event => {
       event.preventDefault();
@@ -467,5 +525,5 @@
     validatedCheckoutUrl, checkoutNeedsRetry, checkoutIntentIsCurrent,
     subscriptionIsVerifiedActive, clearCompletedCheckout,
     retryExpiredCheckout, validateAssetWorkbook, assetRequest, saveDownload,
-    clearAssetPreview, assetFailureMessage, request, init };
+    clearAssetPreview, canCommitAssetPreview, assetFailureMessage, request, init };
 });
