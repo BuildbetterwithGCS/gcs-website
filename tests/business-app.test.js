@@ -341,3 +341,13 @@ test('import confirmation is hidden by default and needs explicit acknowledgemen
   expect(js).toMatch(/assetCommitPending/);
   expect(js).toMatch(/clearAssetPreview\(doc\);/);
 });
+
+
+test('selecting a different workbook invalidates a previous preview before import', () => {
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  expect(js).toContain("getElementById('asset-workbook').addEventListener('change'");
+  expect(js).toContain('Spreadsheet changed. Check it again before importing.');
+  expect(js).toContain('assetPreviewReady = false;');
+  expect(js).toContain("clearAssetPreview(doc, { clearFile: false });");
+});
