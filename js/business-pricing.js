@@ -6,12 +6,30 @@
   const team = document.getElementById('team-size');
   const complete = document.getElementById('complete-plan');
   const output = document.getElementById('plan-estimate');
+  const demoLink = document.getElementById('plan-demo-link');
   function update() {
     const raw = Number(team.value);
     const users = Number.isFinite(raw) && raw >= 1 && raw <= 100 && Number.isInteger(raw) ? raw : null;
     if (users === null) {
       output.textContent = 'Enter a whole number of users between 1 and 100.';
+      if (demoLink) {
+        demoLink.removeAttribute('href');
+        demoLink.setAttribute('aria-disabled', 'true');
+        demoLink.tabIndex = -1;
+      }
       return;
+    }
+    if (demoLink) {
+      const params = new URLSearchParams();
+      const bundle = complete.checked ? 'complete' : 'modular';
+      const selectedModules = complete.checked ? [] : modules
+        .filter(input => input.checked).map(input => input.value);
+      params.set('gcs_plan', bundle);
+      params.set('gcs_users', String(users));
+      if (selectedModules.length) params.set('gcs_modules', selectedModules.join(','));
+      demoLink.setAttribute('href', '../request-demo/?' + params.toString());
+      demoLink.removeAttribute('aria-disabled');
+      demoLink.removeAttribute('tabindex');
     }
     const selected = modules.filter(input => input.checked).length;
     const blocks = Math.ceil(Math.max(0, users - 5) / 5);
