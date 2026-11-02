@@ -6,7 +6,7 @@ const html = fs.readFileSync(path.join(root, 'request-demo', 'index.html'), 'utf
 const script = fs.readFileSync(path.join(root, 'js', 'plan-demo-handoff.js'), 'utf8');
 
 function load(query) {
-  window.history.replaceState({}, '', 'https://buildbetterwithgcs.com/request-demo/' + query);
+  window.history.replaceState({}, '', '/request-demo/' + query);
   document.open();
   document.write(html);
   document.close();
