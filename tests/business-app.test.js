@@ -290,3 +290,54 @@ test('asset panel source preserves screen-reader status and noindex preview boun
   expect(html).toMatch(/id="asset-workbook" type="file"/);
   expect(html).toMatch(/Do not use real customer data/);
 });
+
+
+test('asset import can proceed only with an exact error-free positive-row receipt', () => {
+  const base = { accepted_rows: 2, error_count: 0, receipt_id: 'xpr_' + 'a'.repeat(32) };
+  expect(app.canCommitAssetPreview(base)).toBe(true);
+  expect(app.canCommitAssetPreview({ ...base, error_count: 1 })).toBe(false);
+  expect(app.canCommitAssetPreview({ ...base, accepted_rows: 0 })).toBe(false);
+  expect(app.canCommitAssetPreview({ ...base, accepted_rows: -1 })).toBe(false);
+  expect(app.canCommitAssetPreview({ ...base, error_count: undefined })).toBe(false);
+  expect(app.canCommitAssetPreview({ ...base, receipt_id: 'wrong' })).toBe(false);
+  expect(app.canCommitAssetPreview({ ...base, receipt_id: 'xpr_' + 'z'.repeat(32) })).toBe(false);
+});
+
+test('asset commit submits same workbook and receipt over authenticated CSRF-protected POST', async () => {
+  const file = new File(['PK synthetic workbook'], 'assets.xlsx', {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+  const receipt = 'xpr_' + 'e'.repeat(32);
+  fetch.mockResolvedValue({
+    ok: true,
+    json: async () => ({ data: { total_rows: 2, receipt_id: receipt } }),
+  });
+  const result = await app.assetRequest('/imports/assets/commit', {
+    method: 'POST', file, receipt,
+  });
+  expect(result.total_rows).toBe(2);
+  expect(fetch).toHaveBeenCalledWith('/api/nexus/imports/assets/commit',
+    expect.objectContaining({
+      method: 'POST', credentials: 'same-origin', redirect: 'error',
+      body: file,
+      headers: expect.objectContaining({
+        'X-CSRF-Token': 'csrf-token-value',
+        'X-Nexus-Preview-Receipt': receipt,
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      }),
+    }));
+});
+
+test('import confirmation is hidden by default and needs explicit acknowledgement', () => {
+  const html = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  expect(html).toMatch(/id="asset-commit"[^>]*hidden/);
+  expect(html).toMatch(/id="asset-import"[^>]*disabled/);
+  expect(html).toMatch(/id="asset-confirm" type="checkbox"/);
+  expect(js).toMatch(/assetConfirm\.checked/);
+  expect(js).toMatch(/canCommitAssetPreview\(preview\)/);
+  expect(js).toMatch(/assetCommitPending/);
+  expect(js).toMatch(/clearAssetPreview\(doc\);/);
+});
