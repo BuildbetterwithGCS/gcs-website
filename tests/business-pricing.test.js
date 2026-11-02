@@ -65,4 +65,39 @@ describe('proposed modular subscription builder', () => {
       );
     }
   });
+  test('demo handoff carries validated plan choices without starting checkout', () => {
+    const document = loadBuilder();
+    const link = document.getElementById('plan-demo-link');
+    expect(link).not.toBeNull();
+    expect(link.getAttribute('href')).toContain('gcs_plan=modular');
+    document.querySelector('input[value="finance"]').click();
+    document.querySelector('input[value="operations"]').click();
+    document.getElementById('team-size').value = '11';
+    document.getElementById('team-size').dispatchEvent(
+      new document.defaultView.Event('input', { bubbles: true })
+    );
+    const href = new URL(link.getAttribute('href'), 'https://buildbetterwithgcs.com/business/');
+    expect(href.pathname).toBe('/request-demo/');
+    expect(href.searchParams.get('gcs_plan')).toBe('modular');
+    expect(href.searchParams.get('gcs_users')).toBe('11');
+    expect(href.searchParams.get('gcs_modules')).toBe('operations,finance');
+    expect(href.search).not.toMatch(/email|payment|card|company|ein/i);
+  });
+
+  test('invalid user count disables plan inquiry and complete keeps modules private', () => {
+    const document = loadBuilder();
+    const link = document.getElementById('plan-demo-link');
+    const team = document.getElementById('team-size');
+    team.value = '0';
+    team.dispatchEvent(new document.defaultView.Event('input', { bubbles: true }));
+    expect(link.hasAttribute('href')).toBe(false);
+    expect(link.getAttribute('aria-disabled')).toBe('true');
+    team.value = '5';
+    document.getElementById('complete-plan').click();
+    const url = new URL(link.getAttribute('href'), 'https://buildbetterwithgcs.com/business/');
+    expect(url.searchParams.get('gcs_plan')).toBe('complete');
+    expect(url.searchParams.has('gcs_modules')).toBe(false);
+    expect(link.getAttribute('aria-disabled')).toBeNull();
+  });
+
 });
