@@ -245,6 +245,11 @@
                   <p class="form-error" id="demo-goals-error" role="alert"></p>
                 </div>
 
+                <div class="form-group form-group--full" id="plan-handoff-container" aria-live="polite">
+                  <p id="plan-handoff" class="form-hint" hidden></p>
+                  <input type="hidden" id="requested-plan" name="requestedPlan" value="" />
+                </div>
+
                 <p class="form-privacy-note" style="margin-top:1rem;">Information submitted is used only to evaluate and prepare for your inquiry. Do not include passwords, account numbers, protected health information, Social Security numbers, or confidential records. <a href="../privacy/">Privacy policy.</a></p>
                 <button type="submit" class="btn btn--primary btn--lg" style="margin-top:1rem;">Submit Demonstration Request</button>
               </form>
@@ -335,6 +340,7 @@
     </div>
   </footer>
 
+  <script src="../js/plan-demo-handoff.js" defer></script>
   <script src="../js/main.js"></script>
 </body>
 </html>
