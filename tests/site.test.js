@@ -99,12 +99,12 @@ routes.forEach((route) => {
 });
 
 section('Homepage');
-assert('Homepage title updated', contains(home, '<title>GCS | Build Better Organizations</title>'));
-assert('Homepage meta description updated', containsCI(home, 'GCS combines operational expertise with Nexus'));
-assert('Homepage hero headline', containsCI(home, 'Build Better Organizations.'));
-assert('Homepage hero CTA See Nexus', contains(home, 'href="nexus/" class="btn btn--primary btn--lg">See Nexus</a>'));
-assert('Homepage hero CTA Talk to GCS', contains(home, 'href="contact/" class="btn btn--ghost btn--lg">Talk to GCS</a>'));
-assert('Homepage tertiary request demo link', containsCI(home, 'Request a Demonstration'));
+assert('Homepage title presents the business software storefront', contains(home, '<title>GCS Business Software | Simple Tools to Run Your Business</title>'));
+assert('Homepage meta description describes business software truthfully', containsCI(home, 'Subscription tools are in development.'));
+assert('Homepage hero headline', containsCI(home, 'Run Your Business. Without the Complicated Software.'));
+assert('Homepage hero CTA explores business software', contains(home, 'href="business/" class="btn btn--primary btn--lg">Explore Business Software</a>'));
+assert('Homepage hero CTA requests a demo', contains(home, 'href="request-demo/" class="btn btn--ghost btn--lg">Request a Demo</a>'));
+assert('Homepage tertiary link reaches proposed plans', contains(home, 'href="business/#plans"') && containsCI(home, 'Compare planned subscription tiers'));
 assert('Homepage keeps dashboard preview', containsCI(home, 'dash-shell'));
 assert('Homepage capability section present', containsCI(home, 'Four things Nexus enables.'));
 assert('Homepage demo section present', containsCI(home, 'See Nexus in Action'));
