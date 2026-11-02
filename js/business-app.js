@@ -371,8 +371,18 @@
         return result;
       }, 'Blank spreadsheet downloaded.'));
 
+    doc.getElementById('asset-workbook').addEventListener('change', () => {
+      if (assetCommitPending) return;
+      assetReceipt = null;
+      assetWorkbook = null;
+      assetPreviewReady = false;
+      clearAssetPreview(doc, { clearFile: false });
+      assetStatus.textContent = 'Spreadsheet changed. Check it again before importing.';
+    });
+
     doc.getElementById('asset-preview-form').addEventListener('submit', event => {
       event.preventDefault();
+      if (assetCommitPending) return;
       const selected = doc.getElementById('asset-workbook').files[0];
       assetReceipt = null;
       assetWorkbook = null;
