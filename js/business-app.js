@@ -179,6 +179,13 @@
   }
 
 
+  function clearDashboardSummary(root) {
+    root.querySelectorAll('#dashboard strong').forEach((node) => {
+      node.textContent = '—';
+    });
+  }
+
+
   function validatedAssetInventory(inventory) {
     if (!inventory || typeof inventory !== 'object' || Array.isArray(inventory)) {
       throw new Error('Asset list is unavailable');
@@ -640,6 +647,7 @@
     }
 
     async function refresh() {
+      clearDashboardSummary(doc);
       const dashboard = await run(() => request('/dashboard'), 'Workspace updated.');
       if (dashboard) {
         const values = dashboardSummaryValues(dashboard);
@@ -1148,7 +1156,8 @@
     subscriptionIsVerifiedActive, clearCompletedCheckout,
     retryExpiredCheckout, validateAssetWorkbook, assetRequest, saveDownload,
     clearAssetPreview, canCommitAssetPreview, assetFailureMessage,
-    dashboardSummaryValues, validatedAssetInventory, filterAssetItems,
+    dashboardSummaryValues, clearDashboardSummary,
+    validatedAssetInventory, filterAssetItems,
     validatedPendingLeaveQueue, renderPendingLeaveQueue,
     validatedAssignedWorkQueue, renderAssignedWorkQueue,
     formatInvoiceAmount, validatedInvoiceSummaries, renderInvoiceSummaries,
