@@ -9,6 +9,17 @@
 <label for="search">Find a task</label><input id="search" type="search" autocomplete="off" placeholder="Try: clock in, PTO, work order, invoice" aria-controls="guides">
 <p id="count" role="status" aria-live="polite"></p><div class="guides" id="guides">
 <details data-keywords="start signup setup account organization workspace"><summary>Set up my business</summary><ol><li>When signup is available, create an account using your own business email.</li><li>Enter your business name and choose a workspace.</li><li>Review the modules you want before submitting a subscription selection.</li><li>Check the estimate; access is not activated until billing is independently verified.</li></ol></details>
+<details id="saved-dashboard-guide" data-keywords="today dashboard totals refresh saved workspace open completed work leave time punches imported assets session access accounting payroll audit">
+<summary>Read and refresh my dashboard</summary>
+<ol>
+<li>Sign in with your own account and open <strong>Today</strong>. The five totals summarize only the current signed-in workspace.</li>
+<li>Select <strong>Refresh</strong> to request the current saved operational summary. The page clears the old figures before requesting new ones and fills them only after a successful response.</li>
+<li><strong>Open work</strong> and <strong>Completed work</strong> summarize work-order status. <strong>Time off waiting</strong> counts pending leave requests. <strong>Time punches to review</strong> counts punches awaiting an authorized review.</li>
+<li><strong>Imported assets</strong> is an aggregate count. It does not display asset rows, workbook contents, receipt details, or who imported them.</li>
+<li>If the request fails, your session expires, or your access changes, the totals remain as dashes. Sign in again, confirm the correct workspace, and select <strong>Refresh</strong>. Do not rely on figures displayed before the failed refresh.</li>
+</ol>
+<p><strong>Operational summary only:</strong> These totals are not payroll calculations, accounting records, invoice-delivery or payment-settlement evidence, compliance determinations, or an audit trail.</p>
+</details>
 <details data-keywords="employee invite staff account access login"><summary>Add an employee</summary><ol><li>Open your team administration area.</li><li>Choose Invite employee and enter the intended employee identity.</li><li>Assign an appropriate role and confirm the workspace.</li><li>The employee will need their own verified login before accessing company information.</li></ol></details>
 <details id="time-clock-guide" data-keywords="clock in clock out punch shift timekeeping employee open punch number session access recovery mistake location payroll wage overtime">
 <summary>Clock in or out</summary>
