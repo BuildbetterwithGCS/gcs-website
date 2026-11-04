@@ -17,8 +17,9 @@ The repair commits `bf9c6868ab0a9bcb1670decaa5444f8d514f1d29` and `3134bfbeb1303
 
 ## Verification
 
-- GitHub Actions CI run [41890141236](https://github.com/BuildbetterwithGCS/gcs-website/actions/runs/41890141236): **passed** at commit `3134bfbeb13036361ec2a6227235110be0ced678`.
-- Netlify deploy preview `6aeb7d152f0d1b88d825c807`: **ready**, commit ref `3134bfbeb13036361ec2a6227235110be0ced678`, context `deploy-preview`.
+- GitHub Actions CI run [41890141236](https://github.com/BuildbetterwithGCS/gcs-website/actions/runs/41890141236): **passed** for the repaired implementation at commit `3134bfbeb13036361ec2a6227235110be0ced678`.
+- Checkpoint CI run [41890324953](https://github.com/BuildbetterwithGCS/gcs-website/actions/runs/41890324953): **passed** at checkpoint commit `43b0dc852d3468268393084fd5b009cfd1ad2f35`.
+- Netlify deploy preview `6aeb7d5bae920e84b03a09b9`: **ready**, commit ref `43b0dc852d3468268393084fd5b009cfd1ad2f35`, context `deploy-preview`.
 - Preview URL: https://deploy-preview-58--buildbetterwithgcs.netlify.app
 - The verified Netlify project continues to require team SSO for non-production deploys.
 - Published production deploy remains `6ae0b30c050624f6d7a81d67` and was not changed by this increment.
