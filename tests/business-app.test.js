@@ -236,6 +236,86 @@ test('manager leave panel is explicit-load, session-bound, and status accessible
   expect((js.match(/request\('\/leave\/pending'\)/g) || [])).toHaveLength(1);
 });
 
+test('validates a bounded identity-minimized assigned work queue', () => {
+  const queue = {
+    items: [{
+      work_order_id: 'work-1',
+      title: 'Inspect rooftop unit',
+      status: 'open',
+    }],
+    returned: 1,
+    truncated: false,
+  };
+  expect(app.validatedAssignedWorkQueue(queue)).toEqual(queue);
+  for (const invalid of [
+    { ...queue, actor: 'must-not-be-accepted' },
+    { ...queue, returned: 2 },
+    { ...queue, truncated: 'false' },
+    { ...queue, items: [{ ...queue.items[0], assigned_to: 'employee-1' }] },
+    { ...queue, items: [{ ...queue.items[0], status: 'completed' }] },
+    { ...queue, items: [{ ...queue.items[0], title: '' }] },
+    { ...queue, items: [{ ...queue.items[0], title: 'x'.repeat(201) }] },
+    { ...queue, items: Array.from({ length: 101 }, () => queue.items[0]), returned: 101 },
+  ]) {
+    expect(() => app.validatedAssignedWorkQueue(invalid)).toThrow('unavailable');
+  }
+});
+
+test('renders work safely and requires explicit completion confirmation', () => {
+  document.body.innerHTML = '<ul id="work-queue-list" hidden></ul>';
+  const onComplete = jest.fn();
+  const queue = app.renderAssignedWorkQueue(document, {
+    items: [{
+      work_order_id: '<work-1>',
+      title: '<img src=x onerror=alert(1)>',
+      status: 'open',
+    }],
+    returned: 1,
+    truncated: false,
+  }, onComplete);
+
+  expect(queue.returned).toBe(1);
+  expect(document.querySelector('img')).toBeNull();
+  expect(document.getElementById('work-queue-list').hidden).toBe(false);
+  const buttons = [...document.querySelectorAll('#work-queue-list button')];
+  expect(buttons.map(button => button.textContent)).toEqual([
+    'Mark complete', 'Yes, mark complete', 'No, keep open',
+  ]);
+  buttons[0].click();
+  expect(onComplete).not.toHaveBeenCalled();
+  expect(buttons[0].hidden).toBe(true);
+  expect(buttons[1].closest('.work-confirmation').hidden).toBe(false);
+  buttons[2].click();
+  expect(onComplete).not.toHaveBeenCalled();
+  expect(buttons[0].hidden).toBe(false);
+  buttons[0].click();
+  buttons[1].click();
+  expect(onComplete).toHaveBeenCalledWith('<work-1>');
+});
+
+test('My work panel is explicit-load, session-bound, and status accessible', () => {
+  const html = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  expect(html).toMatch(/id="work-queue-load"[^>]*>Load my work/);
+  expect(html).toMatch(
+    /id="work-queue-status"[^>]*role="status"[^>]*aria-live="polite"[^>]*tabindex="-1"/
+  );
+  expect(html).toContain('Mark one complete only after the work is finished.');
+  expect(js).toContain("request('/work-orders')");
+  expect(js).toContain("request('/work-orders/complete', {");
+  expect(js).toContain("body: { item_id: workOrderId }");
+  const completeStart = js.indexOf('async function completeAssignedWork');
+  const completeEnd = js.indexOf(
+    "workQueueLoad.addEventListener", completeStart);
+  const completeSource = js.slice(completeStart, completeEnd);
+  expect(completeSource).not.toMatch(
+    /tenant|actor|assigned_to|employee_id|role|provider|billing|password|bank/i
+  );
+  expect((js.match(/request\('\/work-orders'\)/g) || [])).toHaveLength(1);
+});
+
 test('validates only non-empty xlsx workbooks within the 5 MB cap', () => {
   const valid = new File(['PK synthetic'], 'assets.xlsx', {
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
