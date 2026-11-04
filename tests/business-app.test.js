@@ -442,3 +442,83 @@ test('browser-level asset help supports direct links, search recovery, and keybo
   expect(count.textContent).toBe('9 of 9 guides shown');
   expect(empty.hidden).toBe(true);
 });
+
+
+test('asset inventory accepts only the bounded backend privacy contract', () => {
+  const raw = {
+    schema_version: 'assets-v1',
+    items: [{
+      asset_id: 'asset-1',
+      asset_name: 'Forklift',
+      site_id: 'site-a',
+      status: 'active',
+      source: 'xlsx-import',
+      committed_at: '2026-10-29T14:30:00+00:00',
+    }],
+    returned: 1,
+    truncated: false,
+  };
+  expect(app.validatedAssetInventory(raw)).toEqual({
+    items: [{
+      asset_id: 'asset-1', asset_name: 'Forklift',
+      site_id: 'site-a', status: 'active',
+    }],
+    returned: 1,
+    truncated: false,
+  });
+  for (const invalid of [
+    { ...raw, returned: 2 },
+    { ...raw, truncated: 'false' },
+    { ...raw, receipt_id: 'must-not-be-accepted' },
+    { ...raw, items: [{ ...raw.items[0], status: 'unknown' }] },
+    { ...raw, items: [{ ...raw.items[0], source: 'manual' }] },
+    { ...raw, items: [{ ...raw.items[0], committed_at: 'not-a-date' }] },
+    { ...raw, items: [{ ...raw.items[0], workbook_sha256: 'private' }] },
+    { ...raw, items: Array.from({ length: 101 }, () => raw.items[0]), returned: 101 },
+  ]) {
+    expect(() => app.validatedAssetInventory(invalid)).toThrow('unavailable');
+  }
+});
+
+test('asset inventory renderer uses safe text cells and shows truncation', () => {
+  document.body.innerHTML = `
+    <table id="asset-inventory-table" hidden><tbody id="asset-inventory-rows"></tbody></table>
+    <p id="asset-inventory-truncated" hidden></p>`;
+  const value = app.renderAssetInventory(document, {
+    schema_version: 'assets-v1',
+    items: [{
+      asset_id: '<asset-1>',
+      asset_name: '<img src=x onerror=alert(1)>',
+      site_id: '',
+      status: 'maintenance',
+      source: 'xlsx-import',
+      committed_at: '2026-10-29T14:30:00+00:00',
+    }],
+    returned: 1,
+    truncated: true,
+  });
+  const cells = [...document.querySelectorAll('td')].map(cell => cell.textContent);
+  expect(cells).toEqual([
+    '<img src=x onerror=alert(1)>', '<asset-1>', 'No site', 'Maintenance',
+  ]);
+  expect(document.querySelector('img')).toBeNull();
+  expect(document.getElementById('asset-inventory-table').hidden).toBe(false);
+  expect(document.getElementById('asset-inventory-truncated').hidden).toBe(false);
+  expect(value.items[0]).not.toHaveProperty('source');
+  expect(document.body.textContent).not.toContain('xlsx-import');
+  expect(document.body.textContent).not.toContain('2026-10-29');
+});
+
+test('asset list is explicit-load, read-only, and clears stale rows after import', () => {
+  const html = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  expect(html).toMatch(/id="asset-inventory-load"[^>]*>Load imported assets/);
+  expect(html).toMatch(/id="asset-inventory-status"[^>]*role="status"[^>]*aria-live="polite"/);
+  expect(html).toContain('Showing the first 100 assets.');
+  expect(js).toContain("assetInventoryLoad.addEventListener('click'");
+  expect(js).toContain("request('/assets')");
+  expect(js).toContain("assetInventoryStatus.textContent = 'Assets changed. Load the list again.'");
+  expect(String(app.renderAssetInventory)).not.toMatch(/innerHTML|receipt|workbook|billing|principal/);
+});
