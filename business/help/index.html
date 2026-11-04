@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>How To | GCS Business</title><meta name="description" content="Simple step-by-step guides for setting up business operations with GCS.">
+<title>How To | GCS Business</title><meta name="description" content="Simple step-by-step guides for setting up business operations with GCS."><meta name="robots" content="noindex,nofollow">
 <link rel="canonical" href="https://buildbetterwithgcs.com/business/help/">
 <style>
 :root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#152d47;background:#f5f8fb}*{box-sizing:border-box}body{margin:0}header{background:#102b4b;color:white;padding:22px 0}.wrap{max-width:980px;margin:auto;padding:0 22px}a{color:#175d9b}header a{color:white}h1{font-size:clamp(2rem,5vw,3rem)}p,li{line-height:1.65}label{display:block;font-weight:700;margin-bottom:10px}input{font:inherit;padding:16px;width:100%;border:2px solid #9db1c5;border-radius:12px}input:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #f5a623;outline-offset:3px}main{padding:35px 0 70px}.guides{display:grid;gap:14px;margin-top:25px}details{background:white;border:1px solid #d8e3ef;border-radius:14px;padding:18px 22px}summary{font-weight:750;cursor:pointer;min-height:44px;display:list-item;padding:10px 0}ol{padding-left:25px}.notice{background:#fff4dc;border-left:4px solid #d48a13;padding:16px;border-radius:6px}#empty{font-weight:700}footer{padding:25px 0;background:#102b4b;color:white}footer a{color:white}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
@@ -16,8 +16,21 @@
 <details data-keywords="job work order assign status complete"><summary>Create and assign a work order</summary><ol><li>Open Work orders and create a job with a clear description.</li><li>Choose an employee who belongs to the workspace.</li><li>Save the assignment and track its status.</li><li>Have the assigned employee mark the job completed when finished.</li></ol></details>
 <details data-keywords="invoice estimate bill payment"><summary>Prepare an invoice</summary><ol><li>Open Invoices and create a draft for a completed job.</li><li>Review customer details, line items, and totals.</li><li>Save the draft for authorized review.</li><li>Invoice delivery, payment collection and settlement are not yet live capabilities.</li></ol></details>
 <details data-keywords="plans pricing subscription modules users"><summary>Choose a subscription plan</summary><ol><li>Review Core, modular and Complete options when offered.</li><li>Select the tools and user allowance your team needs.</li><li>Review the non-binding monthly estimate.</li><li>Only a verified provider payment and server-side entitlement process can activate paid access.</li></ol></details>
+<details data-keywords="asset assets excel xlsx spreadsheet template upload preview check errors error list receipt expired expiry confirm confirmation import insert only add new dashboard total">
+<summary>Bring in an asset spreadsheet</summary>
+<ol>
+<li>Open <strong>Assets</strong> in your workspace and download the blank spreadsheet.</li>
+<li>Add only new assets. Keep the column headings unchanged, then save the file as <strong>.xlsx</strong>.</li>
+<li>Choose the completed file and select <strong>Check spreadsheet</strong>. This check does not save assets.</li>
+<li>If problems are found, download the error list. Fix the named rows and columns, then check the spreadsheet again.</li>
+<li>If the check expires or your access changes, choose the file again and run a new check. Do not reuse an old confirmation.</li>
+<li>When the page shows zero problems, read the insert-only notice, check the confirmation box, and select <strong>Import new assets</strong> once.</li>
+<li>Existing assets are not updated or deleted. After success, confirm the imported-assets total on the dashboard.</li>
+</ol>
+<p><strong>Important:</strong> This guide describes the protected development preview. Do not upload real customer data until GCS confirms production access is ready.</p>
+</details>
 </div><p id="empty" hidden>No matching guide. Try a different task or <a href="../../contact/">contact GCS</a>.</p></main>
 <footer><div class="wrap"><a href="../">Back to business overview</a> · <a href="../../contact/">Contact GCS</a></div></footer>
 <script>
-(function(){'use strict';const input=document.getElementById('search');const guides=[...document.querySelectorAll('#guides details')];const count=document.getElementById('count');const empty=document.getElementById('empty');function filter(){const q=input.value.trim().toLocaleLowerCase();let shown=0;for(const guide of guides){const haystack=(guide.querySelector('summary').textContent+' '+guide.dataset.keywords+' '+guide.textContent).toLocaleLowerCase();guide.hidden=!!q&&!haystack.includes(q);if(!guide.hidden)shown++}count.textContent=shown+' of '+guides.length+' guides shown';empty.hidden=shown!==0}input.addEventListener('input',filter);filter()})();
+(function(){'use strict';const input=document.getElementById('search');const guides=[...document.querySelectorAll('#guides details')];const count=document.getElementById('count');const empty=document.getElementById('empty');function filter(){const terms=input.value.trim().toLocaleLowerCase().split(/\\s+/).filter(Boolean);let shown=0;for(const guide of guides){const haystack=(guide.querySelector('summary').textContent+' '+guide.dataset.keywords+' '+guide.textContent).toLocaleLowerCase();guide.hidden=terms.some(term=>!haystack.includes(term));if(!guide.hidden)shown++}count.textContent=shown+' of '+guides.length+' guides shown';empty.hidden=shown!==0}input.addEventListener('input',filter);filter()})();
 </script></body></html>
