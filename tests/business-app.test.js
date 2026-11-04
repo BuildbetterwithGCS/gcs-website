@@ -516,7 +516,7 @@ test('asset list is explicit-load, read-only, and clears stale rows after import
     path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
   expect(html).toMatch(/id="asset-inventory-load"[^>]*>Load imported assets/);
   expect(html).toMatch(/id="asset-inventory-status"[^>]*role="status"[^>]*aria-live="polite"/);
-  expect(html).toContain('Showing the first 100 assets.');
+  expect(html).toContain('Showing results from the first 100 assets returned.');
   expect(js).toContain("assetInventoryLoad.addEventListener('click'");
   expect(js).toContain("request('/assets')");
   expect(js).toContain("assetInventoryStatus.textContent = 'Assets changed. Load the list again.'");
