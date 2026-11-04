@@ -85,7 +85,21 @@
           <button id="asset-import" type="button" disabled>Import new assets</button>
         </div>
       </div>
-      <p class="fine-print">This development preview does not import, overwrite, or synchronize customer records. Do not use real customer data.</p>
+      <section class="asset-inventory" aria-labelledby="asset-inventory-heading">
+        <h3 id="asset-inventory-heading">Imported assets</h3>
+        <p>Load a read-only list of up to 100 assets in this workspace.</p>
+        <button id="asset-inventory-load" type="button" class="secondary">Load imported assets</button>
+        <p id="asset-inventory-status" class="fine-print" role="status" aria-live="polite">Asset list not loaded.</p>
+        <p id="asset-inventory-truncated" class="inventory-notice" hidden>Showing the first 100 assets. The full inventory contains more records.</p>
+        <div class="inventory-table-wrap">
+          <table id="asset-inventory-table" hidden>
+            <caption class="visually-hidden">Imported assets in this workspace</caption>
+            <thead><tr><th scope="col">Asset</th><th scope="col">Asset ID</th><th scope="col">Site</th><th scope="col">Status</th></tr></thead>
+            <tbody id="asset-inventory-rows"></tbody>
+          </table>
+        </div>
+      </section>
+      <p class="fine-print">This protected development preview uses synthetic data only. Do not use real customer data.</p>
     </section>
 
     <section id="subscription" class="panel" aria-labelledby="subscription-heading">
