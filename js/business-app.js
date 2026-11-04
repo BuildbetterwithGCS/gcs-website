@@ -239,6 +239,17 @@
     });
   }
 
+  function clearAssetFilters(search, status, clearButton, apply) {
+    if (!search || !status || !clearButton || typeof apply !== 'function') {
+      throw new Error('Asset filters are unavailable');
+    }
+    search.value = '';
+    status.value = 'all';
+    clearButton.disabled = true;
+    apply();
+    search.focus();
+  }
+
   function renderAssetRows(doc, items) {
     const rows = doc.getElementById('asset-inventory-rows');
     const labels = {
@@ -611,10 +622,12 @@
     assetInventoryStatusFilter.addEventListener('change', applyAssetInventoryFilters);
     assetInventoryClear.addEventListener('click', () => {
       if (!loadedAssetInventory || assetInventoryClear.disabled) return;
-      assetInventorySearch.value = '';
-      assetInventoryStatusFilter.value = 'all';
-      applyAssetInventoryFilters();
-      assetInventorySearch.focus();
+      clearAssetFilters(
+        assetInventorySearch,
+        assetInventoryStatusFilter,
+        assetInventoryClear,
+        applyAssetInventoryFilters,
+      );
     });
 
     assetInventoryLoad.addEventListener('click', async () => {
@@ -726,5 +739,5 @@
     retryExpiredCheckout, validateAssetWorkbook, assetRequest, saveDownload,
     clearAssetPreview, canCommitAssetPreview, assetFailureMessage,
     dashboardSummaryValues, validatedAssetInventory, filterAssetItems,
-    renderAssetRows, renderAssetInventory, request, init };
+    clearAssetFilters, renderAssetRows, renderAssetInventory, request, init };
 });
