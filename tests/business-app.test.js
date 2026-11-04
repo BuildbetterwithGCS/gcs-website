@@ -893,3 +893,47 @@ test('contextual manager leave help opens directly and remains keyboard accessib
   expect(guide.querySelector('summary').tabIndex).toBe(0);
   expect(document.getElementById('count').textContent).toMatch(/guides shown/);
 });
+
+
+test('How To center bounds employee time-clock recovery and claims', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  const portal = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  expect(portal).toContain('href="../help/#time-clock-guide"');
+  expect(help).toContain('id="time-clock-guide"');
+  expect(help).toContain('<strong>Clock in</strong> once');
+  expect(help).toContain('<strong>Clock out</strong> once');
+  expect(help).toContain('Do not guess a number or create another punch');
+  expect(help).toContain(
+    'The page does not automatically retry a clock action.');
+  expect(help).toContain(
+    'It does not calculate wages, overtime, or payroll, and it does not prove an employee\'s physical or jobsite location.');
+});
+
+test('How To center bounds manager time review and compliance claims', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  const portal = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  expect(portal).toContain('href="../help/#manager-time-review-guide"');
+  expect(help).toContain('id="manager-time-review-guide"');
+  expect(help).toContain('When an authorized manager review queue is available');
+  expect(help).toContain(
+    'Do not approve a record with a missing time or unresolved discrepancy.');
+  expect(help).toContain(
+    'does not calculate pay, establish legal compliance, or prove where the employee worked.');
+});
+
+test('contextual time-clock help opens directly and remains keyboard accessible', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  const body = help.slice(help.indexOf('<body>') + 6, help.lastIndexOf('</body>'));
+  document.body.innerHTML = body;
+  window.history.replaceState(null, '', '/business/help/#time-clock-guide');
+  window.eval(document.querySelector('script').textContent);
+  const guide = document.getElementById('time-clock-guide');
+  expect(guide.open).toBe(true);
+  expect(guide.querySelector('summary').tabIndex).toBe(0);
+  expect(document.getElementById('count').textContent).toMatch(/guides shown/);
+});
