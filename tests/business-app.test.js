@@ -385,3 +385,19 @@ test('confirmed import refreshes the dashboard and keeps the asset card aggregat
   expect(js).toContain('New assets added. Dashboard refreshed.');
   expect(js).not.toMatch(/dashboard\.assets\.(items|asset_id|workbook_sha256)/);
 });
+
+
+test('How To center gives searchable, truthful asset import recovery steps', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  expect(help).toMatch(/<meta name="robots" content="noindex,nofollow">/);
+  expect(help).toContain('Bring in an asset spreadsheet');
+  expect(help).toContain('This check does not save assets.');
+  expect(help).toContain('download the error list');
+  expect(help).toContain('Do not reuse an old confirmation.');
+  expect(help).toContain('Import new assets');
+  expect(help).toContain('Existing assets are not updated or deleted.');
+  expect(help).toContain('Do not upload real customer data');
+  expect(help).toContain("split(/\\s+/).filter(Boolean)");
+  expect(help).toContain("terms.some(term=>!haystack.includes(term))");
+});
