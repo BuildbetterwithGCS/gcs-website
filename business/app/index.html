@@ -90,7 +90,13 @@
         <p>Load a read-only list of up to 100 assets in this workspace.</p>
         <button id="asset-inventory-load" type="button" class="secondary">Load imported assets</button>
         <p id="asset-inventory-status" class="fine-print" role="status" aria-live="polite">Asset list not loaded.</p>
-        <p id="asset-inventory-truncated" class="inventory-notice" hidden>Showing the first 100 assets. The full inventory contains more records.</p>
+        <div id="asset-inventory-filters" class="inventory-filters" hidden>
+          <div><label for="asset-inventory-search">Find a loaded asset</label><input id="asset-inventory-search" type="search" autocomplete="off" placeholder="Try: forklift or site-a"></div>
+          <div><label for="asset-inventory-status-filter">Status</label><select id="asset-inventory-status-filter"><option value="all">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option><option value="maintenance">Maintenance</option></select></div>
+        </div>
+        <p id="asset-inventory-count" class="fine-print" role="status" aria-live="polite" hidden></p>
+        <p id="asset-inventory-empty" class="fine-print" hidden>No loaded assets match these filters.</p>
+        <p id="asset-inventory-truncated" class="inventory-notice" hidden>Showing results from the first 100 assets returned. The full workspace inventory contains more records.</p>
         <div class="inventory-table-wrap">
           <table id="asset-inventory-table" hidden>
             <caption class="visually-hidden">Imported assets in this workspace</caption>
