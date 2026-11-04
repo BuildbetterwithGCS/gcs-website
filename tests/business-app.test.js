@@ -158,6 +158,84 @@ test('clears only verified completed checkout state', () => {
 });
 
 
+test('validates a bounded privacy-minimized manager leave queue', () => {
+  const queue = {
+    items: [{
+      request_id: 'leave-1',
+      employee_id: 'employee-1',
+      kind: 'pto',
+      date: '2026-11-12',
+    }],
+    returned: 1,
+    truncated: false,
+  };
+  expect(app.validatedPendingLeaveQueue(queue)).toEqual(queue);
+  for (const invalid of [
+    { ...queue, actor: 'must-not-be-accepted' },
+    { ...queue, returned: 2 },
+    { ...queue, truncated: 'false' },
+    { ...queue, items: [{ ...queue.items[0], role: 'manager' }] },
+    { ...queue, items: [{ ...queue.items[0], kind: 'vacation' }] },
+    { ...queue, items: [{ ...queue.items[0], date: 'November 12' }] },
+    { ...queue, items: Array.from({ length: 101 }, () => queue.items[0]), returned: 101 },
+  ]) {
+    expect(() => app.validatedPendingLeaveQueue(invalid)).toThrow('unavailable');
+  }
+});
+
+test('renders manager leave actions with safe text and explicit decisions', () => {
+  document.body.innerHTML = '<ul id="leave-review-list" hidden></ul>';
+  const onReview = jest.fn();
+  const queue = app.renderPendingLeaveQueue(document, {
+    items: [{
+      request_id: '<leave-1>',
+      employee_id: '<img src=x onerror=alert(1)>',
+      kind: 'sick',
+      date: '2026-11-13',
+    }],
+    returned: 1,
+    truncated: false,
+  }, onReview);
+
+  expect(queue.returned).toBe(1);
+  expect(document.querySelector('img')).toBeNull();
+  expect(document.getElementById('leave-review-list').hidden).toBe(false);
+  expect(document.body.textContent).toContain(
+    'Employee <img src=x onerror=alert(1)>'
+  );
+  const buttons = [...document.querySelectorAll('#leave-review-list button')];
+  expect(buttons.map(button => button.textContent)).toEqual(['Approve', 'Deny']);
+  expect(buttons[0].getAttribute('aria-label')).toContain('employee <img');
+  buttons[0].click();
+  buttons[1].click();
+  expect(onReview.mock.calls).toEqual([
+    ['<leave-1>', true],
+    ['<leave-1>', false],
+  ]);
+});
+
+test('manager leave panel is explicit-load, session-bound, and status accessible', () => {
+  const html = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  expect(html).toMatch(/id="leave-review-load"[^>]*>Load requests to review/);
+  expect(html).toMatch(
+    /id="leave-review-status"[^>]*role="status"[^>]*aria-live="polite"[^>]*tabindex="-1"/
+  );
+  expect(html).toContain('Choose Approve or Deny for one request at a time.');
+  expect(js).toContain("request('/leave/pending')");
+  expect(js).toContain("request('/leave/review', {");
+  expect(js).toContain("body: { request_id: requestId, approve }");
+  const reviewStart = js.indexOf('async function reviewPendingLeave');
+  const reviewEnd = js.indexOf("leaveReviewLoad.addEventListener", reviewStart);
+  const reviewSource = js.slice(reviewStart, reviewEnd);
+  expect(reviewSource).not.toMatch(
+    /tenant|actor|employee_id|provider|billing|password|bank/i
+  );
+  expect((js.match(/request\('\/leave\/pending'\)/g) || [])).toHaveLength(1);
+});
+
 test('validates only non-empty xlsx workbooks within the 5 MB cap', () => {
   const valid = new File(['PK synthetic'], 'assets.xlsx', {
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
