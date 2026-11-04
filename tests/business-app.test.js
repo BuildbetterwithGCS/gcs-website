@@ -937,3 +937,41 @@ test('contextual time-clock help opens directly and remains keyboard accessible'
   expect(guide.querySelector('summary').tabIndex).toBe(0);
   expect(document.getElementById('count').textContent).toMatch(/guides shown/);
 });
+
+
+test('How To center separates subscription selection, handoff, billing, and access', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  const portal = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  expect(portal).toContain('href="../help/#subscription-checkout-guide"');
+  expect(help).toContain('id="subscription-checkout-guide"');
+  expect(help).toContain(
+    'Saving creates a versioned pending selection only; it is not a charge and does not grant access.');
+  expect(help).toContain(
+    'Leaving GCS for a provider page is a handoff, not proof of payment or settlement.');
+  expect(help).toContain(
+    'The recovery keeps the saved selection but uses a fresh retry key; it does not automatically charge anything.');
+  expect(help).toContain(
+    'the old handoff is stale. Save the current selection and begin a new handoff');
+  expect(help).toContain(
+    'Returning from checkout does not activate access.');
+  expect(help).toContain(
+    'active, billing is verified, access is granted, and the required independent approval is complete.');
+  expect(help).toContain(
+    'It does not prove a live checkout, charge, settlement, subscription, or entitlement.');
+});
+
+test('contextual subscription help opens directly and remains keyboard accessible', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  const body = help.slice(help.indexOf('<body>') + 6, help.lastIndexOf('</body>'));
+  document.body.innerHTML = body;
+  window.history.replaceState(
+    null, '', '/business/help/#subscription-checkout-guide');
+  window.eval(document.querySelector('script').textContent);
+  const guide = document.getElementById('subscription-checkout-guide');
+  expect(guide.open).toBe(true);
+  expect(guide.querySelector('summary').tabIndex).toBe(0);
+  expect(document.getElementById('count').textContent).toMatch(/guides shown/);
+});
