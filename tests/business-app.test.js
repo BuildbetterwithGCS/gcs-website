@@ -817,3 +817,47 @@ test('asset filters are accessible, bounded to loaded rows, and never refetch', 
   expect((js.match(/request\('\/assets'\)/g) || [])).toHaveLength(1);
   expect(String(app.filterAssetItems)).not.toMatch(/fetch|request|receipt|workbook|billing|principal/);
 });
+
+
+test('How To center explains assigned-work completion without payroll claims', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  const portal = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  expect(portal).toContain('href="../help/#work-completion-guide"');
+  expect(help).toContain('id="work-completion-guide"');
+  expect(help).toContain('<strong>Load my work</strong>');
+  expect(help).toContain('<strong>Yes, mark complete</strong>');
+  expect(help).toContain('<strong>No, keep open</strong>');
+  expect(help).toContain('does not automatically retry a completion');
+  expect(help).toContain(
+    'It does not approve time, calculate pay, or run payroll.');
+});
+
+test('How To center explains invoice labels without delivery or settlement claims', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  const portal = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  expect(portal).toContain('href="../help/#invoice-status-guide"');
+  expect(help).toContain('id="invoice-status-guide"');
+  expect(help).toContain(
+    '<strong>Issued</strong> is a tracking label. It is not proof that an invoice was delivered.');
+  expect(help).toContain(
+    '<strong>Paid</strong> is a tracking label. It is not proof that money settled.');
+  expect(help).toContain(
+    'does not send an invoice, collect payment, confirm settlement, or post an accounting entry.');
+});
+
+test('contextual work help opens directly and remains keyboard accessible', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  const body = help.slice(help.indexOf('<body>') + 6, help.lastIndexOf('</body>'));
+  document.body.innerHTML = body;
+  window.history.replaceState(null, '', '/business/help/#work-completion-guide');
+  window.eval(document.querySelector('script').textContent);
+  const guide = document.getElementById('work-completion-guide');
+  expect(guide.open).toBe(true);
+  expect(guide.querySelector('summary').tabIndex).toBe(0);
+  expect(document.getElementById('count').textContent).toMatch(/guides shown/);
+});
