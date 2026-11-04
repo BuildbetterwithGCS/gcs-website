@@ -81,6 +81,16 @@
       <label for="customer-name">Customer name</label><input id="customer-name" maxlength="200" required>
       <label for="amount">Amount in dollars</label><input id="amount" inputmode="decimal" placeholder="125.00" required><button type="submit">Save draft</button></form>
       <p class="fine-print">Saving a draft does not send an invoice or collect payment.</p>
+      <section class="invoice-list" aria-labelledby="invoice-list-heading">
+        <h3 id="invoice-list-heading">Invoice drafts and status</h3>
+        <p>Load up to 100 invoice tracking records for this workspace.</p>
+        <p class="invoice-boundary" role="note"><strong>Tracking only:</strong> A status shown here does not send an invoice, collect payment, confirm settlement, or post an accounting entry.</p>
+        <button id="invoice-list-load" type="button" class="secondary">Load invoice list</button>
+        <p id="invoice-list-status" class="fine-print" role="status" aria-live="polite" tabindex="-1">Invoice list not loaded.</p>
+        <p id="invoice-list-empty" class="fine-print" hidden>No invoice tracking records are available.</p>
+        <p id="invoice-list-truncated" class="inventory-notice" hidden>Showing the first 100 invoice records. More records are available.</p>
+        <ul id="invoice-list-items" class="invoice-list-items" hidden></ul>
+      </section>
     </section>
 
     <section id="assets" class="panel" aria-labelledby="assets-heading">
