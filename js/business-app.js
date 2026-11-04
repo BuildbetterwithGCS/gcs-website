@@ -327,6 +327,93 @@
     return value;
   }
 
+  function validatedAssignedWorkQueue(queue) {
+    const exactKeys = (value, keys) => value
+      && typeof value === 'object'
+      && !Array.isArray(value)
+      && Object.keys(value).sort().join('|') === keys.slice().sort().join('|');
+    if (!exactKeys(queue, ['items', 'returned', 'truncated'])
+      || !Array.isArray(queue.items)
+      || queue.items.length > 100
+      || !Number.isInteger(queue.returned)
+      || queue.returned !== queue.items.length
+      || typeof queue.truncated !== 'boolean') {
+      throw new Error('Assigned work orders are unavailable');
+    }
+    const items = queue.items.map(item => {
+      if (!exactKeys(item, ['work_order_id', 'title', 'status'])
+        || typeof item.work_order_id !== 'string'
+        || item.work_order_id.length < 1 || item.work_order_id.length > 128
+        || typeof item.title !== 'string'
+        || item.title.length < 1 || item.title.length > 200
+        || item.status !== 'open') {
+        throw new Error('Assigned work orders are unavailable');
+      }
+      return {
+        work_order_id: item.work_order_id,
+        title: item.title,
+        status: item.status,
+      };
+    });
+    return { items, returned: queue.returned, truncated: queue.truncated };
+  }
+
+  function renderAssignedWorkQueue(doc, queue, onComplete) {
+    if (typeof onComplete !== 'function') {
+      throw new Error('Assigned work orders are unavailable');
+    }
+    const value = validatedAssignedWorkQueue(queue);
+    const list = doc.getElementById('work-queue-list');
+    list.replaceChildren();
+    for (const item of value.items) {
+      const row = doc.createElement('li');
+      row.className = 'work-queue-item';
+      const title = doc.createElement('p');
+      const strong = doc.createElement('strong');
+      strong.textContent = item.title;
+      title.appendChild(strong);
+      const detail = doc.createElement('p');
+      detail.textContent = 'Open work order';
+      const mark = doc.createElement('button');
+      mark.type = 'button';
+      mark.textContent = 'Mark complete';
+      mark.setAttribute('aria-label', 'Mark ' + item.title + ' complete');
+      const confirmation = doc.createElement('div');
+      confirmation.className = 'work-confirmation';
+      confirmation.hidden = true;
+      const prompt = doc.createElement('p');
+      prompt.textContent = 'Is this work finished?';
+      const actions = doc.createElement('div');
+      actions.className = 'work-confirmation-actions';
+      const confirm = doc.createElement('button');
+      confirm.type = 'button';
+      confirm.textContent = 'Yes, mark complete';
+      confirm.setAttribute('aria-label', 'Confirm ' + item.title + ' is complete');
+      const cancel = doc.createElement('button');
+      cancel.type = 'button';
+      cancel.className = 'cancel';
+      cancel.textContent = 'No, keep open';
+      cancel.setAttribute('aria-label', 'Keep ' + item.title + ' open');
+      mark.addEventListener('click', () => {
+        mark.hidden = true;
+        confirmation.hidden = false;
+        confirm.focus();
+      });
+      cancel.addEventListener('click', () => {
+        confirmation.hidden = true;
+        mark.hidden = false;
+        mark.focus();
+      });
+      confirm.addEventListener('click', () => onComplete(item.work_order_id));
+      actions.append(confirm, cancel);
+      confirmation.append(prompt, actions);
+      row.append(title, detail, mark, confirmation);
+      list.appendChild(row);
+    }
+    list.hidden = value.returned === 0;
+    return value;
+  }
+
   function renderAssetRows(doc, items) {
     const rows = doc.getElementById('asset-inventory-rows');
     const labels = {
@@ -573,6 +660,69 @@
     }
 
     leaveReviewLoad.addEventListener('click', () => loadPendingLeaveQueue());
+
+    const workQueueLoad = doc.getElementById('work-queue-load');
+    const workQueueStatus = doc.getElementById('work-queue-status');
+    const workQueueList = doc.getElementById('work-queue-list');
+    const workQueueEmpty = doc.getElementById('work-queue-empty');
+    const workQueueTruncated = doc.getElementById('work-queue-truncated');
+
+    function clearAssignedWorkQueue() {
+      workQueueList.replaceChildren();
+      workQueueList.hidden = true;
+      workQueueEmpty.hidden = true;
+      workQueueTruncated.hidden = true;
+    }
+
+    async function loadAssignedWorkQueue(successPrefix = '') {
+      workQueueLoad.disabled = true;
+      clearAssignedWorkQueue();
+      workQueueStatus.textContent = 'Loading your work…';
+      try {
+        const queue = renderAssignedWorkQueue(
+          doc,
+          await request('/work-orders'),
+          completeAssignedWork,
+        );
+        workQueueEmpty.hidden = queue.returned !== 0;
+        workQueueTruncated.hidden = !queue.truncated;
+        workQueueStatus.textContent = successPrefix
+          ? successPrefix + ' ' + queue.returned + ' open work order(s).'
+          : queue.returned + ' open work order(s) assigned to you.';
+        workQueueLoad.textContent = 'Refresh my work';
+        return queue;
+      } catch (error) {
+        clearAssignedWorkQueue();
+        workQueueStatus.textContent = error && (error.status === 401 || error.status === 403)
+          ? 'Your secure session does not allow this work list.'
+          : 'Your work orders are not available yet. Try again later.';
+        return null;
+      } finally {
+        workQueueLoad.disabled = false;
+      }
+    }
+
+    async function completeAssignedWork(workOrderId) {
+      workQueueList.querySelectorAll('button').forEach(button => {
+        button.disabled = true;
+      });
+      workQueueStatus.textContent = 'Marking this work complete…';
+      try {
+        await request('/work-orders/complete', {
+          method: 'POST',
+          body: { item_id: workOrderId },
+        });
+        await loadAssignedWorkQueue('Work marked complete.');
+      } catch (error) {
+        clearAssignedWorkQueue();
+        workQueueStatus.textContent = error && (error.status === 401 || error.status === 403)
+          ? 'Your secure session does not allow this work list.'
+          : 'Completion was not confirmed. Load your work again before trying another action.';
+      }
+      workQueueStatus.focus();
+    }
+
+    workQueueLoad.addEventListener('click', () => loadAssignedWorkQueue());
 
     doc.getElementById('work-form').addEventListener('submit', event => {
       event.preventDefault();
@@ -884,5 +1034,6 @@
     clearAssetPreview, canCommitAssetPreview, assetFailureMessage,
     dashboardSummaryValues, validatedAssetInventory, filterAssetItems,
     validatedPendingLeaveQueue, renderPendingLeaveQueue,
+    validatedAssignedWorkQueue, renderAssignedWorkQueue,
     clearAssetFilters, renderAssetRows, renderAssetInventory, request, init };
 });
