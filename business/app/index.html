@@ -58,9 +58,21 @@
     </section>
 
     <section id="work" class="panel" aria-labelledby="work-heading">
-      <p class="step">Manager task</p><h2 id="work-heading">Create a work order</h2>
-      <form id="work-form"><label for="work-title">What needs to be done?</label><input id="work-title" maxlength="200" required>
-      <label for="assignee">Employee ID</label><input id="assignee" maxlength="200" required><button type="submit">Assign work</button></form>
+      <h2 id="work-heading">Work orders</h2>
+      <section class="work-queue" aria-labelledby="work-queue-heading">
+        <p class="step">Employee task</p><h3 id="work-queue-heading">My work</h3>
+        <p>Load open work orders assigned to you. Mark one complete only after the work is finished.</p>
+        <button id="work-queue-load" type="button" class="secondary">Load my work</button>
+        <p id="work-queue-status" class="fine-print" role="status" aria-live="polite" tabindex="-1">Work orders not loaded.</p>
+        <p id="work-queue-empty" class="fine-print" hidden>No open work orders are assigned to you.</p>
+        <p id="work-queue-truncated" class="inventory-notice" hidden>Showing the first 100 open work orders. More work is assigned to you.</p>
+        <ul id="work-queue-list" class="work-queue-list" hidden></ul>
+      </section>
+      <section class="work-create" aria-labelledby="work-create-heading">
+        <p class="step">Manager task</p><h3 id="work-create-heading">Create a work order</h3>
+        <form id="work-form"><label for="work-title">What needs to be done?</label><input id="work-title" maxlength="200" required>
+        <label for="assignee">Employee ID</label><input id="assignee" maxlength="200" required><button type="submit">Assign work</button></form>
+      </section>
     </section>
 
     <section id="invoices" class="panel" aria-labelledby="invoice-heading">
