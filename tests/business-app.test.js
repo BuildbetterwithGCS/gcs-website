@@ -522,3 +522,38 @@ test('asset list is explicit-load, read-only, and clears stale rows after import
   expect(js).toContain("assetInventoryStatus.textContent = 'Assets changed. Load the list again.'");
   expect(String(app.renderAssetInventory)).not.toMatch(/innerHTML|receipt|workbook|billing|principal/);
 });
+
+
+test('loaded asset filters combine search words and fixed status locally', () => {
+  const items = [
+    { asset_id: 'fork-1', asset_name: 'Main Forklift', site_id: 'site-a', status: 'active' },
+    { asset_id: 'gen-2', asset_name: 'Backup Generator', site_id: 'site-b', status: 'maintenance' },
+    { asset_id: 'old-3', asset_name: 'Old Pump', site_id: '', status: 'inactive' },
+  ];
+  expect(app.filterAssetItems(items, 'site-a forklift', 'all'))
+    .toEqual([items[0]]);
+  expect(app.filterAssetItems(items, 'generator', 'maintenance'))
+    .toEqual([items[1]]);
+  expect(app.filterAssetItems(items, '', 'inactive'))
+    .toEqual([items[2]]);
+  expect(app.filterAssetItems(items, 'missing', 'all')).toEqual([]);
+  expect(() => app.filterAssetItems(items, '', 'unknown')).toThrow('unavailable');
+  expect(() => app.filterAssetItems(Array.from({ length: 101 }, () => items[0]), '', 'all'))
+    .toThrow('unavailable');
+});
+
+test('asset filters are accessible, bounded to loaded rows, and never refetch', () => {
+  const html = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  expect(html).toMatch(/<label for="asset-inventory-search">Find a loaded asset<\/label>/);
+  expect(html).toMatch(/<label for="asset-inventory-status-filter">Status<\/label>/);
+  expect(html).toMatch(/id="asset-inventory-count"[^>]*role="status"[^>]*aria-live="polite"/);
+  expect(html).toContain('Showing results from the first 100 assets returned.');
+  expect(html).toContain('The full workspace inventory contains more records.');
+  expect(js).toContain("assetInventorySearch.addEventListener('input', applyAssetInventoryFilters)");
+  expect(js).toContain("assetInventoryStatusFilter.addEventListener('change', applyAssetInventoryFilters)");
+  expect((js.match(/request\('\/assets'\)/g) || [])).toHaveLength(1);
+  expect(String(app.filterAssetItems)).not.toMatch(/fetch|request|receipt|workbook|billing|principal/);
+});
