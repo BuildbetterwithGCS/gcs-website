@@ -69,7 +69,19 @@
 <p><strong>Tracking only:</strong> Loading or reading this list does not send an invoice, collect payment, confirm settlement, or post an accounting entry.</p>
 </details>
 <details data-keywords="invoice estimate bill payment prepare draft"><summary>Prepare an invoice</summary><ol><li>Open Invoices and create a draft for a completed job.</li><li>Review customer details, line items, and totals.</li><li>Save the draft for authorized review.</li><li>Invoice delivery, payment collection and settlement are not yet live capabilities.</li></ol></details>
-<details data-keywords="plans pricing subscription modules users"><summary>Choose a subscription plan</summary><ol><li>Review Core, modular and Complete options when offered.</li><li>Select the tools and user allowance your team needs.</li><li>Review the non-binding monthly estimate.</li><li>Only a verified provider payment and server-side entitlement process can activate paid access.</li></ol></details>
+<details id="subscription-checkout-guide" data-keywords="plans pricing subscription modules users selection save checkout handoff provider billing verified entitlement active access expired stale retry">
+<summary>Choose tools and continue to checkout</summary>
+<ol>
+<li>Choose the package, modules, and number of people who need access, then select <strong>Save selection</strong>.</li>
+<li>Review the saved selection before continuing. Saving creates a versioned pending selection only; it is not a charge and does not grant access.</li>
+<li>Select <strong>Continue to secure checkout</strong> only after the exact current selection is saved. The first step creates or resumes a local handoff bound to that selection.</li>
+<li>Continue only if the authenticated server provides an approved HTTPS checkout destination. Leaving GCS for a provider page is a handoff, not proof of payment or settlement.</li>
+<li>If the handoff expires, return to the workspace and retry only when the server reports it expired. The recovery keeps the saved selection but uses a fresh retry key; it does not automatically charge anything.</li>
+<li>If the package, modules, user limit, or pricing terms changed, the old handoff is stale. Save the current selection and begin a new handoff; do not continue from the old provider page.</li>
+<li>Returning from checkout does not activate access. Wait until the authenticated server reports the subscription is active, billing is verified, access is granted, and the required independent approval is complete.</li>
+</ol>
+<p><strong>Preview boundary:</strong> The current protected preview uses synthetic provider data. It does not prove a live checkout, charge, settlement, subscription, or entitlement.</p>
+</details>
 <details id="asset-spreadsheet-guide" data-keywords="asset assets excel xlsx spreadsheet template upload preview check errors error list receipt expired expiry confirm confirmation import insert only add new dashboard total">
 <summary>Bring in an asset spreadsheet</summary>
 <ol>
