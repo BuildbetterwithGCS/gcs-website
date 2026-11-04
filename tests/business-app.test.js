@@ -542,6 +542,30 @@ test('loaded asset filters combine search words and fixed status locally', () =>
     .toThrow('unavailable');
 });
 
+test('clear asset filters restores all loaded rows and keyboard focus locally', () => {
+  document.body.innerHTML = `
+    <input id="asset-inventory-search" type="search" value="forklift">
+    <select id="asset-inventory-status-filter">
+      <option value="all">All statuses</option>
+      <option value="maintenance" selected>Maintenance</option>
+    </select>
+    <button id="asset-inventory-clear" type="button">Clear filters</button>`;
+  const search = document.getElementById('asset-inventory-search');
+  const status = document.getElementById('asset-inventory-status-filter');
+  const clear = document.getElementById('asset-inventory-clear');
+  const apply = jest.fn();
+
+  app.clearAssetFilters(search, status, clear, apply);
+
+  expect(search.value).toBe('');
+  expect(status.value).toBe('all');
+  expect(clear.disabled).toBe(true);
+  expect(apply).toHaveBeenCalledTimes(1);
+  expect(document.activeElement).toBe(search);
+  expect(() => app.clearAssetFilters(null, status, clear, apply))
+    .toThrow('unavailable');
+});
+
 test('asset filters are accessible, bounded to loaded rows, and never refetch', () => {
   const html = fs.readFileSync(
     path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
@@ -549,11 +573,14 @@ test('asset filters are accessible, bounded to loaded rows, and never refetch', 
     path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
   expect(html).toMatch(/<label for="asset-inventory-search">Find a loaded asset<\/label>/);
   expect(html).toMatch(/<label for="asset-inventory-status-filter">Status<\/label>/);
+  expect(html).toMatch(/id="asset-inventory-clear"[^>]*type="button"[^>]*disabled>Clear filters<\/button>/);
   expect(html).toMatch(/id="asset-inventory-count"[^>]*role="status"[^>]*aria-live="polite"/);
   expect(html).toContain('Showing results from the first 100 assets returned.');
   expect(html).toContain('The full workspace inventory contains more records.');
   expect(js).toContain("assetInventorySearch.addEventListener('input', applyAssetInventoryFilters)");
   expect(js).toContain("assetInventoryStatusFilter.addEventListener('change', applyAssetInventoryFilters)");
+  expect(js).toContain("assetInventoryClear.addEventListener('click'");
+  expect(js).toContain('clearAssetFilters(');
   expect((js.match(/request\('\/assets'\)/g) || [])).toHaveLength(1);
   expect(String(app.filterAssetItems)).not.toMatch(/fetch|request|receipt|workbook|billing|principal/);
 });
