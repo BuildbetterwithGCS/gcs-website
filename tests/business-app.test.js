@@ -1009,7 +1009,7 @@ test('How To center bounds saved dashboard refresh and summary claims', () => {
   expect(help).toContain(
     'The page clears the old figures before requesting new ones');
   expect(help).toContain(
-    'The totals remain as dashes. Sign in again, confirm the correct workspace');
+    'the totals remain as dashes. Sign in again, confirm the correct workspace');
   expect(help).toContain(
     'It does not display asset rows, workbook contents, receipt details, or who imported them.');
   expect(help).toContain(
