@@ -651,6 +651,7 @@ test('browser-level asset help supports direct links, search recovery, and keybo
   const guide = document.getElementById('asset-spreadsheet-guide');
   const count = document.getElementById('count');
   const empty = document.getElementById('empty');
+  const guideTotal = document.querySelectorAll('#guides details').length;
 
   expect(portal).toContain('href="../help/#asset-spreadsheet-guide"');
   expect(guide.open).toBe(true);
@@ -661,18 +662,18 @@ test('browser-level asset help supports direct links, search recovery, and keybo
   input.value = 'expired receipt';
   input.dispatchEvent(new Event('input'));
   expect(guide.hidden).toBe(false);
-  expect(count.textContent).toBe('1 of 9 guides shown');
+  expect(count.textContent).toBe('1 of ' + guideTotal + ' guides shown');
   expect([...document.querySelectorAll('#guides details')]
     .filter(item => !item.hidden)).toEqual([guide]);
 
   input.value = 'no matching task';
   input.dispatchEvent(new Event('input'));
-  expect(count.textContent).toBe('0 of 9 guides shown');
+  expect(count.textContent).toBe('0 of ' + guideTotal + ' guides shown');
   expect(empty.hidden).toBe(false);
 
   input.value = '';
   input.dispatchEvent(new Event('input'));
-  expect(count.textContent).toBe('9 of 9 guides shown');
+  expect(count.textContent).toBe(guideTotal + ' of ' + guideTotal + ' guides shown');
   expect(empty.hidden).toBe(true);
 });
 
