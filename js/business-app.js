@@ -334,7 +334,81 @@
     }
     const dollars = String(Math.floor(amountCents / 100))
       .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return '    const exactKeys = (value, keys) => value
+    return '$' + dollars + '.' + String(amountCents % 100).padStart(2, '0');
+  }
+
+  function validatedInvoiceSummaries(page) {
+    const exactKeys = (value, keys) => value
+      && typeof value === 'object'
+      && !Array.isArray(value)
+      && Object.keys(value).sort().join('|') === keys.slice().sort().join('|');
+    if (!exactKeys(page, ['items', 'returned', 'truncated'])
+      || !Array.isArray(page.items)
+      || page.items.length > 100
+      || !Number.isInteger(page.returned)
+      || page.returned !== page.items.length
+      || typeof page.truncated !== 'boolean') {
+      throw new Error('Invoice summaries are unavailable');
+    }
+    const statuses = new Set(['draft', 'issued', 'paid', 'void']);
+    const items = page.items.map(item => {
+      const date = typeof item.due_date === 'string'
+        && /^\d{4}-\d{2}-\d{2}$/.test(item.due_date)
+        ? new Date(item.due_date + 'T00:00:00Z') : null;
+      const validDate = date
+        && !Number.isNaN(date.getTime())
+        && date.toISOString().slice(0, 10) === item.due_date;
+      if (!exactKeys(item, [
+        'invoice_id', 'customer_label', 'amount_cents', 'due_date', 'status',
+      ])
+        || typeof item.invoice_id !== 'string'
+        || item.invoice_id.length < 1 || item.invoice_id.length > 128
+        || typeof item.customer_label !== 'string'
+        || item.customer_label.length < 1 || item.customer_label.length > 160
+        || !Number.isInteger(item.amount_cents)
+        || item.amount_cents < 0 || item.amount_cents > 1000000000
+        || !validDate
+        || !statuses.has(item.status)) {
+        throw new Error('Invoice summaries are unavailable');
+      }
+      return {
+        invoice_id: item.invoice_id,
+        customer_label: item.customer_label,
+        amount_cents: item.amount_cents,
+        due_date: item.due_date,
+        status: item.status,
+      };
+    });
+    return { items, returned: page.returned, truncated: page.truncated };
+  }
+
+  function renderInvoiceSummaries(doc, page) {
+    const value = validatedInvoiceSummaries(page);
+    const list = doc.getElementById('invoice-list-items');
+    const labels = { draft: 'Draft', issued: 'Issued', paid: 'Paid', void: 'Void' };
+    list.replaceChildren();
+    for (const item of value.items) {
+      const row = doc.createElement('li');
+      row.className = 'invoice-list-item';
+      const customer = doc.createElement('p');
+      const strong = doc.createElement('strong');
+      strong.textContent = item.customer_label;
+      customer.appendChild(strong);
+      const amount = doc.createElement('p');
+      amount.textContent = formatInvoiceAmount(item.amount_cents);
+      const due = doc.createElement('p');
+      due.textContent = 'Due ' + item.due_date;
+      const status = doc.createElement('p');
+      status.textContent = labels[item.status] + ' · tracking only';
+      row.append(customer, amount, due, status);
+      list.appendChild(row);
+    }
+    list.hidden = value.returned === 0;
+    return value;
+  }
+
+  function validatedAssignedWorkQueue(queue) {
+    const exactKeys = (value, keys) => value
       && typeof value === 'object'
       && !Array.isArray(value)
       && Object.keys(value).sort().join('|') === keys.slice().sort().join('|');
