@@ -862,3 +862,34 @@ test('contextual work help opens directly and remains keyboard accessible', () =
   expect(guide.querySelector('summary').tabIndex).toBe(0);
   expect(document.getElementById('count').textContent).toMatch(/guides shown/);
 });
+
+
+test('How To center bounds manager leave decisions and access recovery', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  const portal = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  expect(portal).toContain('href="../help/#manager-leave-review-guide"');
+  expect(help).toContain('id="manager-leave-review-guide"');
+  expect(help).toContain('<strong>Load requests to review</strong>');
+  expect(help).toContain('<strong>Approve</strong>');
+  expect(help).toContain('<strong>Deny</strong>');
+  expect(help).toContain(
+    'The page does not automatically retry an approval or denial.');
+  expect(help).toContain(
+    'It does not change payroll, guarantee a paid balance, calculate overtime, or prove policy compliance.');
+});
+
+test('contextual manager leave help opens directly and remains keyboard accessible', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  const body = help.slice(help.indexOf('<body>') + 6, help.lastIndexOf('</body>'));
+  document.body.innerHTML = body;
+  window.history.replaceState(
+    null, '', '/business/help/#manager-leave-review-guide');
+  window.eval(document.querySelector('script').textContent);
+  const guide = document.getElementById('manager-leave-review-guide');
+  expect(guide.open).toBe(true);
+  expect(guide.querySelector('summary').tabIndex).toBe(0);
+  expect(document.getElementById('count').textContent).toMatch(/guides shown/);
+});
