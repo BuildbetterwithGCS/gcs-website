@@ -457,6 +457,7 @@
     const assetInventoryFilters = doc.getElementById('asset-inventory-filters');
     const assetInventorySearch = doc.getElementById('asset-inventory-search');
     const assetInventoryStatusFilter = doc.getElementById('asset-inventory-status-filter');
+    const assetInventoryClear = doc.getElementById('asset-inventory-clear');
     const assetInventoryCount = doc.getElementById('asset-inventory-count');
     const assetInventoryEmpty = doc.getElementById('asset-inventory-empty');
 
@@ -579,6 +580,7 @@
         assetInventoryEmpty.hidden = true;
         assetInventorySearch.value = '';
         assetInventoryStatusFilter.value = 'all';
+        assetInventoryClear.disabled = true;
         assetInventoryStatus.textContent = 'Assets changed. Load the list again.';
         return imported;
       }, 'New assets added. Dashboard refreshed.')
@@ -601,10 +603,19 @@
       assetInventoryCount.hidden = false;
       assetInventoryCount.textContent = filtered.length + ' of '
         + loadedAssetInventory.returned + ' loaded asset(s) shown.';
+      assetInventoryClear.disabled = !assetInventorySearch.value.trim()
+        && assetInventoryStatusFilter.value === 'all';
     }
 
     assetInventorySearch.addEventListener('input', applyAssetInventoryFilters);
     assetInventoryStatusFilter.addEventListener('change', applyAssetInventoryFilters);
+    assetInventoryClear.addEventListener('click', () => {
+      if (!loadedAssetInventory || assetInventoryClear.disabled) return;
+      assetInventorySearch.value = '';
+      assetInventoryStatusFilter.value = 'all';
+      applyAssetInventoryFilters();
+      assetInventorySearch.focus();
+    });
 
     assetInventoryLoad.addEventListener('click', async () => {
       assetInventoryLoad.disabled = true;
@@ -614,6 +625,7 @@
       assetInventoryRows.replaceChildren();
       loadedAssetInventory = null;
       assetInventoryFilters.hidden = true;
+      assetInventoryClear.disabled = true;
       assetInventoryCount.hidden = true;
       assetInventoryEmpty.hidden = true;
       try {
