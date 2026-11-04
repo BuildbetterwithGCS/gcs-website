@@ -223,16 +223,29 @@
     return { items, returned: inventory.returned, truncated: inventory.truncated };
   }
 
-  function renderAssetInventory(doc, inventory) {
-    const value = validatedAssetInventory(inventory);
+  function filterAssetItems(items, query = '', status = 'all') {
+    if (!Array.isArray(items) || items.length > 100
+      || typeof query !== 'string'
+      || !['all', 'active', 'inactive', 'maintenance'].includes(status)) {
+      throw new Error('Asset filters are unavailable');
+    }
+    const terms = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+    return items.filter(item => {
+      if (status !== 'all' && item.status !== status) return false;
+      const haystack = [
+        item.asset_name, item.asset_id, item.site_id, item.status,
+      ].join(' ').toLocaleLowerCase();
+      return terms.every(term => haystack.includes(term));
+    });
+  }
+
+  function renderAssetRows(doc, items) {
     const rows = doc.getElementById('asset-inventory-rows');
-    const table = doc.getElementById('asset-inventory-table');
-    const truncated = doc.getElementById('asset-inventory-truncated');
     const labels = {
       active: 'Active', inactive: 'Inactive', maintenance: 'Maintenance',
     };
     rows.replaceChildren();
-    for (const item of value.items) {
+    for (const item of items) {
       const row = doc.createElement('tr');
       for (const text of [
         item.asset_name, item.asset_id, item.site_id || 'No site', labels[item.status],
@@ -243,6 +256,13 @@
       }
       rows.appendChild(row);
     }
+  }
+
+  function renderAssetInventory(doc, inventory) {
+    const value = validatedAssetInventory(inventory);
+    const table = doc.getElementById('asset-inventory-table');
+    const truncated = doc.getElementById('asset-inventory-truncated');
+    renderAssetRows(doc, value.items);
     table.hidden = value.returned === 0;
     truncated.hidden = !value.truncated;
     return value;
@@ -333,6 +353,7 @@
     let assetWorkbook = null;
     let assetPreviewReady = false;
     let assetCommitPending = false;
+    let loadedAssetInventory = null;
 
     function message(text, error = false) {
       status.textContent = text;
@@ -433,6 +454,11 @@
     const assetInventoryTable = doc.getElementById('asset-inventory-table');
     const assetInventoryRows = doc.getElementById('asset-inventory-rows');
     const assetInventoryTruncated = doc.getElementById('asset-inventory-truncated');
+    const assetInventoryFilters = doc.getElementById('asset-inventory-filters');
+    const assetInventorySearch = doc.getElementById('asset-inventory-search');
+    const assetInventoryStatusFilter = doc.getElementById('asset-inventory-status-filter');
+    const assetInventoryCount = doc.getElementById('asset-inventory-count');
+    const assetInventoryEmpty = doc.getElementById('asset-inventory-empty');
 
     async function assetRun(action, success) {
       try {
@@ -544,9 +570,15 @@
         assetPreviewReady = false;
         clearAssetPreview(doc);
         await refresh();
+        loadedAssetInventory = null;
         assetInventoryRows.replaceChildren();
         assetInventoryTable.hidden = true;
         assetInventoryTruncated.hidden = true;
+        assetInventoryFilters.hidden = true;
+        assetInventoryCount.hidden = true;
+        assetInventoryEmpty.hidden = true;
+        assetInventorySearch.value = '';
+        assetInventoryStatusFilter.value = 'all';
         assetInventoryStatus.textContent = 'Assets changed. Load the list again.';
         return imported;
       }, 'New assets added. Dashboard refreshed.')
@@ -555,18 +587,46 @@
 
 
 
+    function applyAssetInventoryFilters() {
+      if (!loadedAssetInventory) return;
+      const filtered = filterAssetItems(
+        loadedAssetInventory.items,
+        assetInventorySearch.value,
+        assetInventoryStatusFilter.value,
+      );
+      renderAssetRows(doc, filtered);
+      assetInventoryTable.hidden = filtered.length === 0;
+      assetInventoryEmpty.hidden = filtered.length !== 0
+        || loadedAssetInventory.returned === 0;
+      assetInventoryCount.hidden = false;
+      assetInventoryCount.textContent = filtered.length + ' of '
+        + loadedAssetInventory.returned + ' loaded asset(s) shown.';
+    }
+
+    assetInventorySearch.addEventListener('input', applyAssetInventoryFilters);
+    assetInventoryStatusFilter.addEventListener('change', applyAssetInventoryFilters);
+
     assetInventoryLoad.addEventListener('click', async () => {
       assetInventoryLoad.disabled = true;
       assetInventoryStatus.textContent = 'Loading imported assets…';
       assetInventoryTable.hidden = true;
       assetInventoryTruncated.hidden = true;
       assetInventoryRows.replaceChildren();
+      loadedAssetInventory = null;
+      assetInventoryFilters.hidden = true;
+      assetInventoryCount.hidden = true;
+      assetInventoryEmpty.hidden = true;
       try {
         const inventory = renderAssetInventory(doc, await request('/assets'));
+        loadedAssetInventory = inventory;
+        assetInventorySearch.value = '';
+        assetInventoryStatusFilter.value = 'all';
+        assetInventoryFilters.hidden = inventory.returned === 0;
         assetInventoryStatus.textContent = inventory.returned === 0
           ? 'No imported assets yet.'
-          : inventory.returned + ' imported asset(s) shown.';
+          : inventory.returned + ' imported asset(s) loaded.';
         assetInventoryLoad.textContent = 'Refresh imported assets';
+        applyAssetInventoryFilters();
       } catch (error) {
         assetInventoryStatus.textContent = error && (error.status === 401 || error.status === 403)
           ? 'Your secure session does not allow this asset list.'
@@ -653,6 +713,6 @@
     subscriptionIsVerifiedActive, clearCompletedCheckout,
     retryExpiredCheckout, validateAssetWorkbook, assetRequest, saveDownload,
     clearAssetPreview, canCommitAssetPreview, assetFailureMessage,
-    dashboardSummaryValues, validatedAssetInventory, renderAssetInventory,
-    request, init };
+    dashboardSummaryValues, validatedAssetInventory, filterAssetItems,
+    renderAssetRows, renderAssetInventory, request, init };
 });
