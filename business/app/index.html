@@ -46,6 +46,15 @@
       <p class="step">Employee task</p><h2 id="leave-heading">Request time off</h2>
       <form id="leave-form"><label for="leave-kind">Type</label><select id="leave-kind"><option value="pto">PTO</option><option value="sick">Sick</option><option value="unpaid">Unpaid</option></select>
       <label for="leave-date">Date</label><input id="leave-date" type="date" required><button type="submit">Send request</button></form>
+      <section class="leave-review" aria-labelledby="leave-review-heading">
+        <p class="step">Manager task</p><h3 id="leave-review-heading">Review time off</h3>
+        <p>Load requests waiting for a manager. Choose Approve or Deny for one request at a time.</p>
+        <button id="leave-review-load" type="button" class="secondary">Load requests to review</button>
+        <p id="leave-review-status" class="fine-print" role="status" aria-live="polite" tabindex="-1">Requests not loaded.</p>
+        <p id="leave-review-empty" class="fine-print" hidden>No time-off requests are waiting for review.</p>
+        <p id="leave-review-truncated" class="inventory-notice" hidden>Showing the first 100 requests. More requests are waiting.</p>
+        <ul id="leave-review-list" class="leave-review-list" hidden></ul>
+      </section>
     </section>
 
     <section id="work" class="panel" aria-labelledby="work-heading">
