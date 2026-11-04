@@ -24,9 +24,9 @@ The guide and workspace repeat that loading or reading the list does not send an
 
 ## Verification
 
-- Executable head `0e9a937b32a4cb043f9a0fb09ff61700121edaea`.
-- GitHub Actions CI [41899735183](https://github.com/BuildbetterwithGCS/gcs-website/actions/runs/41899735183): **passed**.
-- Netlify deploy preview `6aeb8aed15d4e330e10fba13`: **ready**, exact commit ref `0e9a937b32a4cb043f9a0fb09ff61700121edaea`, context `deploy-preview`, not published.
+- Executable head `0e9a937b32a4cb043f9a0fb09ff61700121edaea`; GitHub Actions CI [41899735183](https://github.com/BuildbetterwithGCS/gcs-website/actions/runs/41899735183): **passed**.
+- Checkpoint head `851683eb1ed33585b6078d6dcd2f48bc602fed83`; checkpoint CI [41900179327](https://github.com/BuildbetterwithGCS/gcs-website/actions/runs/41900179327): **passed**.
+- Netlify deploy preview `6aeb8b270730061f2ffc7f2b`: **ready**, exact commit ref `851683eb1ed33585b6078d6dcd2f48bc602fed83`, context `deploy-preview`, not published.
 - Non-production Netlify access remains protected by team SSO.
 - Published production remains the unchanged ready deploy `6ae0b30c050624f6d7a81d67`.
 
