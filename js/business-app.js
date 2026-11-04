@@ -178,6 +178,76 @@
     ];
   }
 
+
+  function validatedAssetInventory(inventory) {
+    if (!inventory || typeof inventory !== 'object' || Array.isArray(inventory)) {
+      throw new Error('Asset list is unavailable');
+    }
+    const topFields = new Set(['schema_version', 'items', 'returned', 'truncated']);
+    if (Object.keys(inventory).some(key => !topFields.has(key))
+      || typeof inventory.schema_version !== 'string'
+      || inventory.schema_version.length < 1
+      || inventory.schema_version.length > 40
+      || !Array.isArray(inventory.items)
+      || inventory.items.length > 100
+      || !Number.isInteger(inventory.returned)
+      || inventory.returned !== inventory.items.length
+      || typeof inventory.truncated !== 'boolean') {
+      throw new Error('Asset list is unavailable');
+    }
+    const itemFields = new Set([
+      'asset_id', 'asset_name', 'site_id', 'status', 'source', 'committed_at',
+    ]);
+    const allowedStatuses = new Set(['active', 'inactive', 'maintenance']);
+    const items = inventory.items.map(item => {
+      if (!item || typeof item !== 'object' || Array.isArray(item)
+        || Object.keys(item).some(key => !itemFields.has(key))
+        || typeof item.asset_id !== 'string' || !item.asset_id
+        || item.asset_id.length > 200
+        || typeof item.asset_name !== 'string' || !item.asset_name
+        || item.asset_name.length > 200
+        || typeof item.site_id !== 'string' || item.site_id.length > 200
+        || !allowedStatuses.has(item.status)
+        || item.source !== 'xlsx-import'
+        || typeof item.committed_at !== 'string'
+        || !Number.isFinite(Date.parse(item.committed_at))) {
+        throw new Error('Asset list is unavailable');
+      }
+      return {
+        asset_id: item.asset_id,
+        asset_name: item.asset_name,
+        site_id: item.site_id,
+        status: item.status,
+      };
+    });
+    return { items, returned: inventory.returned, truncated: inventory.truncated };
+  }
+
+  function renderAssetInventory(doc, inventory) {
+    const value = validatedAssetInventory(inventory);
+    const rows = doc.getElementById('asset-inventory-rows');
+    const table = doc.getElementById('asset-inventory-table');
+    const truncated = doc.getElementById('asset-inventory-truncated');
+    const labels = {
+      active: 'Active', inactive: 'Inactive', maintenance: 'Maintenance',
+    };
+    rows.replaceChildren();
+    for (const item of value.items) {
+      const row = doc.createElement('tr');
+      for (const text of [
+        item.asset_name, item.asset_id, item.site_id || 'No site', labels[item.status],
+      ]) {
+        const cell = doc.createElement('td');
+        cell.textContent = text;
+        row.appendChild(cell);
+      }
+      rows.appendChild(row);
+    }
+    table.hidden = value.returned === 0;
+    truncated.hidden = !value.truncated;
+    return value;
+  }
+
   function dollarsToCents(value) {
     if (!/^\d+(\.\d{1,2})?$/.test(String(value).trim())) {
       throw new Error('Enter a valid dollar amount');
@@ -358,6 +428,11 @@
     const assetCommit = doc.getElementById('asset-commit');
     const assetConfirm = doc.getElementById('asset-confirm');
     const assetImport = doc.getElementById('asset-import');
+    const assetInventoryLoad = doc.getElementById('asset-inventory-load');
+    const assetInventoryStatus = doc.getElementById('asset-inventory-status');
+    const assetInventoryTable = doc.getElementById('asset-inventory-table');
+    const assetInventoryRows = doc.getElementById('asset-inventory-rows');
+    const assetInventoryTruncated = doc.getElementById('asset-inventory-truncated');
 
     async function assetRun(action, success) {
       try {
@@ -469,9 +544,36 @@
         assetPreviewReady = false;
         clearAssetPreview(doc);
         await refresh();
+        assetInventoryRows.replaceChildren();
+        assetInventoryTable.hidden = true;
+        assetInventoryTruncated.hidden = true;
+        assetInventoryStatus.textContent = 'Assets changed. Load the list again.';
         return imported;
       }, 'New assets added. Dashboard refreshed.')
         .finally(() => { assetCommitPending = false; });
+    });
+
+
+
+    assetInventoryLoad.addEventListener('click', async () => {
+      assetInventoryLoad.disabled = true;
+      assetInventoryStatus.textContent = 'Loading imported assets…';
+      assetInventoryTable.hidden = true;
+      assetInventoryTruncated.hidden = true;
+      assetInventoryRows.replaceChildren();
+      try {
+        const inventory = renderAssetInventory(doc, await request('/assets'));
+        assetInventoryStatus.textContent = inventory.returned === 0
+          ? 'No imported assets yet.'
+          : inventory.returned + ' imported asset(s) shown.';
+        assetInventoryLoad.textContent = 'Refresh imported assets';
+      } catch (error) {
+        assetInventoryStatus.textContent = error && (error.status === 401 || error.status === 403)
+          ? 'Your secure session does not allow this asset list.'
+          : 'The asset list is not available yet. Try again later.';
+      } finally {
+        assetInventoryLoad.disabled = false;
+      }
     });
 
     doc.getElementById('subscription-form').addEventListener('submit', event => {
@@ -551,5 +653,6 @@
     subscriptionIsVerifiedActive, clearCompletedCheckout,
     retryExpiredCheckout, validateAssetWorkbook, assetRequest, saveDownload,
     clearAssetPreview, canCommitAssetPreview, assetFailureMessage,
-    dashboardSummaryValues, request, init };
+    dashboardSummaryValues, validatedAssetInventory, renderAssetInventory,
+    request, init };
 });
