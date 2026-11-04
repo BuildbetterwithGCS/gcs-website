@@ -409,7 +409,7 @@ test('browser-level asset help supports direct links, search recovery, and keybo
     path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
   const portal = fs.readFileSync(
     path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
-  const body = help.match(/<body>([\\s\\S]*)<\\/body>/)[1];
+  const body = help.slice(help.indexOf('<body>') + 6, help.lastIndexOf('</body>'));
   document.body.innerHTML = body;
   window.history.replaceState(null, '', '/business/help/#asset-spreadsheet-guide');
   window.eval(document.querySelector('script').textContent);
