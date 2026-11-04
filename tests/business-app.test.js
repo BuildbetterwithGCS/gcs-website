@@ -2,7 +2,6 @@
 const fs = require('fs');
 const path = require('path');
 const app = require('../js/business-app.js');
-const { JSDOM } = require('jsdom');
 
 beforeEach(() => {
   Object.defineProperty(document, 'cookie', {
@@ -404,20 +403,21 @@ test('How To center gives searchable, truthful asset import recovery steps', () 
 });
 
 
+
 test('browser-level asset help supports direct links, search recovery, and keyboard access', () => {
   const help = fs.readFileSync(
     path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
   const portal = fs.readFileSync(
     path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
-  const dom = new JSDOM(help, {
-    runScripts: 'dangerously',
-    url: 'https://buildbetterwithgcs.com/business/help/#asset-spreadsheet-guide',
-  });
-  const page = dom.window.document;
-  const input = page.getElementById('search');
-  const guide = page.getElementById('asset-spreadsheet-guide');
-  const count = page.getElementById('count');
-  const empty = page.getElementById('empty');
+  const body = help.match(/<body>([\\s\\S]*)<\\/body>/)[1];
+  document.body.innerHTML = body;
+  window.history.replaceState(null, '', '/business/help/#asset-spreadsheet-guide');
+  window.eval(document.querySelector('script').textContent);
+
+  const input = document.getElementById('search');
+  const guide = document.getElementById('asset-spreadsheet-guide');
+  const count = document.getElementById('count');
+  const empty = document.getElementById('empty');
 
   expect(portal).toContain('href="../help/#asset-spreadsheet-guide"');
   expect(guide.open).toBe(true);
@@ -426,20 +426,19 @@ test('browser-level asset help supports direct links, search recovery, and keybo
   expect(count.getAttribute('aria-live')).toBe('polite');
 
   input.value = 'expired receipt';
-  input.dispatchEvent(new dom.window.Event('input'));
+  input.dispatchEvent(new Event('input'));
   expect(guide.hidden).toBe(false);
   expect(count.textContent).toBe('1 of 9 guides shown');
-  expect([...page.querySelectorAll('#guides details')]
+  expect([...document.querySelectorAll('#guides details')]
     .filter(item => !item.hidden)).toEqual([guide]);
 
   input.value = 'no matching task';
-  input.dispatchEvent(new dom.window.Event('input'));
+  input.dispatchEvent(new Event('input'));
   expect(count.textContent).toBe('0 of 9 guides shown');
   expect(empty.hidden).toBe(false);
 
   input.value = '';
-  input.dispatchEvent(new dom.window.Event('input'));
+  input.dispatchEvent(new Event('input'));
   expect(count.textContent).toBe('9 of 9 guides shown');
   expect(empty.hidden).toBe(true);
-  dom.window.close();
 });
