@@ -351,3 +351,37 @@ test('selecting a different workbook invalidates a previous preview before impor
   expect(js).toContain('assetPreviewReady = false;');
   expect(js).toContain("clearAssetPreview(doc, { clearFile: false });");
 });
+
+
+test('dashboard composition exposes only the privacy-minimized asset total', () => {
+  expect(app.dashboardSummaryValues({
+    open_work: 1,
+    completed_work: 2,
+    pending_leave: 3,
+    unapproved_punches: 4,
+    assets: {
+      total_assets: 7,
+      items: [{ asset_id: 'must-not-render' }],
+      workbook_sha256: 'must-not-render',
+    },
+  })).toEqual([1, 2, 3, 4, 7]);
+  expect(app.dashboardSummaryValues({
+    open_work: 1,
+    completed_work: 2,
+    pending_leave: 3,
+    unapproved_punches: 4,
+  })).toEqual([1, 2, 3, 4, null]);
+  expect(app.dashboardSummaryValues({ assets: { total_assets: -1 } }))
+    .toEqual([undefined, undefined, undefined, undefined, null]);
+});
+
+test('confirmed import refreshes the dashboard and keeps the asset card aggregate-only', () => {
+  const html = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  expect(html).toMatch(/<strong>—<\/strong><span>Imported assets<\/span>/);
+  expect(js).toMatch(/clearAssetPreview\(doc\);\s+await refresh\(\);/);
+  expect(js).toContain('New assets added. Dashboard refreshed.');
+  expect(js).not.toMatch(/dashboard\.assets\.(items|asset_id|workbook_sha256)/);
+});
