@@ -975,3 +975,58 @@ test('contextual subscription help opens directly and remains keyboard accessibl
   expect(guide.querySelector('summary').tabIndex).toBe(0);
   expect(document.getElementById('count').textContent).toMatch(/guides shown/);
 });
+
+
+test('dashboard refresh clears stale totals before requesting current workspace data', () => {
+  document.body.innerHTML = `
+    <div id="dashboard">
+      <article><strong>8</strong></article>
+      <article><strong>5</strong></article>
+      <article><strong>3</strong></article>
+      <article><strong>2</strong></article>
+      <article><strong>13</strong></article>
+    </div>`;
+  app.clearDashboardSummary(document);
+  expect([...document.querySelectorAll('#dashboard strong')]
+    .map(node => node.textContent)).toEqual(['—', '—', '—', '—', '—']);
+
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  expect(js).toMatch(
+    /async function refresh\(\) \{\s+clearDashboardSummary\(doc\);\s+const dashboard = await run/);
+});
+
+
+test('How To center bounds saved dashboard refresh and summary claims', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  const portal = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  expect(portal).toContain('href="../help/#saved-dashboard-guide"');
+  expect(help).toContain('id="saved-dashboard-guide"');
+  expect(help).toContain(
+    'The five totals summarize only the current signed-in workspace.');
+  expect(help).toContain(
+    'The page clears the old figures before requesting new ones');
+  expect(help).toContain(
+    'The totals remain as dashes. Sign in again, confirm the correct workspace');
+  expect(help).toContain(
+    'It does not display asset rows, workbook contents, receipt details, or who imported them.');
+  expect(help).toContain(
+    'These totals are not payroll calculations, accounting records, invoice-delivery or payment-settlement evidence, compliance determinations, or an audit trail.');
+});
+
+
+test('contextual saved dashboard help opens directly and remains keyboard accessible', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  const body = help.slice(help.indexOf('<body>') + 6, help.lastIndexOf('</body>'));
+  document.body.innerHTML = body;
+  window.history.replaceState(
+    null, '', '/business/help/#saved-dashboard-guide');
+  window.eval(document.querySelector('script').textContent);
+  const guide = document.getElementById('saved-dashboard-guide');
+  expect(guide.open).toBe(true);
+  expect(guide.querySelector('summary').tabIndex).toBe(0);
+  expect(document.getElementById('count').textContent).toMatch(/guides shown/);
+});
