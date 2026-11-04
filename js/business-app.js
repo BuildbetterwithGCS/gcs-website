@@ -163,6 +163,21 @@
       && /^xpr_[a-f0-9]{32}$/.test(preview.receipt_id);
   }
 
+  function dashboardSummaryValues(dashboard) {
+    const assetTotal = dashboard && dashboard.assets
+      && Number.isInteger(dashboard.assets.total_assets)
+      && dashboard.assets.total_assets >= 0
+      ? dashboard.assets.total_assets
+      : null;
+    return [
+      dashboard && dashboard.open_work,
+      dashboard && dashboard.completed_work,
+      dashboard && dashboard.pending_leave,
+      dashboard && dashboard.unapproved_punches,
+      assetTotal,
+    ];
+  }
+
   function dollarsToCents(value) {
     if (!/^\d+(\.\d{1,2})?$/.test(String(value).trim())) {
       throw new Error('Enter a valid dollar amount');
@@ -281,10 +296,9 @@
     async function refresh() {
       const dashboard = await run(() => request('/dashboard'), 'Workspace updated.');
       if (dashboard) {
-        const values = [dashboard.open_work, dashboard.completed_work,
-          dashboard.pending_leave, dashboard.unapproved_punches];
+        const values = dashboardSummaryValues(dashboard);
         doc.querySelectorAll('#dashboard strong').forEach((node, index) => {
-          node.textContent = String(values[index] ?? 0);
+          node.textContent = String(values[index] ?? '—');
         });
       }
       const subscription = await run(() => request('/subscription'), 'Workspace updated.');
@@ -454,8 +468,9 @@
         assetWorkbook = null;
         assetPreviewReady = false;
         clearAssetPreview(doc);
+        await refresh();
         return imported;
-      }, 'New assets added. Refresh your asset list to see them.')
+      }, 'New assets added. Dashboard refreshed.')
         .finally(() => { assetCommitPending = false; });
     });
 
@@ -535,5 +550,6 @@
     validatedCheckoutUrl, checkoutNeedsRetry, checkoutIntentIsCurrent,
     subscriptionIsVerifiedActive, clearCompletedCheckout,
     retryExpiredCheckout, validateAssetWorkbook, assetRequest, saveDownload,
-    clearAssetPreview, canCommitAssetPreview, assetFailureMessage, request, init };
+    clearAssetPreview, canCommitAssetPreview, assetFailureMessage,
+    dashboardSummaryValues, request, init };
 });
