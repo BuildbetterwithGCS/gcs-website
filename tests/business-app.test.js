@@ -316,6 +316,81 @@ test('My work panel is explicit-load, session-bound, and status accessible', () 
   expect((js.match(/request\('\/work-orders'\)/g) || [])).toHaveLength(1);
 });
 
+test('validates and formats bounded manager invoice summaries', () => {
+  const page = {
+    items: [{
+      invoice_id: 'invoice-1',
+      customer_label: 'Synthetic Customer',
+      amount_cents: 123456789,
+      due_date: '2026-11-30',
+      status: 'draft',
+    }],
+    returned: 1,
+    truncated: false,
+  };
+  expect(app.validatedInvoiceSummaries(page)).toEqual(page);
+  expect(app.formatInvoiceAmount(0)).toBe('$0.00');
+  expect(app.formatInvoiceAmount(12500)).toBe('$125.00');
+  expect(app.formatInvoiceAmount(123456789)).toBe('$1,234,567.89');
+  for (const invalid of [
+    { ...page, tenant: 'must-not-be-accepted' },
+    { ...page, returned: 2 },
+    { ...page, truncated: 'false' },
+    { ...page, items: [{ ...page.items[0], org_id: 'hidden' }] },
+    { ...page, items: [{ ...page.items[0], status: 'settled' }] },
+    { ...page, items: [{ ...page.items[0], due_date: '2026-99-99' }] },
+    { ...page, items: [{ ...page.items[0], amount_cents: 12.5 }] },
+    { ...page, items: [{ ...page.items[0], amount_cents: -1 }] },
+    { ...page, items: [{ ...page.items[0], customer_label: '' }] },
+    { ...page, items: Array.from({ length: 101 }, () => page.items[0]), returned: 101 },
+  ]) {
+    expect(() => app.validatedInvoiceSummaries(invalid)).toThrow('unavailable');
+  }
+});
+
+test('renders invoice tracking summaries with safe text and no settlement claim', () => {
+  document.body.innerHTML = '<ul id="invoice-list-items" hidden></ul>';
+  const page = app.renderInvoiceSummaries(document, {
+    items: [{
+      invoice_id: 'invoice-1',
+      customer_label: '<img src=x onerror=alert(1)>',
+      amount_cents: 12500,
+      due_date: '2026-11-30',
+      status: 'paid',
+    }],
+    returned: 1,
+    truncated: false,
+  });
+
+  expect(page.returned).toBe(1);
+  expect(document.querySelector('img')).toBeNull();
+  expect(document.getElementById('invoice-list-items').hidden).toBe(false);
+  expect(document.body.textContent).toContain('<img src=x onerror=alert(1)>');
+  expect(document.body.textContent).toContain('$125.00');
+  expect(document.body.textContent).toContain('Due 2026-11-30');
+  expect(document.body.textContent).toContain('Paid · tracking only');
+});
+
+test('invoice list is explicit-load, read-only, and status accessible', () => {
+  const html = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  expect(html).toMatch(/id="invoice-list-load"[^>]*>Load invoice list/);
+  expect(html).toMatch(
+    /id="invoice-list-status"[^>]*role="status"[^>]*aria-live="polite"[^>]*tabindex="-1"/
+  );
+  expect(html).toContain(
+    'does not send an invoice, collect payment, confirm settlement, or post an accounting entry.'
+  );
+  expect(js).toContain("request('/invoices')");
+  const listStart = js.indexOf("invoiceListLoad.addEventListener");
+  const listEnd = js.indexOf("const assetStatus", listStart);
+  const listSource = js.slice(listStart, listEnd);
+  expect(listSource).not.toMatch(/method:\s*'POST'|body:|tenant|actor|role|bank|password/i);
+  expect((js.match(/request\('\/invoices'\)/g) || [])).toHaveLength(1);
+});
+
 test('validates only non-empty xlsx workbooks within the 5 MB cap', () => {
   const valid = new File(['PK synthetic'], 'assets.xlsx', {
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
