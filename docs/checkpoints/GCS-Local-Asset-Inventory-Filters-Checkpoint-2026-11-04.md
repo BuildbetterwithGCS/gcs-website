@@ -44,16 +44,17 @@ The synthetic source/regression suite covers:
 - exactly one inventory request; and
 - absence of network calls and private-coordinate terms in the filter helper.
 
-GitHub Actions evidence is pending for the final branch head. The connector reported the branch at `ff909581758245286cc030452a5d19ce5bb300bb` while the pull-request view temporarily lagged at the preceding implementation commit. This checkpoint makes that state explicit and does not represent CI as complete.
+`488197aacaa91ebeac4e6aecdf0d50ef3f2babe9` restored the branch/PR workflow association. CI #148 then found one stale assertion for the intentionally revised truncation sentence; every other suite passed. Commit `eb5a4c308251a13c843fd3df946e43e9d9e27e0d` aligned that assertion with the new wording. Website CI #149 passed: https://github.com/BuildbetterwithGCS/gcs-website/actions/runs/41816185854.
 
 ## Release state
 
 - Pull request #58 remains a draft.
 - Independent accessibility, privacy, security, and code review are still required.
 - No merge or production deployment was performed.
+- Final executable test evidence is CI #149 on `eb5a4c308251a13c843fd3df946e43e9d9e27e0d`.
 - Production remains on the previously published ready Netlify deploy.
 - This does not establish live customer identity, tenant persistence, billing, settlement, entitlement activation, payroll, or customer onboarding.
 
 ## Exact next action
 
-Wait for or trigger branch-head CI association, repair any failure, then attach the successful workflow URL and protected Netlify preview evidence to pull request #58. Keep the PR draft until independent review. If CI association remains unavailable, advance an independent bounded subscription-workspace increment without merging or exposing production.
+Confirm the protected Netlify deploy-preview for the final checkpoint head, attach CI and preview evidence to pull request #58, and keep the PR draft until independent accessibility, privacy, security, and code review. Then advance the next independent bounded subscription-workspace increment without merging or exposing production.
