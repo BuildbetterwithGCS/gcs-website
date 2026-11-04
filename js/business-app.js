@@ -250,6 +250,83 @@
     search.focus();
   }
 
+  function validatedPendingLeaveQueue(queue) {
+    const exactKeys = (value, keys) => value
+      && typeof value === 'object'
+      && !Array.isArray(value)
+      && Object.keys(value).sort().join('|') === keys.slice().sort().join('|');
+    if (!exactKeys(queue, ['items', 'returned', 'truncated'])
+      || !Array.isArray(queue.items)
+      || queue.items.length > 100
+      || !Number.isInteger(queue.returned)
+      || queue.returned !== queue.items.length
+      || typeof queue.truncated !== 'boolean') {
+      throw new Error('Pending time-off requests are unavailable');
+    }
+    const items = queue.items.map(item => {
+      if (!exactKeys(item, ['request_id', 'employee_id', 'kind', 'date'])
+        || typeof item.request_id !== 'string'
+        || item.request_id.length < 1 || item.request_id.length > 128
+        || typeof item.employee_id !== 'string'
+        || item.employee_id.length < 1 || item.employee_id.length > 128
+        || !['pto', 'sick', 'unpaid'].includes(item.kind)
+        || typeof item.date !== 'string'
+        || !/^\d{4}-\d{2}-\d{2}$/.test(item.date)) {
+        throw new Error('Pending time-off requests are unavailable');
+      }
+      return {
+        request_id: item.request_id,
+        employee_id: item.employee_id,
+        kind: item.kind,
+        date: item.date,
+      };
+    });
+    return { items, returned: queue.returned, truncated: queue.truncated };
+  }
+
+  function renderPendingLeaveQueue(doc, queue, onReview) {
+    if (typeof onReview !== 'function') {
+      throw new Error('Pending time-off requests are unavailable');
+    }
+    const value = validatedPendingLeaveQueue(queue);
+    const list = doc.getElementById('leave-review-list');
+    const labels = { pto: 'PTO', sick: 'Sick', unpaid: 'Unpaid' };
+    list.replaceChildren();
+    for (const item of value.items) {
+      const row = doc.createElement('li');
+      row.className = 'leave-review-item';
+      const employee = doc.createElement('p');
+      const strong = doc.createElement('strong');
+      strong.textContent = 'Employee ' + item.employee_id;
+      employee.appendChild(strong);
+      const details = doc.createElement('p');
+      details.textContent = labels[item.kind] + ' · ' + item.date;
+      const actions = doc.createElement('div');
+      actions.className = 'leave-review-actions';
+      for (const decision of [
+        { label: 'Approve', approve: true, className: '' },
+        { label: 'Deny', approve: false, className: 'deny' },
+      ]) {
+        const button = doc.createElement('button');
+        button.type = 'button';
+        button.className = decision.className;
+        button.textContent = decision.label;
+        button.setAttribute(
+          'aria-label',
+          decision.label + ' ' + labels[item.kind] + ' for employee '
+            + item.employee_id + ' on ' + item.date,
+        );
+        button.addEventListener('click', () =>
+          onReview(item.request_id, decision.approve));
+        actions.appendChild(button);
+      }
+      row.append(employee, details, actions);
+      list.appendChild(row);
+    }
+    list.hidden = value.returned === 0;
+    return value;
+  }
+
   function renderAssetRows(doc, items) {
     const rows = doc.getElementById('asset-inventory-rows');
     const labels = {
@@ -429,6 +506,73 @@
         date: doc.getElementById('leave-date').value,
       } }), 'Time-off request sent.');
     });
+
+    const leaveReviewLoad = doc.getElementById('leave-review-load');
+    const leaveReviewStatus = doc.getElementById('leave-review-status');
+    const leaveReviewList = doc.getElementById('leave-review-list');
+    const leaveReviewEmpty = doc.getElementById('leave-review-empty');
+    const leaveReviewTruncated = doc.getElementById('leave-review-truncated');
+
+    function clearPendingLeaveQueue() {
+      leaveReviewList.replaceChildren();
+      leaveReviewList.hidden = true;
+      leaveReviewEmpty.hidden = true;
+      leaveReviewTruncated.hidden = true;
+    }
+
+    async function loadPendingLeaveQueue(successPrefix = '') {
+      leaveReviewLoad.disabled = true;
+      clearPendingLeaveQueue();
+      leaveReviewStatus.textContent = 'Loading requests to review…';
+      try {
+        const queue = renderPendingLeaveQueue(
+          doc,
+          await request('/leave/pending'),
+          reviewPendingLeave,
+        );
+        leaveReviewEmpty.hidden = queue.returned !== 0;
+        leaveReviewTruncated.hidden = !queue.truncated;
+        leaveReviewStatus.textContent = successPrefix
+          ? successPrefix + ' ' + queue.returned + ' request(s) waiting.'
+          : queue.returned + ' request(s) waiting for review.';
+        leaveReviewLoad.textContent = 'Refresh requests to review';
+        return queue;
+      } catch (error) {
+        clearPendingLeaveQueue();
+        leaveReviewStatus.textContent = error && (error.status === 401 || error.status === 403)
+          ? 'Your secure session does not allow manager review.'
+          : 'Requests to review are not available yet. Try again later.';
+        return null;
+      } finally {
+        leaveReviewLoad.disabled = false;
+      }
+    }
+
+    async function reviewPendingLeave(requestId, approve) {
+      leaveReviewList.querySelectorAll('button').forEach(button => {
+        button.disabled = true;
+      });
+      leaveReviewStatus.textContent = approve
+        ? 'Approving this request…'
+        : 'Denying this request…';
+      try {
+        await request('/leave/review', {
+          method: 'POST',
+          body: { request_id: requestId, approve },
+        });
+        await loadPendingLeaveQueue(approve
+          ? 'Time off approved.'
+          : 'Time off denied.');
+      } catch (error) {
+        clearPendingLeaveQueue();
+        leaveReviewStatus.textContent = error && (error.status === 401 || error.status === 403)
+          ? 'Your secure session does not allow manager review.'
+          : 'The review was not confirmed. Load requests again before trying another action.';
+      }
+      leaveReviewStatus.focus();
+    }
+
+    leaveReviewLoad.addEventListener('click', () => loadPendingLeaveQueue());
 
     doc.getElementById('work-form').addEventListener('submit', event => {
       event.preventDefault();
@@ -739,5 +883,6 @@
     retryExpiredCheckout, validateAssetWorkbook, assetRequest, saveDownload,
     clearAssetPreview, canCommitAssetPreview, assetFailureMessage,
     dashboardSummaryValues, validatedAssetInventory, filterAssetItems,
+    validatedPendingLeaveQueue, renderPendingLeaveQueue,
     clearAssetFilters, renderAssetRows, renderAssetInventory, request, init };
 });
