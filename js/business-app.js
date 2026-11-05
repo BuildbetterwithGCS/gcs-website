@@ -644,12 +644,15 @@
     if (value.checkout_url !== null) {
       checkoutUrl = validatedCheckoutUrl(value.checkout_url);
       const currentTime = Number(now);
+      const createdAt = Date.parse(value.created_at);
       const expiresAt = Date.parse(value.expires_at);
       const updatedAt = Date.parse(value.updated_at);
       if (!value.selection_current || value.status !== 'PROVIDER_SESSION'
         || typeof value.expires_at !== 'string'
-        || !Number.isFinite(currentTime) || !Number.isFinite(expiresAt)
-        || !Number.isFinite(updatedAt)
+        || !Number.isFinite(currentTime) || !Number.isFinite(createdAt)
+        || !Number.isFinite(expiresAt) || !Number.isFinite(updatedAt)
+        || createdAt > updatedAt
+        || updatedAt >= expiresAt
         || expiresAt <= currentTime
         || expiresAt - updatedAt > MAX_PROVIDER_SESSION_MS) invalid();
     }
