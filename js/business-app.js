@@ -186,6 +186,31 @@
   }
 
 
+  function validatedAccessStatus(value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)
+      || Object.keys(value).length !== 1
+      || !Object.prototype.hasOwnProperty.call(value, 'access')
+      || !['manager', 'employee', 'viewer'].includes(value.access)) {
+      throw new Error('Workspace access is unavailable');
+    }
+    return value.access;
+  }
+
+  function renderAccessStatus(root, value) {
+    const access = validatedAccessStatus(value);
+    const labels = {
+      manager: 'Manager access verified.',
+      employee: 'Employee access verified.',
+      viewer: 'View-only access verified.',
+    };
+    root.getElementById('access-status').textContent = labels[access];
+  }
+
+  function clearAccessStatus(root) {
+    root.getElementById('access-status').textContent = 'Access not verified.';
+  }
+
+
   function validatedAssetInventory(inventory) {
     if (!inventory || typeof inventory !== 'object' || Array.isArray(inventory)) {
       throw new Error('Asset list is unavailable');
@@ -647,7 +672,10 @@
     }
 
     async function refresh() {
+      clearAccessStatus(doc);
       clearDashboardSummary(doc);
+      const access = await run(() => request('/access'), 'Workspace access checked.');
+      if (access) renderAccessStatus(doc, access);
       const dashboard = await run(() => request('/dashboard'), 'Workspace updated.');
       if (dashboard) {
         const values = dashboardSummaryValues(dashboard);
@@ -1157,6 +1185,7 @@
     retryExpiredCheckout, validateAssetWorkbook, assetRequest, saveDownload,
     clearAssetPreview, canCommitAssetPreview, assetFailureMessage,
     dashboardSummaryValues, clearDashboardSummary,
+    validatedAccessStatus, renderAccessStatus, clearAccessStatus,
     validatedAssetInventory, filterAssetItems,
     validatedPendingLeaveQueue, renderPendingLeaveQueue,
     validatedAssignedWorkQueue, renderAssignedWorkQueue,
