@@ -1266,13 +1266,16 @@
       let intent;
       const savedIntent = view.sessionStorage.getItem(INTENT_KEY);
       if (savedIntent) {
-        intent = validatedCheckoutIntent(
-          await request('/subscription/checkout-intent/status', {
-            method: 'POST', body: { intent_id: savedIntent },
-          }),
-          null,
-          savedIntent,
-        );
+        const savedStatus = await request('/subscription/checkout-intent/status', {
+          method: 'POST', body: { intent_id: savedIntent },
+        });
+        try {
+          intent = validatedCheckoutIntent(savedStatus, null, savedIntent);
+        } catch (error) {
+          view.sessionStorage.removeItem(INTENT_KEY);
+          view.sessionStorage.removeItem(IDEMPOTENCY_KEY);
+          throw error;
+        }
         if (!checkoutIntentIsCurrent(intent, stagedRevision)) {
           view.sessionStorage.removeItem(INTENT_KEY);
           view.sessionStorage.removeItem(IDEMPOTENCY_KEY);
