@@ -755,6 +755,7 @@
     const view = doc.defaultView;
     let stagedRevision = null;
     let checkoutPending = false;
+    let checkoutLockReason = null;
     let assetReceipt = null;
     let assetWorkbook = null;
     let assetPreviewReady = false;
@@ -768,6 +769,9 @@
 
     function checkoutReady(revision, active = false, approvalPending = false) {
       stagedRevision = Number.isInteger(revision) && revision > 0 ? revision : null;
+      checkoutLockReason = active
+        ? 'active'
+        : approvalPending ? 'approval_pending' : null;
       checkoutButton.disabled = checkoutPending || active || approvalPending
         || stagedRevision === null;
       checkoutState.textContent = active
@@ -1326,6 +1330,7 @@
       if (stagedRevision !== checkoutRevision) {
         view.sessionStorage.removeItem(INTENT_KEY);
         view.sessionStorage.removeItem(IDEMPOTENCY_KEY);
+        if (checkoutLockReason) return null;
         throw new Error('Secure checkout selection changed');
       }
       if (recoveredIdempotencyKey) {
@@ -1342,6 +1347,13 @@
         return intent;
       }, 'Checkout request saved.');
       checkoutPending = false;
+      if (checkoutLockReason) {
+        checkoutButton.disabled = true;
+        message(checkoutLockReason === 'active'
+          ? 'Subscription access is active.'
+          : 'Billing is verified. Access approval is pending.');
+        return;
+      }
       if (!intent) {
         checkoutState.textContent = 'Secure checkout was not started. Try again later.';
       }
