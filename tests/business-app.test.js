@@ -1605,7 +1605,7 @@ test('failed newer selection save keeps stale checkout locked until refresh', as
 
   expect(refreshedButton.disabled).toBe(false);
   expect(document.getElementById('subscription-state').textContent)
-    .toBe('Your selection is saved. Billing verification is still required.');
+    .toBe('Selection saved; billing verification is still required.');
   expect(document.getElementById('checkout-state').textContent)
     .toBe('Your selection is saved. Continue when you are ready.');
 });
