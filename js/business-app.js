@@ -732,6 +732,20 @@
       }
     }
 
+    function presentSubscription(subscription) {
+      const subscriptionView = subscriptionStatusView(subscription);
+      doc.getElementById('subscription-state').textContent = subscriptionView.message;
+      if (subscriptionView.active) {
+        clearCompletedCheckout(subscription, view.sessionStorage);
+      }
+      checkoutReady(
+        subscriptionView.staged_revision,
+        subscriptionView.active,
+        subscriptionView.approval_pending,
+      );
+      return subscriptionView;
+    }
+
     async function refresh() {
       clearAccessStatus(doc);
       clearDashboardSummary(doc);
@@ -747,18 +761,7 @@
       stagedRevision = null;
       clearSubscriptionPresentation(doc);
       const subscription = await run(() => request('/subscription'), 'Workspace updated.');
-      if (subscription) {
-        const subscriptionView = subscriptionStatusView(subscription);
-        doc.getElementById('subscription-state').textContent = subscriptionView.message;
-        if (subscriptionView.active) {
-          clearCompletedCheckout(subscription, view.sessionStorage);
-        }
-        checkoutReady(
-          subscriptionView.staged_revision,
-          subscriptionView.active,
-          subscriptionView.approval_pending,
-        );
-      }
+      if (subscription) presentSubscription(subscription);
     }
 
     doc.getElementById('refresh').addEventListener('click', refresh);
@@ -1178,17 +1181,17 @@
       event.preventDefault();
       const modules = [...doc.querySelectorAll('input[name="module"]:checked')]
         .map(input => input.value);
+      stagedRevision = null;
+      clearSubscriptionPresentation(doc);
       run(() => request('/subscription', { method: 'POST', body: {
         bundle: doc.getElementById('bundle').value,
         selected_module_ids: modules,
         licensed_user_limit: Number(doc.getElementById('users').value),
-      } }), 'Selection saved. Billing verification is still required.').then(value => {
+      } }), 'Subscription request completed.').then(value => {
         if (!value) return;
-        doc.getElementById('subscription-state').textContent =
-          'Selection saved; billing verification is still required.';
-        checkoutReady(value.staged_revision);
         view.sessionStorage.removeItem(INTENT_KEY);
         view.sessionStorage.removeItem(IDEMPOTENCY_KEY);
+        presentSubscription(value);
       });
     });
 
