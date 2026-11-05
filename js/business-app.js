@@ -600,6 +600,44 @@
       && intent.selection_revision === stagedRevision;
   }
 
+  function validatedCheckoutIntent(value, expectedRevision = null,
+    expectedIntentId = null) {
+    const invalid = () => {
+      throw new Error('Secure checkout response is invalid');
+    };
+    if (!value || typeof value !== 'object' || Array.isArray(value)) invalid();
+    const fields = [
+      'checkout_url', 'created_at', 'expires_at', 'intent_id',
+      'selection_current', 'selection_revision', 'status', 'updated_at',
+    ];
+    const keys = Object.keys(value).sort();
+    if (keys.length !== fields.length
+      || keys.some((key, index) => key !== fields[index])) invalid();
+    if (typeof value.intent_id !== 'string'
+      || !/^[A-Za-z0-9._:-]{1,255}$/.test(value.intent_id)) invalid();
+    if (expectedIntentId !== null && value.intent_id !== expectedIntentId) invalid();
+    if (!Number.isInteger(value.selection_revision)
+      || value.selection_revision < 1) invalid();
+    if (expectedRevision !== null
+      && value.selection_revision !== expectedRevision) invalid();
+    if (typeof value.selection_current !== 'boolean') invalid();
+    if (!['READY_FOR_PROVIDER', 'PROVIDER_SESSION', 'SUBSCRIPTION_BOUND']
+      .includes(value.status)) invalid();
+    for (const timestamp of [value.created_at, value.updated_at]) {
+      if (typeof timestamp !== 'string' || timestamp.length > 64
+        || !Number.isFinite(Date.parse(timestamp))) invalid();
+    }
+    if (value.expires_at !== null
+      && (typeof value.expires_at !== 'string' || value.expires_at.length > 64
+        || !Number.isFinite(Date.parse(value.expires_at)))) invalid();
+    let checkoutUrl = null;
+    if (value.checkout_url !== null) {
+      checkoutUrl = validatedCheckoutUrl(value.checkout_url);
+      if (!value.selection_current || value.status !== 'PROVIDER_SESSION') invalid();
+    }
+    return { ...value, checkout_url: checkoutUrl };
+  }
+
   function subscriptionIsVerifiedActive(subscription) {
     return Boolean(subscription)
       && subscription.status === 'active'
@@ -1200,25 +1238,36 @@
       let intent;
       const savedIntent = view.sessionStorage.getItem(INTENT_KEY);
       if (savedIntent) {
-        intent = await request('/subscription/checkout-intent/status', {
-          method: 'POST', body: { intent_id: savedIntent },
-        });
+        intent = validatedCheckoutIntent(
+          await request('/subscription/checkout-intent/status', {
+            method: 'POST', body: { intent_id: savedIntent },
+          }),
+          null,
+          savedIntent,
+        );
         if (!checkoutIntentIsCurrent(intent, stagedRevision)) {
           view.sessionStorage.removeItem(INTENT_KEY);
           view.sessionStorage.removeItem(IDEMPOTENCY_KEY);
           const key = idempotencyKey(view.crypto.getRandomValues.bind(view.crypto));
           view.sessionStorage.setItem(IDEMPOTENCY_KEY, key);
-          intent = await request('/subscription/checkout-intent', {
-            method: 'POST', body: {
-              expected_selection_revision: stagedRevision,
-              idempotency_key: key,
-            },
-          });
+          intent = validatedCheckoutIntent(
+            await request('/subscription/checkout-intent', {
+              method: 'POST', body: {
+                expected_selection_revision: stagedRevision,
+                idempotency_key: key,
+              },
+            }),
+            stagedRevision,
+          );
           view.sessionStorage.setItem(INTENT_KEY, intent.intent_id);
         } else {
           const recovery = await retryExpiredCheckout(intent, savedIntent, request,
             view.crypto.getRandomValues.bind(view.crypto));
-          intent = recovery.intent;
+          intent = validatedCheckoutIntent(
+            recovery.intent,
+            stagedRevision,
+            savedIntent,
+          );
           if (recovery.idempotency_key) {
             view.sessionStorage.setItem(IDEMPOTENCY_KEY, recovery.idempotency_key);
           }
@@ -1229,12 +1278,15 @@
           key = idempotencyKey(view.crypto.getRandomValues.bind(view.crypto));
           view.sessionStorage.setItem(IDEMPOTENCY_KEY, key);
         }
-        intent = await request('/subscription/checkout-intent', {
-          method: 'POST', body: {
-            expected_selection_revision: stagedRevision,
-            idempotency_key: key,
-          },
-        });
+        intent = validatedCheckoutIntent(
+          await request('/subscription/checkout-intent', {
+            method: 'POST', body: {
+              expected_selection_revision: stagedRevision,
+              idempotency_key: key,
+            },
+          }),
+          stagedRevision,
+        );
         view.sessionStorage.setItem(INTENT_KEY, intent.intent_id);
       }
       if (intent.checkout_url) {
@@ -1251,6 +1303,7 @@
 
   return { API, csrfToken, dollarsToCents, idempotencyKey,
     validatedCheckoutUrl, checkoutNeedsRetry, checkoutIntentIsCurrent,
+    validatedCheckoutIntent,
     subscriptionIsVerifiedActive, subscriptionStatusView,
     clearSubscriptionPresentation, clearCompletedCheckout,
     retryExpiredCheckout, validateAssetWorkbook, assetRequest, saveDownload,
