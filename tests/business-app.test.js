@@ -1080,3 +1080,84 @@ test('workspace refresh checks access without making browser authorization claim
   expect(js).toContain('if (access) renderAccessStatus(doc, access);');
   expect(js).not.toMatch(/access\s*===?\s*['"](?:manager|employee|viewer)['"][\s\S]{0,120}(?:hidden|disabled)/);
 });
+
+
+test('subscription onboarding states remain visibly distinct and fail closed', () => {
+  expect(app.subscriptionStatusView({
+    status: 'selection_required',
+    billing_verified: false,
+    grants_access: false,
+    staged_revision: null,
+  })).toEqual({
+    active: false,
+    staged_revision: null,
+    message: 'Choose and save business tools. No subscription is active.',
+  });
+
+  expect(app.subscriptionStatusView({
+    status: 'pending_billing',
+    billing_verified: false,
+    grants_access: false,
+    staged_revision: 3,
+  })).toEqual({
+    active: false,
+    staged_revision: 3,
+    message: 'Selection saved; billing verification is still required.',
+  });
+
+  expect(app.subscriptionStatusView({
+    status: 'pending_billing',
+    billing_verified: true,
+    grants_access: false,
+    staged_revision: 3,
+  })).toEqual({
+    active: false,
+    staged_revision: 3,
+    message: 'Billing verified; access is still waiting for approval.',
+  });
+
+  expect(app.subscriptionStatusView({
+    status: 'active',
+    billing_verified: true,
+    grants_access: true,
+    staged_revision: 3,
+  })).toEqual({
+    active: true,
+    staged_revision: null,
+    message: 'Subscription active.',
+  });
+
+  for (const invalid of [
+    null,
+    { status: 'selection_required', billing_verified: false,
+      grants_access: false, staged_revision: 1 },
+    { status: 'pending_billing', billing_verified: false,
+      grants_access: false, staged_revision: null },
+    { status: 'pending_billing', billing_verified: false,
+      grants_access: true, staged_revision: 1 },
+    { status: 'active', billing_verified: false,
+      grants_access: true, staged_revision: 1 },
+    { status: 'unknown', billing_verified: false,
+      grants_access: false, staged_revision: null },
+  ]) {
+    expect(app.subscriptionStatusView(invalid)).toEqual({
+      active: false,
+      staged_revision: null,
+      message: 'Subscription status is unavailable. Try again later.',
+    });
+  }
+});
+
+
+test('workspace refresh uses validated subscription onboarding presentation', () => {
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  expect(js).toContain(
+    'const subscriptionView = subscriptionStatusView(subscription);');
+  expect(js).toContain(
+    "doc.getElementById('subscription-state').textContent = subscriptionView.message;");
+  expect(js).toMatch(
+    /checkoutReady\(\s+subscriptionView\.staged_revision,\s+subscriptionView\.active/);
+  expect(js).not.toMatch(
+    /subscription-state'\)\.textContent = active\s+\?/);
+});
