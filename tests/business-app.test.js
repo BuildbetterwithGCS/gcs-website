@@ -1257,8 +1257,21 @@ test('validates the complete checkout intent before persistence or navigation', 
     expires_at: '2026-11-05T05:15:00Z',
     checkout_url: 'https://checkout.example.test/session/one',
   };
-  expect(app.validatedCheckoutIntent(provider, 7, 'checkout-123'))
-    .toEqual(provider);
+  const beforeExpiry = Date.parse('2026-11-05T05:14:59Z');
+  expect(app.validatedCheckoutIntent(
+    provider, 7, 'checkout-123', beforeExpiry,
+  )).toEqual(provider);
+  for (const expiredAt of [
+    Date.parse('2026-11-05T05:15:00Z'),
+    Date.parse('2026-11-05T05:15:01Z'),
+  ]) {
+    expect(() => app.validatedCheckoutIntent(
+      provider, 7, 'checkout-123', expiredAt,
+    )).toThrow('Secure checkout response is invalid');
+  }
+  expect(() => app.validatedCheckoutIntent(
+    { ...provider, expires_at: null }, 7, 'checkout-123', beforeExpiry,
+  )).toThrow('Secure checkout response is invalid');
 });
 
 test('rejects malformed, mismatched, or over-shared checkout intents', () => {
@@ -1553,4 +1566,29 @@ test('delayed saved-intent retry remains single-flight', async () => {
     .toBe('checkout-saved');
   expect(window.sessionStorage.getItem('nexus.checkout.idempotency'))
     .not.toBe('nexus-' + 'ab'.repeat(24));
+});
+
+
+test('expired checkout URL never reaches the navigation boundary', () => {
+  const view = { location: { assign: jest.fn() } };
+  const expired = {
+    intent_id: 'checkout-expired',
+    selection_revision: 7,
+    selection_current: true,
+    status: 'PROVIDER_SESSION',
+    expires_at: '2026-11-05T10:00:00Z',
+    created_at: '2026-11-05T09:55:00Z',
+    updated_at: '2026-11-05T09:59:00Z',
+    checkout_url: 'https://checkout.example.test/session/expired',
+  };
+  expect(() => {
+    const intent = app.validatedCheckoutIntent(
+      expired,
+      7,
+      'checkout-expired',
+      Date.parse('2026-11-05T10:00:00Z'),
+    );
+    app.navigateToCheckout(view, intent.checkout_url);
+  }).toThrow('Secure checkout response is invalid');
+  expect(view.location.assign).not.toHaveBeenCalled();
 });
