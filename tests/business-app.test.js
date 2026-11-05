@@ -1309,3 +1309,38 @@ test('every checkout response is validated before intent storage', () => {
     .toBeLessThan(checkout.indexOf('sessionStorage.setItem(INTENT_KEY'));
 });
 
+test('checkout handoff is single-flight and stays disabled while pending', () => {
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  const checkout = js.slice(
+    js.indexOf("checkoutButton.addEventListener('click'"),
+    js.indexOf('checkoutReady(null);'),
+  );
+
+  expect(js).toContain('let checkoutPending = false;');
+  expect(js).toMatch(
+    /checkoutButton\.disabled = checkoutPending \|\| active \|\| approvalPending\s+\|\| stagedRevision === null;/);
+  expect(checkout).toMatch(
+    /if \(checkoutPending\) return;\s+checkoutPending = true;\s+checkoutButton\.disabled = true;\s+checkoutState\.textContent = 'Preparing secure checkout…';/);
+  expect(checkout.indexOf('checkoutPending = true;'))
+    .toBeLessThan(checkout.indexOf("request('/subscription/checkout-intent"));
+  expect(checkout).toMatch(
+    /const intent = await run\([\s\S]+checkoutPending = false;\s+if \(!intent \|\| !intent\.checkout_url\) \{\s+checkoutButton\.disabled = stagedRevision === null;/);
+});
+
+test('single-flight checkout keeps the existing idempotency boundary', () => {
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  const checkout = js.slice(
+    js.indexOf("checkoutButton.addEventListener('click'"),
+    js.indexOf('checkoutReady(null);'),
+  );
+
+  expect(checkout).toContain(
+    'let key = view.sessionStorage.getItem(IDEMPOTENCY_KEY);');
+  expect(checkout).toContain(
+    'view.sessionStorage.setItem(IDEMPOTENCY_KEY, key);');
+  expect(checkout).toContain('expected_selection_revision: stagedRevision');
+  expect(checkout).toContain('validatedCheckoutIntent(');
+});
+
