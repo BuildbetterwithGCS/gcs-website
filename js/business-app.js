@@ -583,6 +583,15 @@
     return url.href;
   }
 
+  function navigateToCheckout(view, value) {
+    if (!view || !view.location || typeof view.location.assign !== 'function') {
+      throw new Error('Secure checkout navigation is unavailable');
+    }
+    const url = validatedCheckoutUrl(value);
+    view.location.assign(url);
+    return url;
+  }
+
   function checkoutNeedsRetry(intent, now = Date.now()) {
     if (!intent || intent.status !== 'PROVIDER_SESSION'
       || typeof intent.expires_at !== 'string') return false;
@@ -1297,7 +1306,7 @@
         view.sessionStorage.setItem(INTENT_KEY, intent.intent_id);
       }
       if (intent.checkout_url) {
-        view.location.assign(validatedCheckoutUrl(intent.checkout_url));
+        navigateToCheckout(view, intent.checkout_url);
       } else {
         checkoutState.textContent = 'Secure checkout is being prepared. Try again later.';
       }
@@ -1314,7 +1323,8 @@
   }
 
   return { API, csrfToken, dollarsToCents, idempotencyKey,
-    validatedCheckoutUrl, checkoutNeedsRetry, checkoutIntentIsCurrent,
+    validatedCheckoutUrl, navigateToCheckout,
+    checkoutNeedsRetry, checkoutIntentIsCurrent,
     validatedCheckoutIntent,
     subscriptionIsVerifiedActive, subscriptionStatusView,
     clearSubscriptionPresentation, clearCompletedCheckout,
