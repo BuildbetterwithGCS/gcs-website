@@ -1551,6 +1551,65 @@ test('newer saved selection rejects a delayed older checkout response', async ()
     .toBe('This task is not available yet. Try again later.');
 });
 
+test('failed newer selection save keeps stale checkout locked until refresh', async () => {
+  const originalLocation = window.location.href;
+  let releaseCheckout;
+  const checkoutResponse = new Promise(resolve => { releaseCheckout = resolve; });
+  const checkoutButton = initCheckoutRuntime(checkoutResponse, {
+    subscriptionSaveResponse: Promise.resolve({
+      ok: false,
+      status: 503,
+      json: async () => ({ error: 'workspace_unavailable' }),
+    }),
+  });
+  await flushCheckoutRuntime();
+  expect(checkoutButton.disabled).toBe(false);
+
+  checkoutButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  document.getElementById('users').value = '10';
+  document.getElementById('subscription-form')
+    .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  await flushCheckoutRuntime();
+
+  expect(checkoutButton.disabled).toBe(true);
+  expect(document.getElementById('subscription-state').textContent)
+    .toBe('Subscription status not verified.');
+  expect(document.getElementById('app-status').textContent)
+    .toBe('This task is not available yet. Try again later.');
+
+  releaseCheckout({
+    ok: true,
+    status: 200,
+    json: async () => ({ data: {
+      intent_id: 'checkout-old-after-failed-save',
+      selection_revision: 7,
+      selection_current: true,
+      status: 'READY_FOR_PROVIDER',
+      expires_at: null,
+      created_at: '2026-11-05T16:00:00Z',
+      updated_at: '2026-11-05T16:00:00Z',
+      checkout_url: null,
+    } }),
+  });
+  await flushCheckoutRuntime();
+
+  expect(window.sessionStorage.getItem('nexus.checkout.intent')).toBeNull();
+  expect(window.sessionStorage.getItem('nexus.checkout.idempotency')).toBeNull();
+  expect(window.location.href).toBe(originalLocation);
+  expect(checkoutButton.disabled).toBe(true);
+  expect(document.getElementById('checkout-state').textContent)
+    .toBe('Secure checkout was not started. Try again later.');
+
+  const refreshedButton = initCheckoutRuntime(undefined);
+  await flushCheckoutRuntime();
+
+  expect(refreshedButton.disabled).toBe(false);
+  expect(document.getElementById('subscription-state').textContent)
+    .toBe('Your selection is saved. Billing verification is still required.');
+  expect(document.getElementById('checkout-state').textContent)
+    .toBe('Your selection is saved. Continue when you are ready.');
+});
+
 test('malformed provider timeline restores eligible checkout without persistence', async () => {
   const originalLocation = window.location.href;
   const malformed = {
