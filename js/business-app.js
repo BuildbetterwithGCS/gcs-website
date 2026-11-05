@@ -607,6 +607,51 @@
       && subscription.grants_access === true;
   }
 
+  function subscriptionStatusView(subscription) {
+    const unavailable = {
+      active: false,
+      staged_revision: null,
+      message: 'Subscription status is unavailable. Try again later.',
+    };
+    if (!subscription || typeof subscription !== 'object'
+      || Array.isArray(subscription)) return unavailable;
+
+    if (subscription.status === 'selection_required') {
+      if (subscription.billing_verified !== false
+        || subscription.grants_access !== false
+        || subscription.staged_revision !== null) return unavailable;
+      return {
+        active: false,
+        staged_revision: null,
+        message: 'Choose and save business tools. No subscription is active.',
+      };
+    }
+
+    if (subscription.status === 'pending_billing') {
+      if (subscription.grants_access !== false
+        || !Number.isInteger(subscription.staged_revision)
+        || subscription.staged_revision < 1) return unavailable;
+      return {
+        active: false,
+        staged_revision: subscription.staged_revision,
+        message: subscription.billing_verified === true
+          ? 'Billing verified; access is still waiting for approval.'
+          : subscription.billing_verified === false
+            ? 'Selection saved; billing verification is still required.'
+            : unavailable.message,
+      };
+    }
+
+    if (subscriptionIsVerifiedActive(subscription)) {
+      return {
+        active: true,
+        staged_revision: null,
+        message: 'Subscription active.',
+      };
+    }
+    return unavailable;
+  }
+
   function clearCompletedCheckout(subscription, storage) {
     if (!subscriptionIsVerifiedActive(subscription)) return false;
     storage.removeItem(INTENT_KEY);
@@ -685,12 +730,15 @@
       }
       const subscription = await run(() => request('/subscription'), 'Workspace updated.');
       if (subscription) {
-        const active = subscriptionIsVerifiedActive(subscription);
-        doc.getElementById('subscription-state').textContent = active
-          ? 'Subscription active.'
-          : 'Selection saved; billing verification is still required.';
-        if (active) clearCompletedCheckout(subscription, view.sessionStorage);
-        checkoutReady(active ? null : subscription.staged_revision, active);
+        const subscriptionView = subscriptionStatusView(subscription);
+        doc.getElementById('subscription-state').textContent = subscriptionView.message;
+        if (subscriptionView.active) {
+          clearCompletedCheckout(subscription, view.sessionStorage);
+        }
+        checkoutReady(
+          subscriptionView.staged_revision,
+          subscriptionView.active,
+        );
       }
     }
 
@@ -1181,7 +1229,8 @@
 
   return { API, csrfToken, dollarsToCents, idempotencyKey,
     validatedCheckoutUrl, checkoutNeedsRetry, checkoutIntentIsCurrent,
-    subscriptionIsVerifiedActive, clearCompletedCheckout,
+    subscriptionIsVerifiedActive, subscriptionStatusView,
+    clearCompletedCheckout,
     retryExpiredCheckout, validateAssetWorkbook, assetRequest, saveDownload,
     clearAssetPreview, canCommitAssetPreview, assetFailureMessage,
     dashboardSummaryValues, clearDashboardSummary,
