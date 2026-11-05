@@ -1595,7 +1595,7 @@ test('expired checkout URL never reaches the navigation boundary', () => {
 
 
 test('checkout provider lifetime is capped at twenty-four hours', () => {
-  const now = Date.parse('2026-11-05T12:00:00Z');
+  const clientNow = Date.parse('2026-11-05T11:55:00Z');
   const base = {
     intent_id: 'checkout-lifetime',
     selection_revision: 7,
@@ -1610,7 +1610,7 @@ test('checkout provider lifetime is capped at twenty-four hours', () => {
     expires_at: '2026-11-06T12:00:00Z',
   };
   expect(app.validatedCheckoutIntent(
-    exactlyTwentyFourHours, 7, 'checkout-lifetime', now,
+    exactlyTwentyFourHours, 7, 'checkout-lifetime', clientNow,
   )).toEqual(exactlyTwentyFourHours);
 
   const tooLong = {
@@ -1618,7 +1618,7 @@ test('checkout provider lifetime is capped at twenty-four hours', () => {
     expires_at: '2026-11-06T12:00:00.001Z',
   };
   expect(() => app.validatedCheckoutIntent(
-    tooLong, 7, 'checkout-lifetime', now,
+    tooLong, 7, 'checkout-lifetime', clientNow,
   )).toThrow('Secure checkout response is invalid');
 });
 
