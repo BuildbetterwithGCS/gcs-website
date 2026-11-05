@@ -1261,9 +1261,12 @@
       checkoutPending = true;
       checkoutButton.disabled = true;
       checkoutState.textContent = 'Preparing secure checkout…';
+      const checkoutRevision = stagedRevision;
       const intent = await run(async () => {
-        if (stagedRevision === null) throw new Error('Save a selection first');
+        if (checkoutRevision === null) throw new Error('Save a selection first');
       let intent;
+      let persistIntent = false;
+      let recoveredIdempotencyKey = null;
       const savedIntent = view.sessionStorage.getItem(INTENT_KEY);
       if (savedIntent) {
         const savedStatus = await request('/subscription/checkout-intent/status', {
@@ -1276,7 +1279,7 @@
           view.sessionStorage.removeItem(IDEMPOTENCY_KEY);
           throw error;
         }
-        if (!checkoutIntentIsCurrent(intent, stagedRevision)) {
+        if (!checkoutIntentIsCurrent(intent, checkoutRevision)) {
           view.sessionStorage.removeItem(INTENT_KEY);
           view.sessionStorage.removeItem(IDEMPOTENCY_KEY);
           const key = idempotencyKey(view.crypto.getRandomValues.bind(view.crypto));
@@ -1284,23 +1287,23 @@
           intent = validatedCheckoutIntent(
             await request('/subscription/checkout-intent', {
               method: 'POST', body: {
-                expected_selection_revision: stagedRevision,
+                expected_selection_revision: checkoutRevision,
                 idempotency_key: key,
               },
             }),
-            stagedRevision,
+            checkoutRevision,
           );
-          view.sessionStorage.setItem(INTENT_KEY, intent.intent_id);
+          persistIntent = true;
         } else {
           const recovery = await retryExpiredCheckout(intent, savedIntent, request,
             view.crypto.getRandomValues.bind(view.crypto));
           intent = validatedCheckoutIntent(
             recovery.intent,
-            stagedRevision,
+            checkoutRevision,
             savedIntent,
           );
           if (recovery.idempotency_key) {
-            view.sessionStorage.setItem(IDEMPOTENCY_KEY, recovery.idempotency_key);
+            recoveredIdempotencyKey = recovery.idempotency_key;
           }
         }
       } else {
@@ -1312,12 +1315,23 @@
         intent = validatedCheckoutIntent(
           await request('/subscription/checkout-intent', {
             method: 'POST', body: {
-              expected_selection_revision: stagedRevision,
+              expected_selection_revision: checkoutRevision,
               idempotency_key: key,
             },
           }),
-          stagedRevision,
+          checkoutRevision,
         );
+        persistIntent = true;
+      }
+      if (stagedRevision !== checkoutRevision) {
+        view.sessionStorage.removeItem(INTENT_KEY);
+        view.sessionStorage.removeItem(IDEMPOTENCY_KEY);
+        throw new Error('Secure checkout selection changed');
+      }
+      if (recoveredIdempotencyKey) {
+        view.sessionStorage.setItem(IDEMPOTENCY_KEY, recoveredIdempotencyKey);
+      }
+      if (persistIntent) {
         view.sessionStorage.setItem(INTENT_KEY, intent.intent_id);
       }
       if (intent.checkout_url) {
