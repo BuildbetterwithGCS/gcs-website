@@ -1353,7 +1353,9 @@ test('single-flight checkout keeps the existing idempotency boundary', () => {
     'let key = view.sessionStorage.getItem(IDEMPOTENCY_KEY);');
   expect(checkout).toContain(
     'view.sessionStorage.setItem(IDEMPOTENCY_KEY, key);');
-  expect(checkout).toContain('expected_selection_revision: stagedRevision');
+  expect(checkout).toContain('const checkoutRevision = stagedRevision;');
+  expect(checkout).toContain('expected_selection_revision: checkoutRevision');
+  expect(checkout).toContain('stagedRevision !== checkoutRevision');
   expect(checkout).toContain('validatedCheckoutIntent(');
 });
 
