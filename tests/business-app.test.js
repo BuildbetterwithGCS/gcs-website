@@ -1592,3 +1592,56 @@ test('expired checkout URL never reaches the navigation boundary', () => {
   }).toThrow('Secure checkout response is invalid');
   expect(view.location.assign).not.toHaveBeenCalled();
 });
+
+
+test('checkout provider lifetime is capped at twenty-four hours', () => {
+  const now = Date.parse('2026-11-05T12:00:00Z');
+  const base = {
+    intent_id: 'checkout-lifetime',
+    selection_revision: 7,
+    selection_current: true,
+    status: 'PROVIDER_SESSION',
+    created_at: '2026-11-05T12:00:00Z',
+    updated_at: '2026-11-05T12:00:00Z',
+    checkout_url: 'https://checkout.example.test/session/lifetime',
+  };
+  const exactlyTwentyFourHours = {
+    ...base,
+    expires_at: '2026-11-06T12:00:00Z',
+  };
+  expect(app.validatedCheckoutIntent(
+    exactlyTwentyFourHours, 7, 'checkout-lifetime', now,
+  )).toEqual(exactlyTwentyFourHours);
+
+  const tooLong = {
+    ...base,
+    expires_at: '2026-11-06T12:00:00.001Z',
+  };
+  expect(() => app.validatedCheckoutIntent(
+    tooLong, 7, 'checkout-lifetime', now,
+  )).toThrow('Secure checkout response is invalid');
+});
+
+test('overlong checkout lifetime never reaches navigation', () => {
+  const view = { location: { assign: jest.fn() } };
+  const overlong = {
+    intent_id: 'checkout-overlong',
+    selection_revision: 7,
+    selection_current: true,
+    status: 'PROVIDER_SESSION',
+    expires_at: '2026-11-06T12:00:00.001Z',
+    created_at: '2026-11-05T12:00:00Z',
+    updated_at: '2026-11-05T12:00:00Z',
+    checkout_url: 'https://checkout.example.test/session/overlong',
+  };
+  expect(() => {
+    const intent = app.validatedCheckoutIntent(
+      overlong,
+      7,
+      'checkout-overlong',
+      Date.parse('2026-11-05T12:00:00Z'),
+    );
+    app.navigateToCheckout(view, intent.checkout_url);
+  }).toThrow('Secure checkout response is invalid');
+  expect(view.location.assign).not.toHaveBeenCalled();
+});
