@@ -1177,3 +1177,30 @@ test('verified billing awaiting approval cannot start another checkout', () => {
     'Billing is verified. Access approval is pending; no checkout is needed.');
   expect(js).toContain('approvalPending ? null : subscription.staged_revision');
 });
+
+
+test('subscription refresh clears stale status and checkout readiness', () => {
+  document.body.innerHTML = `
+    <p id="subscription-state">Subscription active.</p>
+    <button id="continue-checkout">Continue to secure checkout</button>
+    <p id="checkout-state">Your selection is saved.</p>`;
+  document.getElementById('continue-checkout').disabled = false;
+
+  app.clearSubscriptionPresentation(document);
+
+  expect(document.getElementById('subscription-state').textContent)
+    .toBe('Subscription status not verified.');
+  expect(document.getElementById('continue-checkout').disabled).toBe(true);
+  expect(document.getElementById('checkout-state').textContent)
+    .toBe('Refresh subscription status before continuing.');
+});
+
+
+test('subscription presentation clears before the authenticated status request', () => {
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  expect(js).toMatch(
+    /stagedRevision = null;\s+clearSubscriptionPresentation\(doc\);\s+const subscription = await run\(\(\) => request\('\/subscription'\)/);
+  expect(js.indexOf('clearSubscriptionPresentation(doc);'))
+    .toBeLessThan(js.indexOf("request('/subscription')"));
+});
