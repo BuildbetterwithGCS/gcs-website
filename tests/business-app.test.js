@@ -1171,8 +1171,8 @@ test('workspace refresh uses validated subscription onboarding presentation', ()
 test('verified billing awaiting approval cannot start another checkout', () => {
   const js = fs.readFileSync(
     path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
-  expect(js).toContain(
-    'checkoutButton.disabled = active || approvalPending || stagedRevision === null;');
+  expect(js).toMatch(
+    /checkoutButton\.disabled = checkoutPending \|\| active \|\| approvalPending\s+\|\| stagedRevision === null;/);
   expect(js).toContain(
     'Billing is verified. Access approval is pending; no checkout is needed.');
   expect(js).toContain('approvalPending ? null : subscription.staged_revision');
