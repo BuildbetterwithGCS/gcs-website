@@ -1607,7 +1607,7 @@ test('failed newer selection save keeps stale checkout locked until refresh', as
   expect(document.getElementById('subscription-state').textContent)
     .toBe('Selection saved; billing verification is still required.');
   expect(document.getElementById('checkout-state').textContent)
-    .toBe('Your selection is saved. Continue when you are ready.');
+    .toBe('Your selection is saved. Billing is still unverified.');
 });
 
 test('malformed provider timeline restores eligible checkout without persistence', async () => {
