@@ -1645,3 +1645,70 @@ test('overlong checkout lifetime never reaches navigation', () => {
   }).toThrow('Secure checkout response is invalid');
   expect(view.location.assign).not.toHaveBeenCalled();
 });
+
+
+test('URL-bearing checkout intents require monotonic provider timestamps', () => {
+  const base = {
+    intent_id: 'checkout-monotonic',
+    selection_revision: 7,
+    selection_current: true,
+    status: 'PROVIDER_SESSION',
+    expires_at: '2026-11-05T12:30:00Z',
+    created_at: '2026-11-05T12:00:00Z',
+    updated_at: '2026-11-05T12:00:00Z',
+    checkout_url: 'https://checkout.example.test/session/monotonic',
+  };
+  const clientNow = Date.parse('2026-11-05T11:59:00Z');
+  expect(app.validatedCheckoutIntent(
+    base, 7, 'checkout-monotonic', clientNow,
+  )).toEqual(base);
+
+  for (const invalid of [
+    {
+      ...base,
+      created_at: '2026-11-05T12:01:00Z',
+      updated_at: '2026-11-05T12:00:00Z',
+    },
+    {
+      ...base,
+      updated_at: '2026-11-05T12:30:00Z',
+    },
+    {
+      ...base,
+      updated_at: '2026-11-05T12:31:00Z',
+    },
+  ]) {
+    expect(() => app.validatedCheckoutIntent(
+      invalid, 7, 'checkout-monotonic', clientNow,
+    )).toThrow('Secure checkout response is invalid');
+  }
+});
+
+test('non-monotonic provider timestamps never reach navigation', () => {
+  const view = { location: { assign: jest.fn() } };
+  const base = {
+    intent_id: 'checkout-ordering',
+    selection_revision: 7,
+    selection_current: true,
+    status: 'PROVIDER_SESSION',
+    expires_at: '2026-11-05T13:00:00Z',
+    created_at: '2026-11-05T12:00:00Z',
+    updated_at: '2026-11-05T12:30:00Z',
+    checkout_url: 'https://checkout.example.test/session/ordering',
+  };
+  const clientNow = Date.parse('2026-11-05T11:59:00Z');
+
+  for (const invalid of [
+    { ...base, created_at: '2026-11-05T12:31:00Z' },
+    { ...base, updated_at: '2026-11-05T13:00:00Z' },
+    { ...base, updated_at: '2026-11-05T13:01:00Z' },
+  ]) {
+    expect(() => {
+      const intent = app.validatedCheckoutIntent(
+        invalid, 7, 'checkout-ordering', clientNow,
+      );
+      app.navigateToCheckout(view, intent.checkout_url);
+    }).toThrow('Secure checkout response is invalid');
+  }
+  expect(view.location.assign).not.toHaveBeenCalled();
+});
