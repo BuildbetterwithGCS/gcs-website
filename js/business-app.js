@@ -610,7 +610,7 @@
   }
 
   function validatedCheckoutIntent(value, expectedRevision = null,
-    expectedIntentId = null) {
+    expectedIntentId = null, now = Date.now()) {
     const invalid = () => {
       throw new Error('Secure checkout response is invalid');
     };
@@ -642,7 +642,12 @@
     let checkoutUrl = null;
     if (value.checkout_url !== null) {
       checkoutUrl = validatedCheckoutUrl(value.checkout_url);
-      if (!value.selection_current || value.status !== 'PROVIDER_SESSION') invalid();
+      const currentTime = Number(now);
+      const expiresAt = Date.parse(value.expires_at);
+      if (!value.selection_current || value.status !== 'PROVIDER_SESSION'
+        || typeof value.expires_at !== 'string'
+        || !Number.isFinite(currentTime) || !Number.isFinite(expiresAt)
+        || expiresAt <= currentTime) invalid();
     }
     return { ...value, checkout_url: checkoutUrl };
   }
