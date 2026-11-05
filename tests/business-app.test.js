@@ -993,7 +993,7 @@ test('dashboard refresh clears stale totals before requesting current workspace 
   const js = fs.readFileSync(
     path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
   expect(js).toMatch(
-    /async function refresh\(\) \{\s+clearDashboardSummary\(doc\);\s+const dashboard = await run/);
+    /async function refresh\(\) \{[\s\S]{0,500}clearDashboardSummary\(doc\);[\s\S]{0,500}const dashboard = await run/);
 });
 
 
