@@ -1338,7 +1338,7 @@ test('checkout handoff is single-flight and stays disabled while pending', () =>
   expect(checkout.indexOf('checkoutPending = true;'))
     .toBeLessThan(checkout.indexOf("request('/subscription/checkout-intent"));
   expect(checkout).toMatch(
-    /const intent = await run\([\s\S]+checkoutPending = false;\s+if \(!intent \|\| !intent\.checkout_url\) \{\s+checkoutButton\.disabled = stagedRevision === null;/);
+    /const intent = await run\([\s\S]+checkoutPending = false;\s+if \(!intent\) \{\s+checkoutState\.textContent = 'Secure checkout was not started\. Try again later\.';\s+\}\s+if \(!intent \|\| !intent\.checkout_url\) \{\s+checkoutButton\.disabled = stagedRevision === null;/);
 });
 
 test('single-flight checkout keeps the existing idempotency boundary', () => {
