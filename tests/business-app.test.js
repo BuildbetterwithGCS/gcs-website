@@ -1337,8 +1337,13 @@ test('checkout handoff is single-flight and stays disabled while pending', () =>
     /if \(checkoutPending\) return;\s+checkoutPending = true;\s+checkoutButton\.disabled = true;\s+checkoutState\.textContent = 'Preparing secure checkout…';/);
   expect(checkout.indexOf('checkoutPending = true;'))
     .toBeLessThan(checkout.indexOf("request('/subscription/checkout-intent"));
-  expect(checkout).toMatch(
-    /const intent = await run\([\s\S]+checkoutPending = false;\s+if \(!intent\) \{\s+checkoutState\.textContent = 'Secure checkout was not started\. Try again later\.';\s+\}\s+if \(!intent \|\| !intent\.checkout_url\) \{\s+checkoutButton\.disabled = stagedRevision === null;/);
+  expect(checkout).toContain('const intent = await run(');
+  expect(checkout).toContain('checkoutPending = false;');
+  expect(checkout).toContain('if (checkoutLockReason) {');
+  expect(checkout).toContain(
+    "checkoutState.textContent = 'Secure checkout was not started. Try again later.';");
+  expect(checkout).toContain(
+    'checkoutButton.disabled = stagedRevision === null;');
 });
 
 test('single-flight checkout keeps the existing idempotency boundary', () => {
@@ -1609,6 +1614,77 @@ test('failed newer selection save keeps stale checkout locked until refresh', as
   expect(document.getElementById('checkout-state').textContent)
     .toBe('Your selection is saved. Billing is still unverified.');
 });
+
+test('verified active entitlement cancels an in-flight checkout without stale handoff', async () => {
+  const originalLocation = window.location.href;
+  let releaseCheckout;
+  const checkoutResponse = new Promise(resolve => { releaseCheckout = resolve; });
+  const checkoutButton = initCheckoutRuntime(checkoutResponse, {
+    subscriptionSaveResponse: Promise.resolve({
+      ok: true,
+      status: 200,
+      json: async () => ({ data: {
+        status: 'active',
+        billing_verified: true,
+        grants_access: true,
+        staged_revision: 7,
+      } }),
+    }),
+  });
+  await flushCheckoutRuntime();
+  expect(checkoutButton.disabled).toBe(false);
+
+  checkoutButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  document.getElementById('subscription-form')
+    .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  await flushCheckoutRuntime();
+
+  const checkoutCalls = () => fetch.mock.calls.filter(
+    ([url]) => url.endsWith('/subscription/checkout-intent'),
+  );
+  expect(checkoutCalls()).toHaveLength(1);
+  expect(document.getElementById('subscription-state').textContent)
+    .toBe('Subscription active.');
+  expect(document.getElementById('checkout-state').textContent)
+    .toBe('Subscription access is active. No checkout is needed.');
+  expect(checkoutButton.disabled).toBe(true);
+  expect(window.sessionStorage.getItem('nexus.checkout.intent')).toBeNull();
+  expect(window.sessionStorage.getItem('nexus.checkout.idempotency')).toBeNull();
+
+  releaseCheckout({
+    ok: true,
+    status: 200,
+    json: async () => ({ data: {
+      intent_id: 'checkout-before-active-entitlement',
+      selection_revision: 7,
+      selection_current: true,
+      status: 'READY_FOR_PROVIDER',
+      expires_at: null,
+      created_at: '2026-11-05T17:00:00Z',
+      updated_at: '2026-11-05T17:00:00Z',
+      checkout_url: null,
+    } }),
+  });
+  await flushCheckoutRuntime();
+
+  expect(checkoutCalls()).toHaveLength(1);
+  expect(window.sessionStorage.getItem('nexus.checkout.intent')).toBeNull();
+  expect(window.sessionStorage.getItem('nexus.checkout.idempotency')).toBeNull();
+  expect(window.location.href).toBe(originalLocation);
+  expect(checkoutButton.disabled).toBe(true);
+  expect(document.getElementById('subscription-state').textContent)
+    .toBe('Subscription active.');
+  expect(document.getElementById('checkout-state').textContent)
+    .toBe('Subscription access is active. No checkout is needed.');
+  expect(document.getElementById('app-status').textContent)
+    .toBe('Subscription access is active.');
+  expect(document.getElementById('app-status').classList.contains('error')).toBe(false);
+
+  checkoutButton.click();
+  await flushCheckoutRuntime();
+  expect(checkoutCalls()).toHaveLength(1);
+});
+
 
 test('malformed provider timeline restores eligible checkout without persistence', async () => {
   const originalLocation = window.location.href;
