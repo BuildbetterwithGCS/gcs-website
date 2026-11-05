@@ -1519,6 +1519,107 @@ test('malformed provider timeline restores eligible checkout without persistence
   expect(document.getElementById('app-status').classList.contains('error')).toBe(true);
 });
 
+test('malformed saved status is cleared before one fresh exact-revision intent', async () => {
+  const originalLocation = window.location.href;
+  const savedIntent = 'checkout-corrupted-saved';
+  const oldIdempotency = 'nexus-' + 'cd'.repeat(24);
+  const malformedStatus = {
+    intent_id: savedIntent,
+    selection_revision: 7,
+    selection_current: true,
+    status: 'PROVIDER_SESSION',
+    expires_at: '2026-11-05T14:00:00Z',
+    created_at: '2026-11-05T13:31:00Z',
+    updated_at: '2026-11-05T13:30:00Z',
+    checkout_url: 'https://checkout.example.test/session/corrupted-saved',
+  };
+  const freshIntent = {
+    intent_id: 'checkout-fresh-exact-revision',
+    selection_revision: 7,
+    selection_current: true,
+    status: 'READY_FOR_PROVIDER',
+    expires_at: null,
+    created_at: '2026-11-05T13:32:00Z',
+    updated_at: '2026-11-05T13:32:00Z',
+    checkout_url: null,
+  };
+  const checkoutButton = initCheckoutRuntime(Promise.resolve({
+    ok: true,
+    status: 200,
+    json: async () => ({ data: freshIntent }),
+  }), {
+    intentId: savedIntent,
+    idempotencyKey: oldIdempotency,
+    statusResponse: Promise.resolve({
+      ok: true,
+      status: 200,
+      json: async () => ({ data: malformedStatus }),
+    }),
+  });
+  await flushCheckoutRuntime();
+
+  checkoutButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  await flushCheckoutRuntime();
+
+  const callsEnding = suffix => fetch.mock.calls.filter(
+    ([url]) => url.endsWith(suffix),
+  );
+  expect(callsEnding('/subscription/checkout-intent/status')).toHaveLength(1);
+  expect(callsEnding('/subscription/checkout-intent')).toHaveLength(0);
+  expect(window.sessionStorage.getItem('nexus.checkout.intent')).toBeNull();
+  expect(window.sessionStorage.getItem('nexus.checkout.idempotency')).toBeNull();
+  expect(checkoutButton.disabled).toBe(false);
+  expect(document.getElementById('checkout-state').textContent)
+    .toBe('Secure checkout was not started. Try again later.');
+
+  checkoutButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  await flushCheckoutRuntime();
+
+  expect(callsEnding('/subscription/checkout-intent/status')).toHaveLength(1);
+  expect(callsEnding('/subscription/checkout-intent')).toHaveLength(1);
+  const [, requestOptions] = callsEnding('/subscription/checkout-intent')[0];
+  expect(JSON.parse(requestOptions.body)).toEqual({
+    expected_selection_revision: 7,
+    idempotency_key: expect.stringMatching(/^nexus-[a-f0-9]{48}$/),
+  });
+  expect(window.sessionStorage.getItem('nexus.checkout.intent'))
+    .toBe('checkout-fresh-exact-revision');
+  expect(window.sessionStorage.getItem('nexus.checkout.idempotency'))
+    .not.toBe(oldIdempotency);
+  expect(window.location.href).toBe(originalLocation);
+  expect(checkoutButton.disabled).toBe(false);
+  expect(document.getElementById('checkout-state').textContent)
+    .toBe('Secure checkout is being prepared. Try again later.');
+});
+
+test('transient saved-status failure preserves retry state', async () => {
+  const savedIntent = 'checkout-transient-saved';
+  const idempotency = 'nexus-' + 'ef'.repeat(24);
+  const checkoutButton = initCheckoutRuntime(undefined, {
+    intentId: savedIntent,
+    idempotencyKey: idempotency,
+    statusResponse: Promise.resolve({
+      ok: false,
+      status: 503,
+      json: async () => ({ error: 'workspace_unavailable' }),
+    }),
+  });
+  await flushCheckoutRuntime();
+
+  checkoutButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  await flushCheckoutRuntime();
+
+  expect(fetch.mock.calls.filter(
+    ([url]) => url.endsWith('/subscription/checkout-intent/status'),
+  )).toHaveLength(1);
+  expect(window.sessionStorage.getItem('nexus.checkout.intent')).toBe(savedIntent);
+  expect(window.sessionStorage.getItem('nexus.checkout.idempotency'))
+    .toBe(idempotency);
+  expect(checkoutButton.disabled).toBe(false);
+  expect(document.getElementById('checkout-state').textContent)
+    .toBe('Secure checkout was not started. Try again later.');
+});
+
 test('checkout navigation validates before assigning a new location', () => {
   const view = { location: { assign: jest.fn() } };
   expect(app.navigateToCheckout(
