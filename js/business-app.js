@@ -15,6 +15,7 @@
   const IDEMPOTENCY_KEY = 'nexus.checkout.idempotency';
   const XLSX_CONTENT_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
   const MAX_WORKBOOK_BYTES = 5 * 1024 * 1024;
+  const MAX_PROVIDER_SESSION_MS = 24 * 60 * 60 * 1000;
   const PREVIEW_RECEIPT_HEADER = 'X-Nexus-Preview-Receipt';
 
   function csrfToken(cookie) {
@@ -647,7 +648,8 @@
       if (!value.selection_current || value.status !== 'PROVIDER_SESSION'
         || typeof value.expires_at !== 'string'
         || !Number.isFinite(currentTime) || !Number.isFinite(expiresAt)
-        || expiresAt <= currentTime) invalid();
+        || expiresAt <= currentTime
+        || expiresAt - currentTime > MAX_PROVIDER_SESSION_MS) invalid();
     }
     return { ...value, checkout_url: checkoutUrl };
   }
