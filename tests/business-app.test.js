@@ -1204,3 +1204,37 @@ test('subscription presentation clears before the authenticated status request',
   expect(js.indexOf('clearSubscriptionPresentation(doc);'))
     .toBeLessThan(js.indexOf("request('/subscription')"));
 });
+
+test('subscription save fails closed and validates the returned status before checkout', () => {
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  const submit = js.slice(
+    js.indexOf("getElementById('subscription-form').addEventListener('submit'"),
+    js.indexOf("checkoutButton.addEventListener('click'"),
+  );
+
+  expect(submit).toMatch(
+    /stagedRevision = null;\s+clearSubscriptionPresentation\(doc\);\s+run\(\(\) => request\('\/subscription', \{ method: 'POST'/);
+  expect(submit).toContain("'Subscription request completed.'");
+  expect(submit).toContain('presentSubscription(value);');
+  expect(submit).not.toContain('checkoutReady(value.staged_revision)');
+  expect(submit).not.toContain(
+    'Selection saved; billing verification is still required.');
+});
+
+test('saved subscription responses share approval and active checkout lockout', () => {
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  const presentation = js.slice(
+    js.indexOf('function presentSubscription(subscription)'),
+    js.indexOf('async function refresh()'),
+  );
+
+  expect(presentation).toContain(
+    'const subscriptionView = subscriptionStatusView(subscription);');
+  expect(presentation).toMatch(
+    /checkoutReady\(\s+subscriptionView\.staged_revision,\s+subscriptionView\.active,\s+subscriptionView\.approval_pending/);
+  expect(presentation).toContain(
+    'clearCompletedCheckout(subscription, view.sessionStorage);');
+});
+
