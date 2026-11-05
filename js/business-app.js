@@ -610,6 +610,7 @@
   function subscriptionStatusView(subscription) {
     const unavailable = {
       active: false,
+      approval_pending: false,
       staged_revision: null,
       message: 'Subscription status is unavailable. Try again later.',
     };
@@ -622,6 +623,7 @@
         || subscription.staged_revision !== null) return unavailable;
       return {
         active: false,
+        approval_pending: false,
         staged_revision: null,
         message: 'Choose and save business tools. No subscription is active.',
       };
@@ -631,20 +633,24 @@
       if (subscription.grants_access !== false
         || !Number.isInteger(subscription.staged_revision)
         || subscription.staged_revision < 1) return unavailable;
+      const approvalPending = subscription.billing_verified === true;
+      if (!approvalPending && subscription.billing_verified !== false) {
+        return unavailable;
+      }
       return {
         active: false,
-        staged_revision: subscription.staged_revision,
-        message: subscription.billing_verified === true
+        approval_pending: approvalPending,
+        staged_revision: approvalPending ? null : subscription.staged_revision,
+        message: approvalPending
           ? 'Billing verified; access is still waiting for approval.'
-          : subscription.billing_verified === false
-            ? 'Selection saved; billing verification is still required.'
-            : unavailable.message,
+          : 'Selection saved; billing verification is still required.',
       };
     }
 
     if (subscriptionIsVerifiedActive(subscription)) {
       return {
         active: true,
+        approval_pending: false,
         staged_revision: null,
         message: 'Subscription active.',
       };
@@ -692,14 +698,16 @@
       status.classList.toggle('error', error);
     }
 
-    function checkoutReady(revision, active = false) {
+    function checkoutReady(revision, active = false, approvalPending = false) {
       stagedRevision = Number.isInteger(revision) && revision > 0 ? revision : null;
-      checkoutButton.disabled = active || stagedRevision === null;
+      checkoutButton.disabled = active || approvalPending || stagedRevision === null;
       checkoutState.textContent = active
         ? 'Subscription access is active. No checkout is needed.'
-        : stagedRevision === null
-          ? 'Save your business tools before continuing.'
-          : 'Your selection is saved. Billing is still unverified.';
+        : approvalPending
+          ? 'Billing is verified. Access approval is pending; no checkout is needed.'
+          : stagedRevision === null
+            ? 'Save your business tools before continuing.'
+            : 'Your selection is saved. Billing is still unverified.';
     }
 
     async function run(action, success) {
@@ -738,6 +746,7 @@
         checkoutReady(
           subscriptionView.staged_revision,
           subscriptionView.active,
+          subscriptionView.approval_pending,
         );
       }
     }
