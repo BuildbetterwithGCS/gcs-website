@@ -1352,7 +1352,7 @@ async function flushCheckoutRuntime() {
   }
 }
 
-function initCheckoutRuntime(checkoutResponse) {
+function initCheckoutRuntime(checkoutResponse, options = {}) {
   const html = fs.readFileSync(
     path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
   document.body.innerHTML = html.slice(
@@ -1360,6 +1360,13 @@ function initCheckoutRuntime(checkoutResponse) {
     html.lastIndexOf('</body>'),
   );
   window.sessionStorage.clear();
+  if (options.intentId) {
+    window.sessionStorage.setItem('nexus.checkout.intent', options.intentId);
+  }
+  if (options.idempotencyKey) {
+    window.sessionStorage.setItem(
+      'nexus.checkout.idempotency', options.idempotencyKey);
+  }
   fetch.mockImplementation(url => {
     const respond = data => Promise.resolve({
       ok: true,
@@ -1383,6 +1390,12 @@ function initCheckoutRuntime(checkoutResponse) {
         grants_access: false,
         staged_revision: 7,
       });
+    }
+    if (url.endsWith('/subscription/checkout-intent/status')) {
+      return options.statusResponse;
+    }
+    if (url.endsWith('/subscription/checkout-intent/retry')) {
+      return options.retryResponse;
     }
     if (url.endsWith('/subscription/checkout-intent')) return checkoutResponse;
     throw new Error('Unexpected runtime request: ' + url);
@@ -1454,4 +1467,90 @@ test('delayed checkout failure restores only the eligible saved selection', asyn
   expect(document.getElementById('app-status').textContent)
     .toBe('This task is not available yet. Try again later.');
   expect(document.getElementById('app-status').classList.contains('error')).toBe(true);
+});
+
+
+test('checkout navigation validates before assigning a new location', () => {
+  const view = { location: { assign: jest.fn() } };
+  expect(app.navigateToCheckout(
+    view, 'https://checkout.example.test/session/verified',
+  )).toBe('https://checkout.example.test/session/verified');
+  expect(view.location.assign).toHaveBeenCalledTimes(1);
+  expect(view.location.assign).toHaveBeenCalledWith(
+    'https://checkout.example.test/session/verified');
+
+  view.location.assign.mockClear();
+  for (const invalid of [
+    'http://checkout.example.test/session/one',
+    'https://user@checkout.example.test/session/one',
+    'https://checkout.example.test:444/session/one',
+    'https://checkout.example.test/session/one#fragment',
+    'not a url',
+  ]) {
+    expect(() => app.navigateToCheckout(view, invalid)).toThrow(
+      'Secure checkout address is invalid');
+  }
+  expect(view.location.assign).not.toHaveBeenCalled();
+  expect(() => app.navigateToCheckout({}, 'https://checkout.example.test'))
+    .toThrow('Secure checkout navigation is unavailable');
+});
+
+test('delayed saved-intent retry remains single-flight', async () => {
+  let releaseStatus;
+  const statusResponse = new Promise(resolve => { releaseStatus = resolve; });
+  const retryIntent = {
+    intent_id: 'checkout-saved',
+    selection_revision: 7,
+    selection_current: true,
+    status: 'READY_FOR_PROVIDER',
+    expires_at: null,
+    created_at: '2026-11-05T09:00:00Z',
+    updated_at: '2026-11-05T09:05:00Z',
+    checkout_url: null,
+  };
+  const checkoutButton = initCheckoutRuntime(undefined, {
+    intentId: 'checkout-saved',
+    idempotencyKey: 'nexus-' + 'ab'.repeat(24),
+    statusResponse,
+    retryResponse: Promise.resolve({
+      ok: true,
+      status: 200,
+      json: async () => ({ data: retryIntent }),
+    }),
+  });
+  await flushCheckoutRuntime();
+  expect(checkoutButton.disabled).toBe(false);
+
+  checkoutButton.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 1 }));
+  checkoutButton.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 0 }));
+
+  const callsEnding = suffix => fetch.mock.calls.filter(
+    ([url]) => url.endsWith(suffix),
+  );
+  expect(callsEnding('/subscription/checkout-intent/status')).toHaveLength(1);
+  expect(callsEnding('/subscription/checkout-intent/retry')).toHaveLength(0);
+  expect(checkoutButton.disabled).toBe(true);
+
+  releaseStatus({
+    ok: true,
+    status: 200,
+    json: async () => ({ data: {
+      ...retryIntent,
+      status: 'PROVIDER_SESSION',
+      expires_at: '2026-11-05T08:59:59Z',
+      updated_at: '2026-11-05T09:00:00Z',
+    } }),
+  });
+  await flushCheckoutRuntime();
+
+  expect(callsEnding('/subscription/checkout-intent/status')).toHaveLength(1);
+  expect(callsEnding('/subscription/checkout-intent/retry')).toHaveLength(1);
+  expect(callsEnding('/subscription/checkout-intent')).toHaveLength(0);
+  expect(checkoutButton.disabled).toBe(false);
+  expect(document.getElementById('checkout-state').textContent)
+    .toBe('Secure checkout is being prepared. Try again later.');
+  expect(window.sessionStorage.getItem('nexus.checkout.intent'))
+    .toBe('checkout-saved');
+  expect(window.sessionStorage.getItem('nexus.checkout.idempotency'))
+    .not.toBe('nexus-' + 'ab'.repeat(24));
 });
