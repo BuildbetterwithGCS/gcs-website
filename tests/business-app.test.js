@@ -1380,7 +1380,7 @@ function initCheckoutRuntime(checkoutResponse, options = {}) {
     window.sessionStorage.setItem(
       'nexus.checkout.idempotency', options.idempotencyKey);
   }
-  fetch.mockImplementation(url => {
+  fetch.mockImplementation((url, requestOptions = {}) => {
     const respond = data => Promise.resolve({
       ok: true,
       status: 200,
@@ -1397,6 +1397,9 @@ function initCheckoutRuntime(checkoutResponse, options = {}) {
       });
     }
     if (url.endsWith('/subscription')) {
+      if (requestOptions.method === 'POST' && options.subscriptionSaveResponse) {
+        return options.subscriptionSaveResponse;
+      }
       return respond({
         status: 'pending_billing',
         billing_verified: false,
@@ -1482,6 +1485,69 @@ test('delayed checkout failure restores only the eligible saved selection', asyn
   expect(document.getElementById('app-status').classList.contains('error')).toBe(true);
 });
 
+
+test('newer saved selection rejects a delayed older checkout response', async () => {
+  const originalLocation = window.location.href;
+  let releaseCheckout;
+  const checkoutResponse = new Promise(resolve => { releaseCheckout = resolve; });
+  const checkoutButton = initCheckoutRuntime(checkoutResponse, {
+    subscriptionSaveResponse: Promise.resolve({
+      ok: true,
+      status: 200,
+      json: async () => ({ data: {
+        status: 'pending_billing',
+        billing_verified: false,
+        grants_access: false,
+        staged_revision: 8,
+      } }),
+    }),
+  });
+  await flushCheckoutRuntime();
+  expect(checkoutButton.disabled).toBe(false);
+
+  checkoutButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  expect(checkoutButton.disabled).toBe(true);
+
+  document.getElementById('users').value = '10';
+  document.getElementById('subscription-form')
+    .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  await flushCheckoutRuntime();
+
+  const callsEnding = suffix => fetch.mock.calls.filter(
+    ([url]) => url.endsWith(suffix),
+  );
+  expect(callsEnding('/subscription')).toHaveLength(2);
+  expect(checkoutButton.disabled).toBe(true);
+  expect(window.sessionStorage.getItem('nexus.checkout.intent')).toBeNull();
+
+  releaseCheckout({
+    ok: true,
+    status: 200,
+    json: async () => ({ data: {
+      intent_id: 'checkout-old-revision',
+      selection_revision: 7,
+      selection_current: true,
+      status: 'READY_FOR_PROVIDER',
+      expires_at: null,
+      created_at: '2026-11-05T15:00:00Z',
+      updated_at: '2026-11-05T15:00:00Z',
+      checkout_url: null,
+    } }),
+  });
+  await flushCheckoutRuntime();
+
+  expect(callsEnding('/subscription/checkout-intent')).toHaveLength(1);
+  expect(JSON.parse(callsEnding('/subscription/checkout-intent')[0][1].body)
+    .expected_selection_revision).toBe(7);
+  expect(window.sessionStorage.getItem('nexus.checkout.intent')).toBeNull();
+  expect(window.sessionStorage.getItem('nexus.checkout.idempotency')).toBeNull();
+  expect(window.location.href).toBe(originalLocation);
+  expect(checkoutButton.disabled).toBe(false);
+  expect(document.getElementById('checkout-state').textContent)
+    .toBe('Secure checkout was not started. Try again later.');
+  expect(document.getElementById('app-status').textContent)
+    .toBe('This task is not available yet. Try again later.');
+});
 
 test('malformed provider timeline restores eligible checkout without persistence', async () => {
   const originalLocation = window.location.href;
