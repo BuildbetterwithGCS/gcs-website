@@ -1483,6 +1483,42 @@ test('delayed checkout failure restores only the eligible saved selection', asyn
 });
 
 
+test('malformed provider timeline restores eligible checkout without persistence', async () => {
+  const originalLocation = window.location.href;
+  const malformed = {
+    intent_id: 'checkout-malformed-runtime',
+    selection_revision: 7,
+    selection_current: true,
+    status: 'PROVIDER_SESSION',
+    expires_at: '2026-11-05T13:00:00Z',
+    created_at: '2026-11-05T12:31:00Z',
+    updated_at: '2026-11-05T12:30:00Z',
+    checkout_url: 'https://checkout.example.test/session/malformed-runtime',
+  };
+  const checkoutButton = initCheckoutRuntime(Promise.resolve({
+    ok: true,
+    status: 200,
+    json: async () => ({ data: malformed }),
+  }));
+  await flushCheckoutRuntime();
+  expect(checkoutButton.disabled).toBe(false);
+
+  checkoutButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  await flushCheckoutRuntime();
+
+  expect(fetch.mock.calls.filter(
+    ([url]) => url.endsWith('/subscription/checkout-intent'),
+  )).toHaveLength(1);
+  expect(window.sessionStorage.getItem('nexus.checkout.intent')).toBeNull();
+  expect(window.location.href).toBe(originalLocation);
+  expect(checkoutButton.disabled).toBe(false);
+  expect(document.getElementById('checkout-state').textContent)
+    .toBe('Secure checkout was not started. Try again later.');
+  expect(document.getElementById('app-status').textContent)
+    .toBe('This task is not available yet. Try again later.');
+  expect(document.getElementById('app-status').classList.contains('error')).toBe(true);
+});
+
 test('checkout navigation validates before assigning a new location', () => {
   const view = { location: { assign: jest.fn() } };
   expect(app.navigateToCheckout(
