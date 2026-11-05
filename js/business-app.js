@@ -645,11 +645,13 @@
       checkoutUrl = validatedCheckoutUrl(value.checkout_url);
       const currentTime = Number(now);
       const expiresAt = Date.parse(value.expires_at);
+      const updatedAt = Date.parse(value.updated_at);
       if (!value.selection_current || value.status !== 'PROVIDER_SESSION'
         || typeof value.expires_at !== 'string'
         || !Number.isFinite(currentTime) || !Number.isFinite(expiresAt)
+        || !Number.isFinite(updatedAt)
         || expiresAt <= currentTime
-        || expiresAt - currentTime > MAX_PROVIDER_SESSION_MS) invalid();
+        || expiresAt - updatedAt > MAX_PROVIDER_SESSION_MS) invalid();
     }
     return { ...value, checkout_url: checkoutUrl };
   }
