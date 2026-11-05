@@ -1359,6 +1359,7 @@ function initCheckoutRuntime(checkoutResponse) {
     html.indexOf('<body>') + 6,
     html.lastIndexOf('</body>'),
   );
+  window.sessionStorage.clear();
   fetch.mockImplementation(url => {
     const respond = data => Promise.resolve({
       ok: true,
