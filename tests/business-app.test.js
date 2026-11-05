@@ -1090,6 +1090,7 @@ test('subscription onboarding states remain visibly distinct and fail closed', (
     staged_revision: null,
   })).toEqual({
     active: false,
+    approval_pending: false,
     staged_revision: null,
     message: 'Choose and save business tools. No subscription is active.',
   });
@@ -1101,6 +1102,7 @@ test('subscription onboarding states remain visibly distinct and fail closed', (
     staged_revision: 3,
   })).toEqual({
     active: false,
+    approval_pending: false,
     staged_revision: 3,
     message: 'Selection saved; billing verification is still required.',
   });
@@ -1112,7 +1114,8 @@ test('subscription onboarding states remain visibly distinct and fail closed', (
     staged_revision: 3,
   })).toEqual({
     active: false,
-    staged_revision: 3,
+    approval_pending: true,
+    staged_revision: null,
     message: 'Billing verified; access is still waiting for approval.',
   });
 
@@ -1123,6 +1126,7 @@ test('subscription onboarding states remain visibly distinct and fail closed', (
     staged_revision: 3,
   })).toEqual({
     active: true,
+    approval_pending: false,
     staged_revision: null,
     message: 'Subscription active.',
   });
@@ -1142,6 +1146,7 @@ test('subscription onboarding states remain visibly distinct and fail closed', (
   ]) {
     expect(app.subscriptionStatusView(invalid)).toEqual({
       active: false,
+      approval_pending: false,
       staged_revision: null,
       message: 'Subscription status is unavailable. Try again later.',
     });
@@ -1157,7 +1162,18 @@ test('workspace refresh uses validated subscription onboarding presentation', ()
   expect(js).toContain(
     "doc.getElementById('subscription-state').textContent = subscriptionView.message;");
   expect(js).toMatch(
-    /checkoutReady\(\s+subscriptionView\.staged_revision,\s+subscriptionView\.active/);
+    /checkoutReady\(\s+subscriptionView\.staged_revision,\s+subscriptionView\.active,\s+subscriptionView\.approval_pending/);
   expect(js).not.toMatch(
     /subscription-state'\)\.textContent = active\s+\?/);
+});
+
+
+test('verified billing awaiting approval cannot start another checkout', () => {
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  expect(js).toContain(
+    'checkoutButton.disabled = active || approvalPending || stagedRevision === null;');
+  expect(js).toContain(
+    'Billing is verified. Access approval is pending; no checkout is needed.');
+  expect(js).toContain('approvalPending ? null : subscription.staged_revision');
 });
