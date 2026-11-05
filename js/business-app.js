@@ -1325,6 +1325,9 @@
         return intent;
       }, 'Checkout request saved.');
       checkoutPending = false;
+      if (!intent) {
+        checkoutState.textContent = 'Secure checkout was not started. Try again later.';
+      }
       if (!intent || !intent.checkout_url) {
         checkoutButton.disabled = stagedRevision === null;
       }
