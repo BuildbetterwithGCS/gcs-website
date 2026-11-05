@@ -1344,3 +1344,113 @@ test('single-flight checkout keeps the existing idempotency boundary', () => {
   expect(checkout).toContain('validatedCheckoutIntent(');
 });
 
+
+
+async function flushCheckoutRuntime() {
+  for (let index = 0; index < 20; index += 1) {
+    await Promise.resolve();
+  }
+}
+
+function initCheckoutRuntime(checkoutResponse) {
+  const html = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  document.body.innerHTML = html.slice(
+    html.indexOf('<body>') + 6,
+    html.lastIndexOf('</body>'),
+  );
+  fetch.mockImplementation(url => {
+    const respond = data => Promise.resolve({
+      ok: true,
+      status: 200,
+      json: async () => ({ data }),
+    });
+    if (url.endsWith('/access')) return respond({ access: 'employee' });
+    if (url.endsWith('/dashboard')) {
+      return respond({
+        open_work: 0,
+        completed_work: 0,
+        pending_leave: 0,
+        unapproved_punches: 0,
+        assets: { total_assets: 0 },
+      });
+    }
+    if (url.endsWith('/subscription')) {
+      return respond({
+        status: 'pending_billing',
+        billing_verified: false,
+        grants_access: false,
+        staged_revision: 7,
+      });
+    }
+    if (url.endsWith('/subscription/checkout-intent')) return checkoutResponse;
+    throw new Error('Unexpected runtime request: ' + url);
+  });
+  app.init(document);
+  return document.getElementById('continue-checkout');
+}
+
+test('delayed checkout runtime ignores repeated activation and re-enables without a URL', async () => {
+  let releaseCheckout;
+  const checkoutResponse = new Promise(resolve => { releaseCheckout = resolve; });
+  const checkoutButton = initCheckoutRuntime(checkoutResponse);
+  await flushCheckoutRuntime();
+  expect(checkoutButton.disabled).toBe(false);
+
+  checkoutButton.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 1 }));
+  checkoutButton.dispatchEvent(new MouseEvent('click', { bubbles: true, detail: 0 }));
+
+  const checkoutCalls = () => fetch.mock.calls.filter(
+    ([url]) => url.endsWith('/subscription/checkout-intent'),
+  );
+  expect(checkoutCalls()).toHaveLength(1);
+  expect(checkoutButton.disabled).toBe(true);
+  expect(document.getElementById('checkout-state').textContent)
+    .toBe('Preparing secure checkout…');
+
+  releaseCheckout({
+    ok: true,
+    status: 200,
+    json: async () => ({ data: {
+      intent_id: 'checkout-123',
+      selection_revision: 7,
+      selection_current: true,
+      status: 'READY_FOR_PROVIDER',
+      expires_at: null,
+      created_at: '2026-11-05T08:00:00Z',
+      updated_at: '2026-11-05T08:00:00Z',
+      checkout_url: null,
+    } }),
+  });
+  await flushCheckoutRuntime();
+
+  expect(checkoutCalls()).toHaveLength(1);
+  expect(checkoutButton.disabled).toBe(false);
+  expect(document.getElementById('checkout-state').textContent)
+    .toBe('Secure checkout is being prepared. Try again later.');
+});
+
+test('delayed checkout failure restores only the eligible saved selection', async () => {
+  let releaseCheckout;
+  const checkoutResponse = new Promise(resolve => { releaseCheckout = resolve; });
+  const checkoutButton = initCheckoutRuntime(checkoutResponse);
+  await flushCheckoutRuntime();
+
+  checkoutButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  expect(checkoutButton.disabled).toBe(true);
+
+  releaseCheckout({
+    ok: false,
+    status: 503,
+    json: async () => ({ error: 'workspace_unavailable' }),
+  });
+  await flushCheckoutRuntime();
+
+  expect(fetch.mock.calls.filter(
+    ([url]) => url.endsWith('/subscription/checkout-intent'),
+  )).toHaveLength(1);
+  expect(checkoutButton.disabled).toBe(false);
+  expect(document.getElementById('app-status').textContent)
+    .toBe('This task is not available yet. Try again later.');
+  expect(document.getElementById('app-status').classList.contains('error')).toBe(true);
+});
