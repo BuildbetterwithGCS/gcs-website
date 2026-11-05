@@ -733,6 +733,7 @@
     const checkoutState = doc.getElementById('checkout-state');
     const view = doc.defaultView;
     let stagedRevision = null;
+    let checkoutPending = false;
     let assetReceipt = null;
     let assetWorkbook = null;
     let assetPreviewReady = false;
@@ -746,7 +747,8 @@
 
     function checkoutReady(revision, active = false, approvalPending = false) {
       stagedRevision = Number.isInteger(revision) && revision > 0 ? revision : null;
-      checkoutButton.disabled = active || approvalPending || stagedRevision === null;
+      checkoutButton.disabled = checkoutPending || active || approvalPending
+        || stagedRevision === null;
       checkoutState.textContent = active
         ? 'Subscription access is active. No checkout is needed.'
         : approvalPending
@@ -1233,8 +1235,13 @@
       });
     });
 
-    checkoutButton.addEventListener('click', () => run(async () => {
-      if (stagedRevision === null) throw new Error('Save a selection first');
+    checkoutButton.addEventListener('click', async () => {
+      if (checkoutPending) return;
+      checkoutPending = true;
+      checkoutButton.disabled = true;
+      checkoutState.textContent = 'Preparing secure checkout…';
+      const intent = await run(async () => {
+        if (stagedRevision === null) throw new Error('Save a selection first');
       let intent;
       const savedIntent = view.sessionStorage.getItem(INTENT_KEY);
       if (savedIntent) {
@@ -1294,8 +1301,13 @@
       } else {
         checkoutState.textContent = 'Secure checkout is being prepared. Try again later.';
       }
-      return intent;
-    }, 'Checkout request saved.'));
+        return intent;
+      }, 'Checkout request saved.');
+      checkoutPending = false;
+      if (!intent || !intent.checkout_url) {
+        checkoutButton.disabled = stagedRevision === null;
+      }
+    });
 
     checkoutReady(null);
     refresh();
