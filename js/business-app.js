@@ -607,6 +607,14 @@
       && subscription.grants_access === true;
   }
 
+  function clearSubscriptionPresentation(root) {
+    root.getElementById('subscription-state').textContent =
+      'Subscription status not verified.';
+    root.getElementById('continue-checkout').disabled = true;
+    root.getElementById('checkout-state').textContent =
+      'Refresh subscription status before continuing.';
+  }
+
   function subscriptionStatusView(subscription) {
     const unavailable = {
       active: false,
@@ -736,6 +744,8 @@
           node.textContent = String(values[index] ?? '—');
         });
       }
+      stagedRevision = null;
+      clearSubscriptionPresentation(doc);
       const subscription = await run(() => request('/subscription'), 'Workspace updated.');
       if (subscription) {
         const subscriptionView = subscriptionStatusView(subscription);
@@ -1239,7 +1249,7 @@
   return { API, csrfToken, dollarsToCents, idempotencyKey,
     validatedCheckoutUrl, checkoutNeedsRetry, checkoutIntentIsCurrent,
     subscriptionIsVerifiedActive, subscriptionStatusView,
-    clearCompletedCheckout,
+    clearSubscriptionPresentation, clearCompletedCheckout,
     retryExpiredCheckout, validateAssetWorkbook, assetRequest, saveDownload,
     clearAssetPreview, canCommitAssetPreview, assetFailureMessage,
     dashboardSummaryValues, clearDashboardSummary,
