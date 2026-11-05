@@ -1238,3 +1238,74 @@ test('saved subscription responses share approval and active checkout lockout', 
     'clearCompletedCheckout(subscription, view.sessionStorage);');
 });
 
+test('validates the complete checkout intent before persistence or navigation', () => {
+  const ready = {
+    intent_id: 'checkout-123',
+    selection_revision: 7,
+    selection_current: true,
+    status: 'READY_FOR_PROVIDER',
+    expires_at: null,
+    created_at: '2026-11-05T05:00:00Z',
+    updated_at: '2026-11-05T05:00:00Z',
+    checkout_url: null,
+  };
+  expect(app.validatedCheckoutIntent(ready, 7)).toEqual(ready);
+
+  const provider = {
+    ...ready,
+    status: 'PROVIDER_SESSION',
+    expires_at: '2026-11-05T05:15:00Z',
+    checkout_url: 'https://checkout.example.test/session/one',
+  };
+  expect(app.validatedCheckoutIntent(provider, 7, 'checkout-123'))
+    .toEqual(provider);
+});
+
+test('rejects malformed, mismatched, or over-shared checkout intents', () => {
+  const valid = {
+    intent_id: 'checkout-123',
+    selection_revision: 7,
+    selection_current: true,
+    status: 'READY_FOR_PROVIDER',
+    expires_at: null,
+    created_at: '2026-11-05T05:00:00Z',
+    updated_at: '2026-11-05T05:00:00Z',
+    checkout_url: null,
+  };
+  const invalid = [
+    null,
+    { ...valid, provider: 'must-not-reach-browser' },
+    { ...valid, intent_id: 'bad intent' },
+    { ...valid, selection_revision: 0 },
+    { ...valid, selection_current: 'yes' },
+    { ...valid, status: 'UNKNOWN' },
+    { ...valid, created_at: 'not-a-time' },
+    { ...valid, expires_at: 'not-a-time' },
+    { ...valid, checkout_url: 'https://checkout.example.test/session/one' },
+    { ...valid, status: 'PROVIDER_SESSION', selection_current: false,
+      checkout_url: 'https://checkout.example.test/session/one' },
+  ];
+  for (const value of invalid) {
+    expect(() => app.validatedCheckoutIntent(value))
+      .toThrow('Secure checkout response is invalid');
+  }
+  expect(() => app.validatedCheckoutIntent(valid, 8))
+    .toThrow('Secure checkout response is invalid');
+  expect(() => app.validatedCheckoutIntent(valid, 7, 'checkout-other'))
+    .toThrow('Secure checkout response is invalid');
+});
+
+test('every checkout response is validated before intent storage', () => {
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  const checkout = js.slice(
+    js.indexOf("checkoutButton.addEventListener('click'"),
+    js.indexOf('checkoutReady(null);'),
+  );
+  expect((checkout.match(/validatedCheckoutIntent\(/g) || [])).toHaveLength(4);
+  expect(checkout).not.toMatch(
+    /intent = await request\('\/subscription\/checkout-intent/);
+  expect(checkout.indexOf('validatedCheckoutIntent('))
+    .toBeLessThan(checkout.indexOf('sessionStorage.setItem(INTENT_KEY'));
+});
+
