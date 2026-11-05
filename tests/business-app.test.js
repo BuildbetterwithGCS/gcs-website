@@ -1030,3 +1030,53 @@ test('contextual saved dashboard help opens directly and remains keyboard access
   expect(guide.querySelector('summary').tabIndex).toBe(0);
   expect(document.getElementById('count').textContent).toMatch(/guides shown/);
 });
+
+
+test('workspace access status accepts only the minimized server contract', () => {
+  expect(app.validatedAccessStatus({ access: 'manager' })).toBe('manager');
+  expect(app.validatedAccessStatus({ access: 'employee' })).toBe('employee');
+  expect(app.validatedAccessStatus({ access: 'viewer' })).toBe('viewer');
+  for (const value of [
+    null,
+    {},
+    { access: 'admin' },
+    { access: 'employee', principal_id: 'must-not-render' },
+    { access: 'manager', workspace_id: 'must-not-render' },
+  ]) {
+    expect(() => app.validatedAccessStatus(value))
+      .toThrow('Workspace access is unavailable');
+  }
+});
+
+
+test('workspace access label renders plain language and clears on refresh failure', () => {
+  document.body.innerHTML = '<p id="access-status">Old access</p>';
+  app.renderAccessStatus(document, { access: 'manager' });
+  expect(document.getElementById('access-status').textContent)
+    .toBe('Manager access verified.');
+  app.renderAccessStatus(document, { access: 'employee' });
+  expect(document.getElementById('access-status').textContent)
+    .toBe('Employee access verified.');
+  app.renderAccessStatus(document, { access: 'viewer' });
+  expect(document.getElementById('access-status').textContent)
+    .toBe('View-only access verified.');
+  app.clearAccessStatus(document);
+  expect(document.getElementById('access-status').textContent)
+    .toBe('Access not verified.');
+});
+
+
+test('workspace refresh checks access without making browser authorization claims', () => {
+  const html = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  const js = fs.readFileSync(
+    path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
+  expect(html).toContain('id="access-status"');
+  expect(html).toContain('Access not verified.');
+  expect(html).toContain(
+    'The server still checks permission for every action.');
+  expect(js).toMatch(
+    /async function refresh\(\) \{\s+clearAccessStatus\(doc\);\s+clearDashboardSummary\(doc\);\s+const access = await run\(\(\) => request\('\/access'\)/);
+  expect(js).toContain('if (access) renderAccessStatus(doc, access);');
+  expect(js).not.toMatch(/access\s*===?\s*['"](?:manager|employee|viewer)['"][\s\S]{0,120}(?:hidden|disabled)/);
+});
