@@ -2468,3 +2468,93 @@ test('assistant help supports direct links, multi-word search, and keyboard acce
     .toBe(guideTotal + ' of ' + guideTotal + ' guides shown');
   expect(empty.hidden).toBe(true);
 });
+
+
+function safeAssistantPreviewFixture() {
+  return {
+    schema_version: 'assistant-digest-preview-v1',
+    period_start: '2026-11-10T14:00:00Z',
+    period_end: '2026-11-11T14:00:00Z',
+    preference_revision: 4,
+    checked_at: '2026-11-11T14:01:00Z',
+    returned: 1,
+    truncated: false,
+    items: [{
+      topic: 'bid_opportunities',
+      title: 'Review Orlando concrete restoration bid',
+      action_label: 'Review opportunity',
+      deadline_at: null,
+      evidence: {
+        freshness_status: 'CURRENT',
+        observed_at: '2026-11-11T13:55:00Z',
+        source_updated_at: '2026-11-11T12:30:00Z',
+        is_synthetic: false,
+        source_url: 'https://example.gov/opportunity/',
+        location_known: true,
+        within_radius: true,
+      },
+    }],
+  };
+}
+
+test('assistant digest preview accepts only the exact safe response contract', () => {
+  const fixture = safeAssistantPreviewFixture();
+  expect(app.validatedAssistantDigestPreview(fixture)).toBe(fixture);
+
+  const forbiddenTopLevel = safeAssistantPreviewFixture();
+  forbiddenTopLevel.tenant_id = 'other-tenant';
+  expect(() => app.validatedAssistantDigestPreview(forbiddenTopLevel))
+    .toThrow('Assistant preview is unavailable');
+
+  const forbiddenItem = safeAssistantPreviewFixture();
+  forbiddenItem.items[0].record_id = 'bid-secret';
+  expect(() => app.validatedAssistantDigestPreview(forbiddenItem))
+    .toThrow('Assistant preview item is unavailable');
+
+  const unsafeSource = safeAssistantPreviewFixture();
+  unsafeSource.items[0].evidence.source_url = 'javascript:alert(1)';
+  expect(() => app.validatedAssistantDigestPreview(unsafeSource))
+    .toThrow('Assistant preview evidence is unavailable');
+
+  const synthetic = safeAssistantPreviewFixture();
+  synthetic.items[0].evidence.is_synthetic = true;
+  expect(() => app.validatedAssistantDigestPreview(synthetic))
+    .toThrow('Assistant preview evidence is unavailable');
+});
+
+test('assistant digest renderer uses text-only content and hardened source links', () => {
+  document.body.innerHTML = '<ul id="assistant-preview-items"></ul>';
+  const fixture = safeAssistantPreviewFixture();
+  fixture.items[0].title = '<img src=x onerror=alert(1)>';
+
+  app.renderAssistantDigestPreview(document, fixture);
+
+  const row = document.querySelector('#assistant-preview-items li');
+  expect(row.querySelector('strong').textContent)
+    .toBe('<img src=x onerror=alert(1)>');
+  expect(row.querySelector('img')).toBeNull();
+  const source = row.querySelector('a');
+  expect(source.href).toBe('https://example.gov/opportunity/');
+  expect(source.target).toBe('_blank');
+  expect(source.rel).toBe('nofollow noopener noreferrer');
+  expect(row.textContent).not.toContain('tenant');
+  expect(row.textContent).not.toContain('record_id');
+});
+
+test('assistant digest preview enforces item count and period consistency', () => {
+  const wrongCount = safeAssistantPreviewFixture();
+  wrongCount.returned = 2;
+  expect(() => app.validatedAssistantDigestPreview(wrongCount))
+    .toThrow('Assistant preview is unavailable');
+
+  const reversedPeriod = safeAssistantPreviewFixture();
+  reversedPeriod.period_start = reversedPeriod.period_end;
+  expect(() => app.validatedAssistantDigestPreview(reversedPeriod))
+    .toThrow('Assistant preview period is unavailable');
+
+  const tooMany = safeAssistantPreviewFixture();
+  tooMany.items = Array.from({ length: 101 }, () => safeAssistantPreviewFixture().items[0]);
+  tooMany.returned = 101;
+  expect(() => app.validatedAssistantDigestPreview(tooMany))
+    .toThrow('Assistant preview is unavailable');
+});
