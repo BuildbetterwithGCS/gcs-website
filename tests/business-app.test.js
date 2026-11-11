@@ -1066,7 +1066,7 @@ test('workspace access label renders plain language and clears on refresh failur
 });
 
 
-test('workspace refresh checks access without making browser authorization claims', () => {
+test('workspace refresh checks access before enabling role-appropriate mutations', () => {
   const html = fs.readFileSync(
     path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
   const js = fs.readFileSync(
@@ -1077,8 +1077,127 @@ test('workspace refresh checks access without making browser authorization claim
     'The server still checks permission for every action.');
   expect(js).toMatch(
     /async function refresh\(\) \{\s+clearAccessStatus\(doc\);\s+clearDashboardSummary\(doc\);\s+const access = await run\(\(\) => request\('\/access'\)/);
-  expect(js).toContain('if (access) renderAccessStatus(doc, access);');
-  expect(js).not.toMatch(/access\s*===?\s*['"](?:manager|employee|viewer)['"][\s\S]{0,120}(?:hidden|disabled)/);
+  expect(js).toContain('const verifiedAccess = validatedAccessStatus(access);');
+  expect(js).toContain('setWorkspaceMutationAccess(verifiedAccess);');
+  expect(js).toContain("runWorkspaceMutation('employee'");
+  expect(js).toContain("runWorkspaceMutation('manager'");
+});
+
+
+test('access denial clears workspace state and blocks mutation retry until refresh', async () => {
+  const html = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  document.body.innerHTML = html.slice(
+    html.indexOf('<body>') + 6,
+    html.lastIndexOf('</body>'),
+  );
+
+  let accessRole = 'manager';
+  let clockMode = 'delayed';
+  let releaseClock;
+  const delayedClock = new Promise(resolve => { releaseClock = resolve; });
+  const respond = data => Promise.resolve({
+    ok: true,
+    status: 200,
+    json: async () => ({ data }),
+  });
+  fetch.mockImplementation((url) => {
+    if (url.endsWith('/access')) return respond({ access: accessRole });
+    if (url.endsWith('/dashboard')) {
+      return respond({
+        open_work: 3,
+        completed_work: 2,
+        pending_leave: 1,
+        unapproved_punches: 4,
+        assets: { total_assets: 5 },
+      });
+    }
+    if (url.endsWith('/subscription')) {
+      return respond({
+        status: 'selection_required',
+        billing_verified: false,
+        grants_access: false,
+        staged_revision: null,
+      });
+    }
+    if (url.endsWith('/clock-in')) {
+      return clockMode === 'delayed'
+        ? delayedClock
+        : respond({ punch_id: 'punch-restored' });
+    }
+    throw new Error('Unexpected access runtime request: ' + url);
+  });
+
+  app.init(document);
+  await flushCheckoutRuntime();
+
+  const clockIn = document.getElementById('clock-in');
+  const leaveSubmit = document.querySelector(
+    '#leave-form button[type="submit"]');
+  const workSubmit = document.querySelector(
+    '#work-form button[type="submit"]');
+  expect(document.getElementById('access-status').textContent)
+    .toBe('Manager access verified.');
+  expect([...document.querySelectorAll('#dashboard strong')]
+    .map(node => node.textContent)).toEqual(['3', '2', '1', '4', '5']);
+  expect(clockIn.disabled).toBe(false);
+  expect(leaveSubmit.disabled).toBe(false);
+  expect(workSubmit.disabled).toBe(false);
+
+  clockIn.click();
+  const clockCalls = () => fetch.mock.calls.filter(
+    ([url]) => url.endsWith('/clock-in'),
+  );
+  expect(clockCalls()).toHaveLength(1);
+
+  releaseClock({
+    ok: false,
+    status: 403,
+    json: async () => ({ error: 'request_denied' }),
+  });
+  await flushCheckoutRuntime();
+
+  expect(clockCalls()).toHaveLength(1);
+  expect(document.getElementById('access-status').textContent)
+    .toBe('Access not verified.');
+  expect([...document.querySelectorAll('#dashboard strong')]
+    .map(node => node.textContent)).toEqual(['—', '—', '—', '—', '—']);
+  expect(clockIn.disabled).toBe(true);
+  expect(leaveSubmit.disabled).toBe(true);
+  expect(workSubmit.disabled).toBe(true);
+  expect(document.getElementById('app-status').textContent)
+    .toBe('Your secure session does not allow this task.');
+  expect(document.getElementById('app-status').classList.contains('error'))
+    .toBe(true);
+
+  clockIn.click();
+  document.getElementById('leave-form')
+    .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  document.getElementById('work-form')
+    .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  await flushCheckoutRuntime();
+  expect(clockCalls()).toHaveLength(1);
+  expect(fetch.mock.calls.filter(
+    ([url]) => url.endsWith('/leave') || url.endsWith('/work-orders'),
+  )).toHaveLength(0);
+  expect(document.getElementById('app-status').textContent)
+    .toBe('Refresh secure access before trying this task.');
+
+  accessRole = 'employee';
+  clockMode = 'success';
+  document.getElementById('refresh').click();
+  await flushCheckoutRuntime();
+
+  expect(document.getElementById('access-status').textContent)
+    .toBe('Employee access verified.');
+  expect(clockIn.disabled).toBe(false);
+  expect(leaveSubmit.disabled).toBe(false);
+  expect(workSubmit.disabled).toBe(true);
+
+  clockIn.click();
+  await flushCheckoutRuntime();
+  expect(clockCalls()).toHaveLength(2);
+  expect(document.getElementById('app-status').textContent).toBe('Clocked in.');
 });
 
 
