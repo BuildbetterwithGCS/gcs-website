@@ -1412,6 +1412,21 @@ noscript .nexus-dept-grid { display: flex; }
 /* ============================================================
    RESPONSIVE
    ============================================================ */
+@media (min-width: 761px) and (max-height: 1000px) {
+  .hero--home {
+    min-height: clamp(560px, 72vh, 680px);
+  }
+  .hero__content {
+    padding-block: 2.5rem;
+  }
+  .hero__title {
+    font-size: clamp(2.5rem, 4vw, 3.25rem);
+  }
+  .hero__actions {
+    margin-block: 1.5rem;
+  }
+}
+
 @media (max-width: 1100px) {
   .nav__toggle { display: inline-flex; }
   .nav__links {
