@@ -2468,3 +2468,24 @@ test('assistant help supports direct links, multi-word search, and keyboard acce
     .toBe(guideTotal + ' of ' + guideTotal + ' guides shown');
   expect(empty.hidden).toBe(true);
 });
+
+
+test('business workspace and help center use the canonical GCS brand assets', () => {
+  const portal = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  const stylesheet = fs.readFileSync(
+    path.join(__dirname, '..', 'css', 'business-app.css'), 'utf8');
+
+  for (const page of [portal, help]) {
+    expect(page).toContain('src="../../assets/gcs-logo.svg"');
+    expect(page).toContain('alt="GCS — Build Better Organizations"');
+    expect(page).toContain('aria-label="GCS Business home"');
+    expect(page).toContain('href="../../assets/gcs-favicon.svg"');
+  }
+  expect(portal).toContain('class="topbar-logo"');
+  expect(help).toContain('class="help-brand"');
+  expect(stylesheet).toContain('.topbar-logo img');
+  expect(stylesheet).toContain('.topbar-brand{align-items:flex-start;flex-direction:column}');
+});
