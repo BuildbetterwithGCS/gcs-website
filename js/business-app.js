@@ -775,6 +775,117 @@
     return value;
   }
 
+
+  function hasExactFields(value, fields) {
+    return value && typeof value === 'object' && !Array.isArray(value)
+      && Object.keys(value).length === fields.size
+      && Object.keys(value).every(key => fields.has(key));
+  }
+
+  function boundedTimestamp(value, field) {
+    if (typeof value !== 'string' || value.length < 20 || value.length > 40
+      || !Number.isFinite(Date.parse(value))) {
+      throw new Error('Assistant preview ' + field + ' is unavailable');
+    }
+    return value;
+  }
+
+  function safeEvidenceUrl(value) {
+    if (value === null) return null;
+    if (typeof value !== 'string' || value.length > 2048) {
+      throw new Error('Assistant preview evidence is unavailable');
+    }
+    let url;
+    try { url = new URL(value); } catch (_error) {
+      throw new Error('Assistant preview evidence is unavailable');
+    }
+    if (url.protocol !== 'https:' || url.username || url.password
+      || url.hash || url.toString() !== value) {
+      throw new Error('Assistant preview evidence is unavailable');
+    }
+    return value;
+  }
+
+  function validatedAssistantDigestPreview(value) {
+    const previewFields = new Set([
+      'schema_version', 'period_start', 'period_end', 'preference_revision',
+      'checked_at', 'items', 'returned', 'truncated',
+    ]);
+    if (!hasExactFields(value, previewFields)
+      || value.schema_version !== 'assistant-digest-preview-v1'
+      || !Number.isInteger(value.preference_revision) || value.preference_revision < 0
+      || !Array.isArray(value.items) || value.items.length > 100
+      || value.returned !== value.items.length
+      || typeof value.truncated !== 'boolean') {
+      throw new Error('Assistant preview is unavailable');
+    }
+    const periodStart = boundedTimestamp(value.period_start, 'period');
+    const periodEnd = boundedTimestamp(value.period_end, 'period');
+    boundedTimestamp(value.checked_at, 'check time');
+    if (Date.parse(periodStart) >= Date.parse(periodEnd)) {
+      throw new Error('Assistant preview period is unavailable');
+    }
+    const itemFields = new Set([
+      'topic', 'title', 'action_label', 'deadline_at', 'evidence',
+    ]);
+    const evidenceFields = new Set([
+      'freshness_status', 'observed_at', 'source_updated_at', 'is_synthetic',
+      'source_url', 'location_known', 'within_radius',
+    ]);
+    value.items.forEach(item => {
+      if (!hasExactFields(item, itemFields)
+        || !ASSISTANT_TOPICS.has(item.topic)
+        || typeof item.title !== 'string' || item.title.length < 1
+        || item.title.length > 200
+        || typeof item.action_label !== 'string' || item.action_label.length < 1
+        || item.action_label.length > 120
+        || (item.deadline_at !== null
+          && (typeof item.deadline_at !== 'string'
+            || !Number.isFinite(Date.parse(item.deadline_at))))) {
+        throw new Error('Assistant preview item is unavailable');
+      }
+      const evidence = item.evidence;
+      if (!hasExactFields(evidence, evidenceFields)
+        || evidence.freshness_status !== 'CURRENT'
+        || evidence.is_synthetic !== false
+        || ![null, true, false].includes(evidence.location_known)
+        || ![null, true, false].includes(evidence.within_radius)) {
+        throw new Error('Assistant preview evidence is unavailable');
+      }
+      boundedTimestamp(evidence.observed_at, 'evidence time');
+      boundedTimestamp(evidence.source_updated_at, 'source time');
+      safeEvidenceUrl(evidence.source_url);
+    });
+    return value;
+  }
+
+  function renderAssistantDigestPreview(doc, value) {
+    const preview = validatedAssistantDigestPreview(value);
+    const list = doc.getElementById('assistant-preview-items');
+    if (!list) throw new Error('Assistant preview container is unavailable');
+    list.replaceChildren();
+    preview.items.forEach(item => {
+      const row = doc.createElement('li');
+      const title = doc.createElement('strong');
+      title.textContent = item.title;
+      const action = doc.createElement('span');
+      action.textContent = item.action_label;
+      const evidence = doc.createElement('small');
+      evidence.textContent = 'Source checked ' + item.evidence.observed_at;
+      row.append(title, action, evidence);
+      if (item.evidence.source_url) {
+        const source = doc.createElement('a');
+        source.href = item.evidence.source_url;
+        source.textContent = 'Open source evidence';
+        source.target = '_blank';
+        source.rel = 'nofollow noopener noreferrer';
+        row.append(source);
+      }
+      list.append(row);
+    });
+    return preview;
+  }
+
   function init(doc) {
     if (!doc) return;
     const status = doc.getElementById('app-status');
@@ -1563,7 +1674,8 @@
     dashboardSummaryValues, clearDashboardSummary,
     validatedAccessStatus, renderAccessStatus, clearAccessStatus,
     validatedAssetInventory, filterAssetItems,
-    validatedAssistantPreference,
+    validatedAssistantPreference, validatedAssistantDigestPreview,
+    renderAssistantDigestPreview,
     validatedPendingLeaveQueue, renderPendingLeaveQueue,
     validatedAssignedWorkQueue, renderAssignedWorkQueue,
     formatInvoiceAmount, validatedInvoiceSummaries, renderInvoiceSummaries,
