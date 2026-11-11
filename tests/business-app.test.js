@@ -2177,3 +2177,230 @@ test('non-monotonic provider timestamps never reach navigation', () => {
   }
   expect(view.location.assign).not.toHaveBeenCalled();
 });
+
+
+test('assistant preference response accepts only the minimized settings contract', () => {
+  const valid = {
+    revision: 0,
+    enabled: false,
+    frequency: 'paused',
+    timezone: 'UTC',
+    topics: [],
+  };
+  expect(app.validatedAssistantPreference(valid)).toEqual(valid);
+  for (const value of [
+    { ...valid, provider: 'must-not-render' },
+    { ...valid, delivery_address: 'must-not-render' },
+    { ...valid, revision: -1 },
+    { ...valid, enabled: 'false' },
+    { ...valid, frequency: 'hourly' },
+    { ...valid, timezone: '' },
+    { ...valid, topics: ['assigned_work', 'assigned_work'] },
+    { ...valid, topics: ['fabricated_leads'] },
+  ]) {
+    expect(() => app.validatedAssistantPreference(value))
+      .toThrow('Assistant settings are unavailable');
+  }
+});
+
+
+test('assistant settings UI starts disabled and states the no-delivery boundary', () => {
+  const html = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  expect(html).toContain('id="assistant-load" type="button" class="secondary" disabled');
+  expect(html).toContain('id="assistant-controls" disabled');
+  expect(html).toContain('Settings only:');
+  expect(html).toContain('Nexus does not send email from this page yet.');
+  expect(html).toContain('Saving does not start an AI task, scheduler, provider, or delivery.');
+});
+
+
+function initAssistantRuntime(assistantHandler) {
+  const html = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  document.body.innerHTML = html.slice(
+    html.indexOf('<body>') + 6,
+    html.lastIndexOf('</body>'),
+  );
+  const respond = data => Promise.resolve({
+    ok: true,
+    status: 200,
+    json: async () => ({ data }),
+  });
+  fetch.mockImplementation((url, options = {}) => {
+    if (url.endsWith('/access')) return respond({ access: 'manager' });
+    if (url.endsWith('/dashboard')) {
+      return respond({
+        open_work: 2,
+        completed_work: 1,
+        pending_leave: 0,
+        unapproved_punches: 0,
+        assets: { total_assets: 3 },
+      });
+    }
+    if (url.endsWith('/subscription')) {
+      return respond({
+        status: 'active',
+        billing_verified: true,
+        grants_access: true,
+        staged_revision: null,
+      });
+    }
+    if (url.endsWith('/assistant/preferences')) {
+      return assistantHandler(url, options, respond);
+    }
+    throw new Error('Unexpected assistant runtime request: ' + url);
+  });
+  app.init(document);
+}
+
+
+test('assistant settings load once and repeated save sends one exact preference patch', async () => {
+  let releaseSave;
+  const delayedSave = new Promise(resolve => { releaseSave = resolve; });
+  initAssistantRuntime((_url, options, respond) => {
+    if (options.method === 'PATCH') return delayedSave;
+    return respond({
+      revision: 0,
+      enabled: false,
+      frequency: 'paused',
+      timezone: 'UTC',
+      topics: [],
+    });
+  });
+  await flushCheckoutRuntime();
+
+  const load = document.getElementById('assistant-load');
+  const form = document.getElementById('assistant-form');
+  expect(load.disabled).toBe(false);
+  load.click();
+  load.click();
+  await flushCheckoutRuntime();
+
+  const preferenceCalls = () => fetch.mock.calls.filter(
+    ([url]) => url.endsWith('/assistant/preferences'));
+  expect(preferenceCalls()).toHaveLength(1);
+  expect(document.getElementById('assistant-controls').disabled).toBe(false);
+  expect(document.getElementById('assistant-status').textContent)
+    .toBe('Settings loaded. No email is sent yet.');
+
+  document.getElementById('assistant-enabled').checked = true;
+  document.getElementById('assistant-frequency').value = 'daily';
+  document.getElementById('assistant-timezone').value = 'America/New_York';
+  document.querySelector(
+    'input[name="assistant-topic"][value="assigned_work"]').checked = true;
+  document.querySelector(
+    'input[name="assistant-topic"][value="work_orders"]').checked = true;
+  form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  await flushCheckoutRuntime();
+
+  expect(preferenceCalls()).toHaveLength(2);
+  const patch = preferenceCalls()[1][1];
+  expect(patch.method).toBe('PATCH');
+  expect(JSON.parse(patch.body)).toEqual({
+    expected_revision: 0,
+    enabled: true,
+    frequency: 'daily',
+    timezone: 'America/New_York',
+    topics: ['assigned_work', 'work_orders'],
+  });
+  expect(JSON.stringify(patch)).not.toMatch(
+    /provider|delivery_address|email_address|tenant|actor|role/i);
+
+  releaseSave({
+    ok: true,
+    status: 200,
+    json: async () => ({ data: {
+      revision: 1,
+      enabled: true,
+      frequency: 'daily',
+      timezone: 'America/New_York',
+      topics: ['assigned_work', 'work_orders'],
+    } }),
+  });
+  await flushCheckoutRuntime();
+  expect(document.getElementById('assistant-status').textContent)
+    .toBe('Settings saved. No email, AI task, scheduler, or delivery was started.');
+  expect(fetch.mock.calls.map(([url]) => url).join(' '))
+    .not.toMatch(/\/email|\/provider|\/deliver|\/scheduler|\/ai(?:\/|$)/i);
+});
+
+
+test('assistant stale revision and denied entitlement fail closed without retry', async () => {
+  let mode = 'load';
+  initAssistantRuntime((_url, options, respond) => {
+    if (mode === 'load') {
+      return respond({
+        revision: 4,
+        enabled: false,
+        frequency: 'weekly',
+        timezone: 'America/New_York',
+        topics: ['follow_ups'],
+      });
+    }
+    if (mode === 'stale' && options.method === 'PATCH') {
+      return Promise.resolve({
+        ok: false,
+        status: 409,
+        json: async () => ({ error: 'assistant_preference_conflict' }),
+      });
+    }
+    if (mode === 'unknown') {
+      return respond({
+        revision: 5,
+        enabled: false,
+        frequency: 'paused',
+        timezone: 'UTC',
+        topics: [],
+        provider: 'must-not-render',
+      });
+    }
+    return Promise.resolve({
+      ok: false,
+      status: 403,
+      json: async () => ({ error: 'subscription_not_active' }),
+    });
+  });
+  await flushCheckoutRuntime();
+
+  const load = document.getElementById('assistant-load');
+  load.click();
+  await flushCheckoutRuntime();
+  expect(document.getElementById('assistant-controls').disabled).toBe(false);
+
+  mode = 'stale';
+  const beforeStale = fetch.mock.calls.length;
+  document.getElementById('assistant-form').dispatchEvent(
+    new Event('submit', { bubbles: true, cancelable: true }));
+  await flushCheckoutRuntime();
+  expect(fetch.mock.calls.length).toBe(beforeStale + 1);
+  expect(document.getElementById('assistant-controls').disabled).toBe(true);
+  expect(document.getElementById('assistant-status').textContent)
+    .toBe('These settings changed elsewhere. Load the latest settings before trying again.');
+
+  mode = 'unknown';
+  load.click();
+  await flushCheckoutRuntime();
+  expect(document.getElementById('assistant-controls').disabled).toBe(true);
+  expect(document.getElementById('assistant-status').textContent)
+    .toBe('Update settings are unavailable. Try loading them again.');
+
+  mode = 'denied';
+  load.click();
+  await flushCheckoutRuntime();
+  const deniedCalls = fetch.mock.calls.filter(
+    ([url]) => url.endsWith('/assistant/preferences')).length;
+  load.click();
+  await flushCheckoutRuntime();
+  expect(fetch.mock.calls.filter(
+    ([url]) => url.endsWith('/assistant/preferences'))).toHaveLength(deniedCalls);
+  expect(load.disabled).toBe(true);
+  expect(document.getElementById('access-status').textContent)
+    .toBe('Access not verified.');
+  expect([...document.querySelectorAll('#dashboard strong')]
+    .map(node => node.textContent)).toEqual(['—', '—', '—', '—', '—']);
+  expect(document.getElementById('assistant-controls').disabled).toBe(true);
+  expect(document.getElementById('assistant-status').textContent)
+    .toBe('Your access or active subscription does not allow these settings.');
+});
