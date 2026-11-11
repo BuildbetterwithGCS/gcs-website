@@ -756,6 +756,7 @@
     let stagedRevision = null;
     let checkoutPending = false;
     let checkoutLockReason = null;
+    let workspaceAccess = null;
     let assetReceipt = null;
     let assetWorkbook = null;
     let assetPreviewReady = false;
@@ -783,18 +784,50 @@
             : 'Your selection is saved. Billing is still unverified.';
     }
 
-    async function run(action, success) {
+    function setWorkspaceMutationAccess(access = null) {
+      workspaceAccess = ['manager', 'employee'].includes(access) ? access : null;
+      const employeeAllowed = workspaceAccess === 'manager'
+        || workspaceAccess === 'employee';
+      doc.getElementById('clock-in').disabled = !employeeAllowed;
+      doc.getElementById('clock-out').disabled = !employeeAllowed;
+      doc.querySelector('#leave-form button[type="submit"]').disabled = !employeeAllowed;
+      doc.querySelector('#work-form button[type="submit"]').disabled
+        = workspaceAccess !== 'manager';
+    }
+
+    function clearRevokedWorkspace() {
+      setWorkspaceMutationAccess(null);
+      clearAccessStatus(doc);
+      clearDashboardSummary(doc);
+    }
+
+    function workspaceMutationAllowed(requiredAccess) {
+      if (requiredAccess === 'manager') return workspaceAccess === 'manager';
+      return workspaceAccess === 'manager' || workspaceAccess === 'employee';
+    }
+
+    async function run(action, success, options = {}) {
       try {
         message('Saving…');
         const value = await action();
         message(success);
         return value;
       } catch (error) {
-        message(error.status === 403
+        const denied = error && (error.status === 401 || error.status === 403);
+        if (denied && options.lockOnDenied) clearRevokedWorkspace();
+        message(denied
           ? 'Your secure session does not allow this task.'
           : 'This task is not available yet. Try again later.', true);
         return null;
       }
+    }
+
+    function runWorkspaceMutation(requiredAccess, action, success) {
+      if (!workspaceMutationAllowed(requiredAccess)) {
+        message('Refresh secure access before trying this task.', true);
+        return Promise.resolve(null);
+      }
+      return run(action, success, { lockOnDenied: true });
     }
 
     function presentSubscription(subscription) {
@@ -812,10 +845,13 @@
     }
 
     async function refresh() {
-      clearAccessStatus(doc);
-      clearDashboardSummary(doc);
+      clearRevokedWorkspace();
       const access = await run(() => request('/access'), 'Workspace access checked.');
-      if (access) renderAccessStatus(doc, access);
+      if (access) {
+        const verifiedAccess = validatedAccessStatus(access);
+        renderAccessStatus(doc, access);
+        setWorkspaceMutationAccess(verifiedAccess);
+      }
       const dashboard = await run(() => request('/dashboard'), 'Workspace updated.');
       if (dashboard) {
         const values = dashboardSummaryValues(dashboard);
@@ -831,18 +867,24 @@
 
     doc.getElementById('refresh').addEventListener('click', refresh);
     doc.getElementById('clock-in').addEventListener('click', () =>
-      run(() => request('/clock-in', { method: 'POST', body: {} }), 'Clocked in.'));
+      runWorkspaceMutation('employee',
+        () => request('/clock-in', { method: 'POST', body: {} }),
+        'Clocked in.'));
     doc.getElementById('clock-out').addEventListener('click', () =>
-      run(() => request('/clock-out', { method: 'POST', body: {
-        punch_id: doc.getElementById('punch-id').value.trim(),
-      } }), 'Clocked out.'));
+      runWorkspaceMutation('employee',
+        () => request('/clock-out', { method: 'POST', body: {
+          punch_id: doc.getElementById('punch-id').value.trim(),
+        } }),
+        'Clocked out.'));
 
     doc.getElementById('leave-form').addEventListener('submit', event => {
       event.preventDefault();
-      run(() => request('/leave', { method: 'POST', body: {
-        kind: doc.getElementById('leave-kind').value,
-        date: doc.getElementById('leave-date').value,
-      } }), 'Time-off request sent.');
+      runWorkspaceMutation('employee', () => request('/leave', {
+        method: 'POST', body: {
+          kind: doc.getElementById('leave-kind').value,
+          date: doc.getElementById('leave-date').value,
+        },
+      }), 'Time-off request sent.');
     });
 
     const leaveReviewLoad = doc.getElementById('leave-review-load');
@@ -977,10 +1019,12 @@
 
     doc.getElementById('work-form').addEventListener('submit', event => {
       event.preventDefault();
-      run(() => request('/work-orders', { method: 'POST', body: {
-        title: doc.getElementById('work-title').value.trim(),
-        assigned_principal_id: doc.getElementById('assignee').value.trim(),
-      } }), 'Work order assigned.');
+      runWorkspaceMutation('manager', () => request('/work-orders', {
+        method: 'POST', body: {
+          title: doc.getElementById('work-title').value.trim(),
+          assigned_principal_id: doc.getElementById('assignee').value.trim(),
+        },
+      }), 'Work order assigned.');
     });
 
     doc.getElementById('invoice-form').addEventListener('submit', event => {
