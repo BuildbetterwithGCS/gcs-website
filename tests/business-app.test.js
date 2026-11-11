@@ -993,7 +993,13 @@ test('dashboard refresh clears stale totals before requesting current workspace 
   const js = fs.readFileSync(
     path.join(__dirname, '..', 'js', 'business-app.js'), 'utf8');
   expect(js).toMatch(
-    /async function refresh\(\) \{[\s\S]{0,500}clearDashboardSummary\(doc\);[\s\S]{0,500}const dashboard = await run/);
+    /function clearRevokedWorkspace\(\) \{[\s\S]{0,300}clearDashboardSummary\(doc\);/);
+  const refresh = js.slice(
+    js.indexOf('async function refresh()'),
+    js.indexOf("doc.getElementById('refresh').addEventListener"),
+  );
+  expect(refresh.indexOf('clearRevokedWorkspace();'))
+    .toBeLessThan(refresh.indexOf("request('/dashboard')"));
 });
 
 
@@ -1076,7 +1082,7 @@ test('workspace refresh checks access before enabling role-appropriate mutations
   expect(html).toContain(
     'The server still checks permission for every action.');
   expect(js).toMatch(
-    /async function refresh\(\) \{\s+clearAccessStatus\(doc\);\s+clearDashboardSummary\(doc\);\s+const access = await run\(\(\) => request\('\/access'\)/);
+    /async function refresh\(\) \{\s+clearRevokedWorkspace\(\);\s+const access = await run\(\(\) => request\('\/access'\)/);
   expect(js).toContain('const verifiedAccess = validatedAccessStatus(access);');
   expect(js).toContain('setWorkspaceMutationAccess(verifiedAccess);');
   expect(js).toContain("runWorkspaceMutation('employee'");
