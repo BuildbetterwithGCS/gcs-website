@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How To | GCS Business</title><meta name="description" content="Simple step-by-step guides for setting up business operations with GCS."><meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://buildbetterwithgcs.com/business/help/">
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#152d47;background:#f5f8fb}*{box-sizing:border-box}body{margin:0}header{background:#102b4b;color:white;padding:22px 0}.wrap{max-width:980px;margin:auto;padding:0 22px}a{color:#175d9b}header a{color:white}h1{font-size:clamp(2rem,5vw,3rem)}p,li{line-height:1.65}label{display:block;font-weight:700;margin-bottom:10px}input{font:inherit;padding:16px;width:100%;border:2px solid #9db1c5;border-radius:12px}input:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #f5a623;outline-offset:3px}main{padding:35px 0 70px}.guides{display:grid;gap:14px;margin-top:25px}details{background:white;border:1px solid #d8e3ef;border-radius:14px;padding:18px 22px}summary{font-weight:750;cursor:pointer;min-height:44px;display:list-item;padding:10px 0}ol{padding-left:25px}.notice{background:#fff4dc;border-left:4px solid #d48a13;padding:16px;border-radius:6px}#empty{font-weight:700}footer{padding:25px 0;background:#102b4b;color:white}footer a{color:white}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style></head><body><header><div class="wrap"><a href="../">← GCS Business</a><h1>How do I…?</h1><p>Clear instructions for everyday business tasks.</p></div></header>
+<main class="wrap"><p class="notice"><strong>Preview guidance:</strong> GCS Business is under development. These guides describe the planned workflow; they are not instructions for a live customer account. No payroll, billing, or employee data is collected on this page.</p>
+<label for="search">Find a task</label><input id="search" type="search" autocomplete="off" placeholder="Try: clock in, PTO, work order, invoice" aria-controls="guides">
+<p id="count" role="status" aria-live="polite"></p><div class="guides" id="guides">
+<details data-keywords="start signup setup account organization workspace"><summary>Set up my business</summary><ol><li>When signup is available, create an account using your own business email.</li><li>Enter your business name and choose a workspace.</li><li>Review the modules you want before submitting a subscription selection.</li><li>Check the estimate; access is not activated until billing is independently verified.</li></ol></details>
+<details id="saved-dashboard-guide" data-keywords="today dashboard totals refresh saved workspace open completed work leave time punches imported assets session access accounting payroll audit">
+<summary>Read and refresh my dashboard</summary>
+<ol>
+<li>Sign in with your own account and open <strong>Today</strong>. The five totals summarize only the current signed-in workspace.</li>
+<li>Select <strong>Refresh</strong> to request the current saved operational summary. The page clears the old figures before requesting new ones and fills them only after a successful response.</li>
+<li><strong>Open work</strong> and <strong>Completed work</strong> summarize work-order status. <strong>Time off waiting</strong> counts pending leave requests. <strong>Time punches to review</strong> counts punches awaiting an authorized review.</li>
+<li><strong>Imported assets</strong> is an aggregate count. It does not display asset rows, workbook contents, receipt details, or who imported them.</li>
+<li>If the request fails, your session expires, or your access changes, the totals remain as dashes. Sign in again, confirm the correct workspace, and select <strong>Refresh</strong>. Do not rely on figures displayed before the failed refresh.</li>
+</ol>
+<p><strong>Operational summary only:</strong> These totals are not payroll calculations, accounting records, invoice-delivery or payment-settlement evidence, compliance determinations, or an audit trail.</p>
+</details>
+<details data-keywords="employee invite staff account access login"><summary>Add an employee</summary><ol><li>Open your team administration area.</li><li>Choose Invite employee and enter the intended employee identity.</li><li>Assign an appropriate role and confirm the workspace.</li><li>The employee will need their own verified login before accessing company information.</li></ol></details>
+<details id="time-clock-guide" data-keywords="clock in clock out punch shift timekeeping employee open punch number session access recovery mistake location payroll wage overtime">
+<summary>Clock in or out</summary>
+<ol>
+<li>Sign in with your own employee account and open <strong>My time</strong>.</li>
+<li>When work begins, select <strong>Clock in</strong> once and keep the displayed open punch number.</li>
+<li>When work ends, enter that open punch number and select <strong>Clock out</strong> once.</li>
+<li>If the punch number is missing or a time is wrong, stop and notify your manager. Do not guess a number or create another punch to correct it.</li>
+<li>If your session expires or access changes, sign in again and review the current status before taking another action. The page does not automatically retry a clock action.</li>
+</ol>
+<p><strong>Time record only:</strong> A punch records a timestamp. It does not calculate wages, overtime, or payroll, and it does not prove an employee's physical or jobsite location.</p>
+</details>
+<details data-keywords="pto leave sick holiday time off request"><summary>Request time off</summary><ol><li>Open Time off and select the type of leave.</li><li>Choose the date and submit the request.</li><li>Watch for manager approval or denial.</li><li>Leave balances and payroll calculations require separately verified policies and integrations.</li></ol></details>
+<details id="manager-leave-review-guide" data-keywords="manager pto leave sick unpaid time off approve deny review request access session balance payroll">
+<summary>Approve or deny a time-off request</summary>
+<ol>
+<li>Sign in with your own authorized manager account and open <strong>Time off</strong>.</li>
+<li>Select <strong>Load requests to review</strong>. Review the employee, leave type, and date before deciding.</li>
+<li>Select <strong>Approve</strong> only when the request matches the company's approved policy.</li>
+<li>Select <strong>Deny</strong> when the request should not be approved. Confirm the decision in the company's normal communication and recordkeeping process.</li>
+<li>If your session expires or access changes, sign in again and reload the queue. The page does not automatically retry an approval or denial.</li>
+</ol>
+<p><strong>Important:</strong> Approving a request records a manager decision only. It does not change payroll, guarantee a paid balance, calculate overtime, or prove policy compliance.</p>
+</details>
+<details id="manager-time-review-guide" data-keywords="manager approve time punch overtime review employee correction wage payroll compliance location">
+<summary>Review an employee's time</summary>
+<ol>
+<li>When an authorized manager review queue is available, sign in with your own manager account.</li>
+<li>Check the employee identity, dates, clock-in time, clock-out time, and any missing or duplicate punch.</li>
+<li>Do not approve a record with a missing time or unresolved discrepancy. Follow the company's normal correction and documentation process.</li>
+<li>Approve only a complete record that matches the company's approved policy.</li>
+<li>Verify wages, overtime, payroll, labor rules, and any required location evidence in the separately approved systems responsible for those decisions.</li>
+</ol>
+<p><strong>Review boundary:</strong> A time-review decision does not calculate pay, establish legal compliance, or prove where the employee worked.</p>
+</details>
+<details id="work-completion-guide" data-keywords="job work order assigned employee my work load mark complete confirm access expired session manager">
+<summary>Finish work assigned to me</summary>
+<ol>
+<li>Sign in with your own employee account and open <strong>Work orders</strong>.</li>
+<li>Select <strong>Load my work</strong>. The list shows only open work assigned to your signed-in identity.</li>
+<li>Finish the job before selecting <strong>Mark complete</strong>.</li>
+<li>Read the confirmation. Choose <strong>Yes, mark complete</strong> only when the work is finished, or choose <strong>No, keep open</strong> to cancel.</li>
+<li>If your session or access changes, sign in again and reload the list. The page does not automatically retry a completion.</li>
+<li>A completed work-order status is operational tracking only. It does not approve time, calculate pay, or run payroll.</li>
+</ol>
+</details>
+<details data-keywords="job work order assign manager create employee status complete"><summary>Create and assign a work order</summary><ol><li>Open Work orders and create a job with a clear description.</li><li>Choose an employee who belongs to the workspace.</li><li>Save the assignment and track its status.</li><li>Have the assigned employee mark the job completed when finished.</li></ol></details>
+<details id="invoice-status-guide" data-keywords="invoice estimate bill payment status draft issued paid void tracking settlement accounting load list">
+<summary>Read an invoice status</summary>
+<ol>
+<li>Sign in with an authorized manager account, open <strong>Invoices</strong>, and select <strong>Load invoice list</strong>.</li>
+<li><strong>Draft</strong> means an invoice record is still being prepared.</li>
+<li><strong>Issued</strong> is a tracking label. It is not proof that an invoice was delivered.</li>
+<li><strong>Paid</strong> is a tracking label. It is not proof that money settled.</li>
+<li><strong>Void</strong> means the record should no longer be used as an active invoice.</li>
+<li>Verify delivery, payment, settlement, and accounting entries in the separately approved systems responsible for those actions.</li>
+</ol>
+<p><strong>Tracking only:</strong> Loading or reading this list does not send an invoice, collect payment, confirm settlement, or post an accounting entry.</p>
+</details>
+<details data-keywords="invoice estimate bill payment prepare draft"><summary>Prepare an invoice</summary><ol><li>Open Invoices and create a draft for a completed job.</li><li>Review customer details, line items, and totals.</li><li>Save the draft for authorized review.</li><li>Invoice delivery, payment collection and settlement are not yet live capabilities.</li></ol></details>
+<details id="assistant-updates-guide" data-keywords="assistant ai updates digest email notification settings load enabled turn on paused daily weekly frequency timezone topics assigned tasks work orders leave invoice leads follow ups bid opportunities source freshness stale revision changed elsewhere access entitlement subscription no delivery provider scheduler">
+<summary>Choose assistant update settings</summary>
+<ol>
+<li>Sign in with your own account, open <strong>Assistant updates</strong>, and select <strong>Load my update settings</strong>. The controls stay locked until workspace access and an active eligible subscription are verified.</li>
+<li>Leave <strong>Turn on updates</strong> unchecked if you do not want future updates. Checking it saves your choice only; it does not start email.</li>
+<li>Choose <strong>Paused</strong>, <strong>Daily</strong>, or <strong>Weekly</strong>. Paused keeps delivery off. Daily and weekly are preferences for future verified delivery.</li>
+<li>Enter your IANA timezone, such as <strong>America/New_York</strong>, so a future delivery service can use the intended local time.</li>
+<li>Choose only the topics you need: assigned tasks, work orders, time-off actions, invoice status, customer leads, follow-ups, or bid opportunities with source evidence.</li>
+<li>Select <strong>Save update settings</strong> once. Wait for the saved message before making another change.</li>
+<li>If the page says the settings changed elsewhere, select <strong>Load my update settings</strong> again, review the latest choices, and then save. The page does not automatically retry a stale save.</li>
+<li>If access or the active subscription is lost, the settings lock and workspace status clears. Sign in again, verify the correct workspace and subscription, then load the settings again. The page does not automatically retry a denied request.</li>
+</ol>
+<p><strong>Settings only—no email is sent yet:</strong> Saving does not run AI, schedule a digest, call an email provider, deliver a message, create a bid or lead, or prove that any opportunity is fresh. Real delivery still requires independent review, verified provider credentials, tenant-isolation testing, deduplication, unsubscribe/compliance controls, and end-to-end evidence.</p>
+</details>
+<details id="subscription-checkout-guide" data-keywords="plans pricing subscription modules users selection save checkout handoff provider billing verified entitlement active access expired stale retry">
+<summary>Choose tools and continue to checkout</summary>
+<ol>
+<li>Choose the package, modules, and number of people who need access, then select <strong>Save selection</strong>.</li>
+<li>Review the saved selection before continuing. Saving creates a versioned pending selection only; it is not a charge and does not grant access.</li>
+<li>Select <strong>Continue to secure checkout</strong> only after the exact current selection is saved. The first step creates or resumes a local handoff bound to that selection.</li>
+<li>Continue only if the authenticated server provides an approved HTTPS checkout destination. Leaving GCS for a provider page is a handoff, not proof of payment or settlement.</li>
+<li>If the handoff expires, return to the workspace and retry only when the server reports it expired. The recovery keeps the saved selection but uses a fresh retry key; it does not automatically charge anything.</li>
+<li>If the package, modules, user limit, or pricing terms changed, the old handoff is stale. Save the current selection and begin a new handoff; do not continue from the old provider page.</li>
+<li>Returning from checkout does not activate access. Wait until the authenticated server reports the subscription is active, billing is verified, access is granted, and the required independent approval is complete.</li>
+</ol>
+<p><strong>Preview boundary:</strong> The current protected preview uses synthetic provider data. It does not prove a live checkout, charge, settlement, subscription, or entitlement.</p>
+</details>
+<details id="asset-spreadsheet-guide" data-keywords="asset assets excel xlsx spreadsheet template upload preview check errors error list receipt expired expiry confirm confirmation import insert only add new dashboard total">
+<summary>Bring in an asset spreadsheet</summary>
+<ol>
+<li>Open <strong>Assets</strong> in your workspace and download the blank spreadsheet.</li>
+<li>Add only new assets. Keep the column headings unchanged, then save the file as <strong>.xlsx</strong>.</li>
+<li>Choose the completed file and select <strong>Check spreadsheet</strong>. This check does not save assets.</li>
+<li>If problems are found, download the error list. Fix the named rows and columns, then check the spreadsheet again.</li>
+<li>If the check expires or your access changes, choose the file again and run a new check. Do not reuse an old confirmation.</li>
+<li>When the page shows zero problems, read the insert-only notice, check the confirmation box, and select <strong>Import new assets</strong> once.</li>
+<li>Existing assets are not updated or deleted. After success, confirm the imported-assets total on the dashboard.</li>
+</ol>
+<p><strong>Important:</strong> This guide describes the protected development preview. Do not upload real customer data until GCS confirms production access is ready.</p>
+</details>
+</div><p id="empty" hidden>No matching guide. Try a different task or <a href="../../contact/">contact GCS</a>.</p></main>
+<footer><div class="wrap"><a href="../">Back to business overview</a> · <a href="../../contact/">Contact GCS</a></div></footer>
+<script>
+(function(){'use strict';const input=document.getElementById('search');const guides=[...document.querySelectorAll('#guides details')];const count=document.getElementById('count');const empty=document.getElementById('empty');function filter(){const terms=input.value.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);let shown=0;for(const guide of guides){const haystack=(guide.querySelector('summary').textContent+' '+guide.dataset.keywords+' '+guide.textContent).toLocaleLowerCase();guide.hidden=terms.some(term=>!haystack.includes(term));if(!guide.hidden)shown++}count.textContent=shown+' of '+guides.length+' guides shown';empty.hidden=shown!==0}input.addEventListener('input',filter);filter();const target=document.getElementById(window.location.hash.slice(1));if(target&&target.tagName==='DETAILS')target.open=true})();
+</script></body></html>

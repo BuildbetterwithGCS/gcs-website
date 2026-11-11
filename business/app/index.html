@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Nexus Business Workspace | Development Preview</title>
+  <meta name="description" content="Development preview of the GCS Nexus business workspace.">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="../../css/business-app.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to workspace</a>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">GCS Nexus</p>
+      <h1>My business workspace</h1>
+    </div>
+    <a class="help-link" href="../help/">How To help</a>
+  </header>
+  <div class="preview" role="note"><strong>Development preview:</strong> This page does not create a live account, charge a payment method, run payroll, or prove production availability.</div>
+
+  <nav class="task-nav" aria-label="Workspace tasks">
+    <a href="#today">Today</a><a href="#time">My time</a><a href="#leave">Time off</a>
+    <a href="#work">Work orders</a><a href="#invoices">Invoices</a><a href="#assets">Assets</a><a href="#assistant">Assistant updates</a><a href="#subscription">Subscription</a>
+  </nav>
+
+  <main id="main">
+    <p id="app-status" class="status" role="status" aria-live="polite">Connecting to your secure workspace…</p>
+    <p id="access-status" class="fine-print" role="status" aria-live="polite">Access not verified.</p>
+    <p class="fine-print">This label explains your workspace tasks. The server still checks permission for every action.</p>
+
+    <section id="today" class="panel" aria-labelledby="today-heading">
+      <div class="panel-heading"><div><p class="step">Start here</p><h2 id="today-heading">Today</h2></div><button id="refresh" type="button">Refresh</button></div>
+      <div id="dashboard" class="summary-grid" aria-live="polite">
+        <article><strong>—</strong><span>Open work</span></article><article><strong>—</strong><span>Completed work</span></article>
+        <article><strong>—</strong><span>Time off waiting</span></article><article><strong>—</strong><span>Time punches to review</span></article>
+        <article><strong>—</strong><span>Imported assets</span></article>
+      </div>
+      <p><a href="../help/#saved-dashboard-guide">What these dashboard totals mean</a></p>
+    </section>
+
+    <section id="time" class="panel" aria-labelledby="time-heading">
+      <p class="step">Employee task</p><h2 id="time-heading">My time</h2><p>Use one large button when your shift starts or ends.</p>
+      <p><a href="../help/#time-clock-guide">Show me how to clock in or out</a> · <a href="../help/#manager-time-review-guide">Manager time-review guide</a></p>
+      <div class="actions"><button id="clock-in" type="button">Clock in</button><button id="clock-out" class="secondary" type="button">Clock out</button></div>
+      <label for="punch-id">Open punch number <span>(needed to clock out)</span></label><input id="punch-id" autocomplete="off">
+    </section>
+
+    <section id="leave" class="panel" aria-labelledby="leave-heading">
+      <p class="step">Employee task</p><h2 id="leave-heading">Request time off</h2>
+      <form id="leave-form"><label for="leave-kind">Type</label><select id="leave-kind"><option value="pto">PTO</option><option value="sick">Sick</option><option value="unpaid">Unpaid</option></select>
+      <label for="leave-date">Date</label><input id="leave-date" type="date" required><button type="submit">Send request</button></form>
+      <section class="leave-review" aria-labelledby="leave-review-heading">
+        <p class="step">Manager task</p><h3 id="leave-review-heading">Review time off</h3>
+        <p>Load requests waiting for a manager. Choose Approve or Deny for one request at a time.</p>
+        <p><a href="../help/#manager-leave-review-guide">Show me how to approve or deny time off</a></p>
+        <button id="leave-review-load" type="button" class="secondary">Load requests to review</button>
+        <p id="leave-review-status" class="fine-print" role="status" aria-live="polite" tabindex="-1">Requests not loaded.</p>
+        <p id="leave-review-empty" class="fine-print" hidden>No time-off requests are waiting for review.</p>
+        <p id="leave-review-truncated" class="inventory-notice" hidden>Showing the first 100 requests. More requests are waiting.</p>
+        <ul id="leave-review-list" class="leave-review-list" hidden></ul>
+      </section>
+    </section>
+
+    <section id="work" class="panel" aria-labelledby="work-heading">
+      <h2 id="work-heading">Work orders</h2>
+      <section class="work-queue" aria-labelledby="work-queue-heading">
+        <p class="step">Employee task</p><h3 id="work-queue-heading">My work</h3>
+        <p>Load open work orders assigned to you. Mark one complete only after the work is finished.</p>
+        <p><a href="../help/#work-completion-guide">Show me how to finish assigned work</a></p>
+        <button id="work-queue-load" type="button" class="secondary">Load my work</button>
+        <p id="work-queue-status" class="fine-print" role="status" aria-live="polite" tabindex="-1">Work orders not loaded.</p>
+        <p id="work-queue-empty" class="fine-print" hidden>No open work orders are assigned to you.</p>
+        <p id="work-queue-truncated" class="inventory-notice" hidden>Showing the first 100 open work orders. More work is assigned to you.</p>
+        <ul id="work-queue-list" class="work-queue-list" hidden></ul>
+      </section>
+      <section class="work-create" aria-labelledby="work-create-heading">
+        <p class="step">Manager task</p><h3 id="work-create-heading">Create a work order</h3>
+        <form id="work-form"><label for="work-title">What needs to be done?</label><input id="work-title" maxlength="200" required>
+        <label for="assignee">Employee ID</label><input id="assignee" maxlength="200" required><button type="submit">Assign work</button></form>
+      </section>
+    </section>
+
+    <section id="invoices" class="panel" aria-labelledby="invoice-heading">
+      <p class="step">Manager task</p><h2 id="invoice-heading">Prepare an invoice draft</h2>
+      <form id="invoice-form"><label for="invoice-id">Invoice number</label><input id="invoice-id" maxlength="80" required>
+      <label for="customer-name">Customer name</label><input id="customer-name" maxlength="200" required>
+      <label for="amount">Amount in dollars</label><input id="amount" inputmode="decimal" placeholder="125.00" required><button type="submit">Save draft</button></form>
+      <p class="fine-print">Saving a draft does not send an invoice or collect payment.</p>
+      <section class="invoice-list" aria-labelledby="invoice-list-heading">
+        <h3 id="invoice-list-heading">Invoice drafts and status</h3>
+        <p>Load up to 100 invoice tracking records for this workspace.</p>
+        <p><a href="../help/#invoice-status-guide">Show me what each invoice status means</a></p>
+        <p class="invoice-boundary" role="note"><strong>Tracking only:</strong> A status shown here does not send an invoice, collect payment, confirm settlement, or post an accounting entry.</p>
+        <button id="invoice-list-load" type="button" class="secondary">Load invoice list</button>
+        <p id="invoice-list-status" class="fine-print" role="status" aria-live="polite" tabindex="-1">Invoice list not loaded.</p>
+        <p id="invoice-list-empty" class="fine-print" hidden>No invoice tracking records are available.</p>
+        <p id="invoice-list-truncated" class="inventory-notice" hidden>Showing the first 100 invoice records. More records are available.</p>
+        <ul id="invoice-list-items" class="invoice-list-items" hidden></ul>
+      </section>
+    </section>
+
+    <section id="assets" class="panel" aria-labelledby="assets-heading">
+      <p class="step">Administrator task</p><h2 id="assets-heading">Bring in my asset list</h2>
+      <p>Use the GCS spreadsheet, check it for problems, and fix the listed cells before importing. Previewing does not save any assets.</p>
+      <p><a href="../help/#asset-spreadsheet-guide">Show me how to prepare and import the spreadsheet</a></p>
+      <ol class="asset-steps">
+        <li><button id="asset-template" type="button" class="secondary">1. Download blank spreadsheet</button></li>
+        <li><form id="asset-preview-form">
+          <label for="asset-workbook">2. Choose the completed spreadsheet</label>
+          <input id="asset-workbook" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required>
+          <button type="submit">3. Check spreadsheet</button>
+        </form></li>
+      </ol>
+      <p id="asset-status" class="fine-print" role="status" aria-live="polite">No spreadsheet checked.</p>
+      <div id="asset-preview" hidden>
+        <p><strong id="asset-preview-summary"></strong></p>
+        <ul id="asset-errors" class="error-list"></ul>
+        <button id="asset-error-download" type="button" class="secondary" hidden>Download error list</button>
+        <div id="asset-commit" class="commit-confirmation" hidden>
+          <p><strong>Ready to add these new assets.</strong> Existing assets will not be changed or deleted.</p>
+          <label for="asset-confirm"><input id="asset-confirm" type="checkbox"> I understand this adds new assets to this workspace.</label>
+          <button id="asset-import" type="button" disabled>Import new assets</button>
+        </div>
+      </div>
+      <section class="asset-inventory" aria-labelledby="asset-inventory-heading">
+        <h3 id="asset-inventory-heading">Imported assets</h3>
+        <p>Load a read-only list of up to 100 assets in this workspace.</p>
+        <button id="asset-inventory-load" type="button" class="secondary">Load imported assets</button>
+        <p id="asset-inventory-status" class="fine-print" role="status" aria-live="polite">Asset list not loaded.</p>
+        <div id="asset-inventory-filters" class="inventory-filters" hidden>
+          <div><label for="asset-inventory-search">Find a loaded asset</label><input id="asset-inventory-search" type="search" autocomplete="off" placeholder="Try: forklift or site-a"></div>
+          <div><label for="asset-inventory-status-filter">Status</label><select id="asset-inventory-status-filter"><option value="all">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option><option value="maintenance">Maintenance</option></select></div>
+          <div class="inventory-filter-actions"><button id="asset-inventory-clear" type="button" class="secondary" disabled>Clear filters</button></div>
+        </div>
+        <p id="asset-inventory-count" class="fine-print" role="status" aria-live="polite" hidden></p>
+        <p id="asset-inventory-empty" class="fine-print" hidden>No loaded assets match these filters.</p>
+        <p id="asset-inventory-truncated" class="inventory-notice" hidden>Showing results from the first 100 assets returned. The full workspace inventory contains more records.</p>
+        <div class="inventory-table-wrap">
+          <table id="asset-inventory-table" hidden>
+            <caption class="visually-hidden">Imported assets in this workspace</caption>
+            <thead><tr><th scope="col">Asset</th><th scope="col">Asset ID</th><th scope="col">Site</th><th scope="col">Status</th></tr></thead>
+            <tbody id="asset-inventory-rows"></tbody>
+          </table>
+        </div>
+      </section>
+      <p class="fine-print">This protected development preview uses synthetic data only. Do not use real customer data.</p>
+    </section>
+
+    <section id="assistant" class="panel" aria-labelledby="assistant-heading">
+      <p class="step">Subscriber setting</p><h2 id="assistant-heading">Assistant updates</h2>
+      <p>Choose which business reminders you may want later. Load your saved settings before making a change.</p>
+      <p><a href="../help/#assistant-updates-guide">Show me how assistant update settings work</a></p>
+      <p class="assistant-boundary" role="note"><strong>Settings only:</strong> Nexus does not send email from this page yet. Saving does not start an AI task, scheduler, provider, or delivery.</p>
+      <button id="assistant-load" type="button" class="secondary" disabled>Load my update settings</button>
+      <p id="assistant-status" class="fine-print" role="status" aria-live="polite">Verify workspace access, then load your settings.</p>
+      <form id="assistant-form">
+        <fieldset id="assistant-controls" disabled>
+          <legend>My update choices</legend>
+          <label class="assistant-toggle"><input id="assistant-enabled" type="checkbox"> Turn on updates when verified delivery becomes available</label>
+          <label for="assistant-frequency">How often</label>
+          <select id="assistant-frequency">
+            <option value="paused">Paused</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+          </select>
+          <label for="assistant-timezone">My timezone</label>
+          <input id="assistant-timezone" list="assistant-timezones" maxlength="80" value="UTC" autocomplete="off">
+          <datalist id="assistant-timezones">
+            <option value="UTC"><option value="America/New_York"><option value="America/Chicago"><option value="America/Denver"><option value="America/Los_Angeles">
+          </datalist>
+          <fieldset class="assistant-topics">
+            <legend>What to include</legend>
+            <label><input type="checkbox" name="assistant-topic" value="assigned_work"> My assigned tasks</label>
+            <label><input type="checkbox" name="assistant-topic" value="work_orders"> Work orders</label>
+            <label><input type="checkbox" name="assistant-topic" value="leave_actions"> Time-off actions</label>
+            <label><input type="checkbox" name="assistant-topic" value="invoice_status"> Invoice status</label>
+            <label><input type="checkbox" name="assistant-topic" value="leads"> Customer leads</label>
+            <label><input type="checkbox" name="assistant-topic" value="follow_ups"> Follow-ups</label>
+            <label><input type="checkbox" name="assistant-topic" value="bid_opportunities"> Bid opportunities with source evidence</label>
+          </fieldset>
+          <button id="assistant-save" type="submit">Save update settings</button>
+        </fieldset>
+      </form>
+    </section>
+
+    <section id="subscription" class="panel" aria-labelledby="subscription-heading">
+      <p class="step">Administrator task</p><h2 id="subscription-heading">Choose business tools</h2>
+      <p id="subscription-state">No verified subscription status loaded.</p>
+      <p><a href="../help/#subscription-checkout-guide">Show me how selection, checkout, and activation work</a></p>
+      <form id="subscription-form"><label for="bundle">Package</label><select id="bundle"><option value="modular">Choose modules</option><option value="complete">Complete package</option></select>
+      <fieldset><legend>Modules</legend><label><input type="checkbox" name="module" value="workforce"> Workforce &amp; time</label><label><input type="checkbox" name="module" value="operations"> Jobs &amp; operations</label><label><input type="checkbox" name="module" value="finance"> Finance &amp; invoicing</label><label><input type="checkbox" name="module" value="assets"> Assets &amp; maintenance</label><label><input type="checkbox" name="module" value="crm"> Customers &amp; CRM</label><label><input type="checkbox" name="module" value="analytics"> Analytics</label></fieldset>
+      <label for="users">People who need access</label><input id="users" type="number" min="1" max="100" value="5" required>
+      <button type="submit">Save selection</button></form>
+      <button id="continue-checkout" class="secondary" type="button" disabled>Continue to secure checkout</button>
+      <p id="checkout-state" class="fine-print" aria-live="polite">Save your business tools before continuing.</p>
+      <p class="fine-print">A saved selection is not a charge and does not grant access. Activation requires verified billing and independent approval.</p>
+    </section>
+  </main>
+  <footer><a href="../help/">How To help</a> · <a href="../">Business overview</a></footer>
+  <script src="../../js/business-app.js"></script>
+</body>
+</html>

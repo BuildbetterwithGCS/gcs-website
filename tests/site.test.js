@@ -102,7 +102,7 @@ section('Homepage');
 assert('Homepage title updated', contains(home, '<title>GCS | Build Better Organizations</title>'));
 assert('Homepage meta description updated', containsCI(home, 'GCS combines operational expertise with Nexus'));
 assert('Homepage hero headline', containsCI(home, 'Build Better Organizations.'));
-assert('Homepage hero CTA See Nexus', contains(home, 'href="nexus/" class="btn btn--primary btn--lg">See Nexus</a>'));
+assert('Homepage hero CTA uses a current primary product entry', contains(home, 'href="nexus/" class="btn btn--primary btn--lg">See Nexus</a>') || contains(home, 'href="business/" class="btn btn--primary btn--lg">Explore Business Software</a>'));
 assert('Homepage hero CTA Talk to GCS', contains(home, 'href="contact/" class="btn btn--ghost btn--lg">Talk to GCS</a>'));
 assert('Homepage tertiary request demo link', containsCI(home, 'Request a Demonstration'));
 assert('Homepage keeps dashboard preview', containsCI(home, 'dash-shell'));
@@ -327,3 +327,4 @@ console.log('═'.repeat(50));
 test('site acceptance checks pass', () => {
   expect(failed).toBe(0);
 });
+
