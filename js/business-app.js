@@ -17,6 +17,11 @@
   const MAX_WORKBOOK_BYTES = 5 * 1024 * 1024;
   const MAX_PROVIDER_SESSION_MS = 24 * 60 * 60 * 1000;
   const PREVIEW_RECEIPT_HEADER = 'X-Nexus-Preview-Receipt';
+  const ASSISTANT_FREQUENCIES = new Set(['paused', 'daily', 'weekly']);
+  const ASSISTANT_TOPICS = new Set([
+    'assigned_work', 'work_orders', 'leave_actions', 'invoice_status',
+    'leads', 'follow_ups', 'bid_opportunities',
+  ]);
 
   function csrfToken(cookie) {
     const prefix = '__Host-nexus-csrf=';
@@ -747,11 +752,41 @@
     return { intent: retried, idempotency_key: key };
   }
 
+
+  function validatedAssistantPreference(value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      throw new Error('Assistant settings are unavailable');
+    }
+    const fields = new Set(['revision', 'enabled', 'frequency', 'timezone', 'topics']);
+    if (Object.keys(value).length !== fields.size
+      || Object.keys(value).some(key => !fields.has(key))
+      || !Number.isInteger(value.revision) || value.revision < 0
+      || typeof value.enabled !== 'boolean'
+      || !ASSISTANT_FREQUENCIES.has(value.frequency)
+      || typeof value.timezone !== 'string'
+      || value.timezone.length < 1 || value.timezone.length > 80
+      || !/^[A-Za-z0-9_+\/-]+$/.test(value.timezone)
+      || !Array.isArray(value.topics)
+      || value.topics.length > ASSISTANT_TOPICS.size
+      || new Set(value.topics).size !== value.topics.length
+      || value.topics.some(topic => !ASSISTANT_TOPICS.has(topic))) {
+      throw new Error('Assistant settings are unavailable');
+    }
+    return value;
+  }
+
   function init(doc) {
     if (!doc) return;
     const status = doc.getElementById('app-status');
     const checkoutButton = doc.getElementById('continue-checkout');
     const checkoutState = doc.getElementById('checkout-state');
+    const assistantLoad = doc.getElementById('assistant-load');
+    const assistantStatus = doc.getElementById('assistant-status');
+    const assistantForm = doc.getElementById('assistant-form');
+    const assistantControls = doc.getElementById('assistant-controls');
+    const assistantEnabled = doc.getElementById('assistant-enabled');
+    const assistantFrequency = doc.getElementById('assistant-frequency');
+    const assistantTimezone = doc.getElementById('assistant-timezone');
     const view = doc.defaultView;
     let stagedRevision = null;
     let checkoutPending = false;
@@ -762,6 +797,10 @@
     let assetPreviewReady = false;
     let assetCommitPending = false;
     let loadedAssetInventory = null;
+    let assistantRevision = null;
+    let assistantLoadPending = false;
+    let assistantSavePending = false;
+    let workspaceVerified = false;
 
     function message(text, error = false) {
       status.textContent = text;
@@ -795,8 +834,67 @@
         = workspaceAccess !== 'manager';
     }
 
+
+    function clearAssistantSettings(text = 'Load your saved settings before making a change.') {
+      assistantRevision = null;
+      assistantEnabled.checked = false;
+      assistantFrequency.value = 'paused';
+      assistantTimezone.value = 'UTC';
+      doc.querySelectorAll('input[name="assistant-topic"]').forEach(input => {
+        input.checked = false;
+      });
+      assistantControls.disabled = true;
+      assistantStatus.textContent = text;
+    }
+
+    function setAssistantAccess(verified) {
+      workspaceVerified = verified === true;
+      assistantLoad.disabled = !workspaceVerified || assistantLoadPending;
+      if (!workspaceVerified) {
+        clearAssistantSettings('Verify workspace access, then load your settings.');
+      }
+    }
+
+    function renderAssistantSettings(value) {
+      const preference = validatedAssistantPreference(value);
+      assistantRevision = preference.revision;
+      assistantEnabled.checked = preference.enabled;
+      assistantFrequency.value = preference.frequency;
+      assistantTimezone.value = preference.timezone;
+      const selected = new Set(preference.topics);
+      doc.querySelectorAll('input[name="assistant-topic"]').forEach(input => {
+        input.checked = selected.has(input.value);
+      });
+      assistantControls.disabled = false;
+      assistantStatus.textContent = 'Settings loaded. No email is sent yet.';
+      return preference;
+    }
+
+    async function loadAssistantSettings() {
+      if (!workspaceVerified || assistantLoadPending) return;
+      assistantLoadPending = true;
+      assistantLoad.disabled = true;
+      clearAssistantSettings('Loading update settings…');
+      try {
+        renderAssistantSettings(await request('/assistant/preferences'));
+      } catch (error) {
+        const denied = error && (error.status === 401 || error.status === 403);
+        if (denied) {
+          clearRevokedWorkspace();
+          assistantStatus.textContent =
+            'Your access or active subscription does not allow these settings.';
+        } else {
+          clearAssistantSettings('Update settings are unavailable. Try loading them again.');
+        }
+      } finally {
+        assistantLoadPending = false;
+        assistantLoad.disabled = !workspaceVerified;
+      }
+    }
+
     function clearRevokedWorkspace() {
       setWorkspaceMutationAccess(null);
+      setAssistantAccess(false);
       clearAccessStatus(doc);
       clearDashboardSummary(doc);
     }
@@ -851,6 +949,7 @@
         const verifiedAccess = validatedAccessStatus(access);
         renderAccessStatus(doc, access);
         setWorkspaceMutationAccess(verifiedAccess);
+        setAssistantAccess(true);
       }
       const dashboard = await run(() => request('/dashboard'), 'Workspace updated.');
       if (dashboard) {
@@ -864,6 +963,49 @@
       const subscription = await run(() => request('/subscription'), 'Workspace updated.');
       if (subscription) presentSubscription(subscription);
     }
+
+
+    assistantLoad.addEventListener('click', loadAssistantSettings);
+    assistantForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      if (assistantSavePending || !workspaceVerified
+        || !Number.isInteger(assistantRevision)) return;
+      assistantSavePending = true;
+      assistantControls.disabled = true;
+      assistantStatus.textContent = 'Saving update settings…';
+      const expectedRevision = assistantRevision;
+      const body = {
+        expected_revision: expectedRevision,
+        enabled: assistantEnabled.checked,
+        frequency: assistantFrequency.value,
+        timezone: assistantTimezone.value.trim(),
+        topics: [...doc.querySelectorAll('input[name="assistant-topic"]:checked')]
+          .map(input => input.value),
+      };
+      try {
+        renderAssistantSettings(await request('/assistant/preferences', {
+          method: 'PATCH',
+          body,
+        }));
+        assistantStatus.textContent =
+          'Settings saved. No email, AI task, scheduler, or delivery was started.';
+      } catch (error) {
+        const denied = error && (error.status === 401 || error.status === 403);
+        if (denied) {
+          clearRevokedWorkspace();
+          assistantStatus.textContent =
+            'Your access or active subscription does not allow these settings.';
+        } else if (error && error.status === 409) {
+          clearAssistantSettings(
+            'These settings changed elsewhere. Load the latest settings before trying again.');
+        } else {
+          clearAssistantSettings(
+            'Update settings were not saved. Load the latest settings before trying again.');
+        }
+      } finally {
+        assistantSavePending = false;
+      }
+    });
 
     doc.getElementById('refresh').addEventListener('click', refresh);
     doc.getElementById('clock-in').addEventListener('click', () =>
@@ -1421,6 +1563,7 @@
     dashboardSummaryValues, clearDashboardSummary,
     validatedAccessStatus, renderAccessStatus, clearAccessStatus,
     validatedAssetInventory, filterAssetItems,
+    validatedAssistantPreference,
     validatedPendingLeaveQueue, renderPendingLeaveQueue,
     validatedAssignedWorkQueue, renderAssignedWorkQueue,
     formatInvoiceAmount, validatedInvoiceSummaries, renderInvoiceSummaries,
