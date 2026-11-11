@@ -21,7 +21,7 @@
 
   <nav class="task-nav" aria-label="Workspace tasks">
     <a href="#today">Today</a><a href="#time">My time</a><a href="#leave">Time off</a>
-    <a href="#work">Work orders</a><a href="#invoices">Invoices</a><a href="#assets">Assets</a><a href="#subscription">Subscription</a>
+    <a href="#work">Work orders</a><a href="#invoices">Invoices</a><a href="#assets">Assets</a><a href="#assistant">Assistant updates</a><a href="#subscription">Subscription</a>
   </nav>
 
   <main id="main">
@@ -145,6 +145,42 @@
         </div>
       </section>
       <p class="fine-print">This protected development preview uses synthetic data only. Do not use real customer data.</p>
+    </section>
+
+    <section id="assistant" class="panel" aria-labelledby="assistant-heading">
+      <p class="step">Subscriber setting</p><h2 id="assistant-heading">Assistant updates</h2>
+      <p>Choose which business reminders you may want later. Load your saved settings before making a change.</p>
+      <p class="assistant-boundary" role="note"><strong>Settings only:</strong> Nexus does not send email from this page yet. Saving does not start an AI task, scheduler, provider, or delivery.</p>
+      <button id="assistant-load" type="button" class="secondary" disabled>Load my update settings</button>
+      <p id="assistant-status" class="fine-print" role="status" aria-live="polite">Verify workspace access, then load your settings.</p>
+      <form id="assistant-form">
+        <fieldset id="assistant-controls" disabled>
+          <legend>My update choices</legend>
+          <label class="assistant-toggle"><input id="assistant-enabled" type="checkbox"> Turn on updates when verified delivery becomes available</label>
+          <label for="assistant-frequency">How often</label>
+          <select id="assistant-frequency">
+            <option value="paused">Paused</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+          </select>
+          <label for="assistant-timezone">My timezone</label>
+          <input id="assistant-timezone" list="assistant-timezones" maxlength="80" value="UTC" autocomplete="off">
+          <datalist id="assistant-timezones">
+            <option value="UTC"><option value="America/New_York"><option value="America/Chicago"><option value="America/Denver"><option value="America/Los_Angeles">
+          </datalist>
+          <fieldset class="assistant-topics">
+            <legend>What to include</legend>
+            <label><input type="checkbox" name="assistant-topic" value="assigned_work"> My assigned tasks</label>
+            <label><input type="checkbox" name="assistant-topic" value="work_orders"> Work orders</label>
+            <label><input type="checkbox" name="assistant-topic" value="leave_actions"> Time-off actions</label>
+            <label><input type="checkbox" name="assistant-topic" value="invoice_status"> Invoice status</label>
+            <label><input type="checkbox" name="assistant-topic" value="leads"> Customer leads</label>
+            <label><input type="checkbox" name="assistant-topic" value="follow_ups"> Follow-ups</label>
+            <label><input type="checkbox" name="assistant-topic" value="bid_opportunities"> Bid opportunities with source evidence</label>
+          </fieldset>
+          <button id="assistant-save" type="submit">Save update settings</button>
+        </fieldset>
+      </form>
     </section>
 
     <section id="subscription" class="panel" aria-labelledby="subscription-heading">
