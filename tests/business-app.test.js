@@ -2404,3 +2404,67 @@ test('assistant stale revision and denied entitlement fail closed without retry'
   expect(document.getElementById('assistant-status').textContent)
     .toBe('Your access or active subscription does not allow these settings.');
 });
+
+
+test('How To center explains assistant settings without claiming delivery', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  const portal = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  expect(portal).toContain('href="../help/#assistant-updates-guide"');
+  expect(help).toContain('id="assistant-updates-guide"');
+  expect(help).toContain('The controls stay locked until workspace access and an active eligible subscription are verified.');
+  expect(help).toContain('Checking it saves your choice only; it does not start email.');
+  expect(help).toContain('The page does not automatically retry a stale save.');
+  expect(help).toContain('The page does not automatically retry a denied request.');
+  expect(help).toContain('Settings only—no email is sent yet:');
+  expect(help).toContain('does not run AI, schedule a digest, call an email provider, deliver a message, create a bid or lead');
+  expect(help).toContain('verified provider credentials');
+  expect(help).toContain('tenant-isolation testing');
+  expect(help).toContain('unsubscribe/compliance controls');
+});
+
+
+test('assistant help supports direct links, multi-word search, and keyboard access', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  const body = help.slice(help.indexOf('<body>') + 6, help.lastIndexOf('</body>'));
+  document.body.innerHTML = body;
+  window.history.replaceState(
+    null, '', '/business/help/#assistant-updates-guide');
+  window.eval(document.querySelector('script').textContent);
+
+  const input = document.getElementById('search');
+  const guide = document.getElementById('assistant-updates-guide');
+  const count = document.getElementById('count');
+  const empty = document.getElementById('empty');
+  const guideTotal = document.querySelectorAll('#guides details').length;
+
+  expect(guide.open).toBe(true);
+  expect(guide.querySelector('summary').tabIndex).toBe(0);
+  expect(count.getAttribute('role')).toBe('status');
+  expect(count.getAttribute('aria-live')).toBe('polite');
+
+  input.value = 'assistant stale settings';
+  input.dispatchEvent(new Event('input'));
+  expect(guide.hidden).toBe(false);
+  expect(count.textContent).toBe('1 of ' + guideTotal + ' guides shown');
+  expect([...document.querySelectorAll('#guides details')]
+    .filter(item => !item.hidden)).toEqual([guide]);
+
+  input.value = 'live email delivery';
+  input.dispatchEvent(new Event('input'));
+  expect(guide.hidden).toBe(false);
+  expect(count.textContent).toBe('1 of ' + guideTotal + ' guides shown');
+
+  input.value = 'assistant fabricated evidence';
+  input.dispatchEvent(new Event('input'));
+  expect(count.textContent).toBe('0 of ' + guideTotal + ' guides shown');
+  expect(empty.hidden).toBe(false);
+
+  input.value = '';
+  input.dispatchEvent(new Event('input'));
+  expect(count.textContent)
+    .toBe(guideTotal + ' of ' + guideTotal + ' guides shown');
+  expect(empty.hidden).toBe(true);
+});
