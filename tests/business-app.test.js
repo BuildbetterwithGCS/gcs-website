@@ -2564,12 +2564,53 @@ test('assistant digest preview rejects exact duplicate items', () => {
   expect(app.validatedAssistantDigestPreview(distinctSource)).toBe(distinctSource);
 });
 
+function safeAssistantPreferenceFixture() {
+  return {
+    revision: 4,
+    enabled: true,
+    frequency: 'daily',
+    timezone: 'America/New_York',
+    topics: ['bid_opportunities'],
+  };
+}
+
+test('assistant renderer requires active current preferences and selected topics', () => {
+  document.body.innerHTML = '<ul id="assistant-preview-items"></ul>';
+  const fixture = safeAssistantPreviewFixture();
+  const preference = safeAssistantPreferenceFixture();
+  expect(app.renderAssistantDigestPreview(document, fixture, preference)).toBe(fixture);
+
+  const disabled = safeAssistantPreferenceFixture();
+  disabled.enabled = false;
+  expect(() => app.renderAssistantDigestPreview(document, fixture, disabled))
+    .toThrow('Assistant preview is unavailable');
+
+  const paused = safeAssistantPreferenceFixture();
+  paused.frequency = 'paused';
+  expect(() => app.renderAssistantDigestPreview(document, fixture, paused))
+    .toThrow('Assistant preview is unavailable');
+
+  const stale = safeAssistantPreferenceFixture();
+  stale.revision = 3;
+  expect(() => app.renderAssistantDigestPreview(document, fixture, stale))
+    .toThrow('Assistant preview is unavailable');
+
+  const unselected = safeAssistantPreferenceFixture();
+  unselected.topics = ['assigned_work'];
+  expect(() => app.renderAssistantDigestPreview(document, fixture, unselected))
+    .toThrow('Assistant preview is unavailable');
+
+  expect(() => app.renderAssistantDigestPreview(document, fixture))
+    .toThrow('Assistant preview is unavailable');
+});
+
 test('assistant digest renderer uses text-only content and hardened source links', () => {
   document.body.innerHTML = '<ul id="assistant-preview-items"></ul>';
   const fixture = safeAssistantPreviewFixture();
   fixture.items[0].title = '<img src=x onerror=alert(1)>';
 
-  app.renderAssistantDigestPreview(document, fixture);
+  app.renderAssistantDigestPreview(
+    document, fixture, safeAssistantPreferenceFixture());
 
   const row = document.querySelector('#assistant-preview-items li');
   expect(row.querySelector('strong').textContent)
