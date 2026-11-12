@@ -106,3 +106,66 @@ test('contract remains unconnected and does not accept customer contact fields',
     /innerHTML|fetch|request|email|phone|address|provider/i,
   );
 });
+
+
+test('builds only a bounded idempotent internal estimate draft request', () => {
+  const now = Date.parse('2026-11-12T20:00:00Z');
+  const request = app.estimateDraftRequest(
+    'Synthetic customer',
+    'Synthetic stamped concrete proposal',
+    'Prepare and install a synthetic stamped concrete test surface.',
+    250000,
+    '2026-12-12',
+    bytes => { bytes.fill(0xab); return bytes; },
+    now,
+  );
+  expect(request).toEqual({
+    customer_label: 'Synthetic customer',
+    title: 'Synthetic stamped concrete proposal',
+    scope_summary: 'Prepare and install a synthetic stamped concrete test surface.',
+    amount_cents: 250000,
+    expires_on: '2026-12-12',
+    idempotency_key: 'estimate-' + 'ab'.repeat(24),
+  });
+  expect(request).not.toHaveProperty('tenant_id');
+  expect(request).not.toHaveProperty('workspace_id');
+  expect(request).not.toHaveProperty('email');
+  expect(request).not.toHaveProperty('phone');
+  expect(request).not.toHaveProperty('address');
+  expect(request).not.toHaveProperty('send');
+});
+
+test('estimate draft request rejects unsafe content, money, dates, and randomness', () => {
+  const now = Date.parse('2026-11-12T20:00:00Z');
+  const make = (overrides = {}) => app.estimateDraftRequest(
+    overrides.customer ?? 'Synthetic customer',
+    overrides.title ?? 'Synthetic proposal',
+    overrides.scope ?? 'Synthetic bounded scope',
+    overrides.amount ?? 10000,
+    overrides.expires ?? '2026-12-12',
+    overrides.random ?? (bytes => { bytes.fill(1); return bytes; }),
+    overrides.now ?? now,
+  );
+  for (const overrides of [
+    { customer: '' },
+    { title: 'x'.repeat(201) },
+    { scope: 'x'.repeat(2001) },
+    { scope: 'unsafe\u202etext' },
+    { amount: 0 },
+    { amount: 12.5 },
+    { amount: 1000000001 },
+    { expires: '2026-11-11' },
+    { expires: '2027-06-01' },
+    { expires: '2026-02-30' },
+    { random: null },
+    { now: NaN },
+  ]) {
+    expect(() => make(overrides)).toThrow('Estimate draft is unavailable');
+  }
+});
+
+test('estimate draft builder remains unconnected and cannot send a proposal', () => {
+  expect(String(app.estimateDraftRequest)).not.toMatch(
+    /fetch|request\(|email|phone|address|tenant_id|workspace_id|provider|send/i,
+  );
+});
