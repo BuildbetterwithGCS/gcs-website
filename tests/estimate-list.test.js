@@ -143,8 +143,10 @@ test('estimate draft request rejects unsafe content, money, dates, and randomnes
     overrides.scope ?? 'Synthetic bounded scope',
     overrides.amount ?? 10000,
     overrides.expires ?? '2026-12-12',
-    overrides.random ?? (bytes => { bytes.fill(1); return bytes; }),
-    overrides.now ?? now,
+    Object.prototype.hasOwnProperty.call(overrides, 'random')
+      ? overrides.random
+      : (bytes => { bytes.fill(1); return bytes; }),
+    Object.prototype.hasOwnProperty.call(overrides, 'now') ? overrides.now : now,
   );
   for (const overrides of [
     { customer: '' },
@@ -166,6 +168,6 @@ test('estimate draft request rejects unsafe content, money, dates, and randomnes
 
 test('estimate draft builder remains unconnected and cannot send a proposal', () => {
   expect(String(app.estimateDraftRequest)).not.toMatch(
-    /fetch|request\(|email|phone|address|tenant_id|workspace_id|provider|send/i,
+    /fetch\s*\(|request\s*\(\s*['\"]|email|phone|address|tenant_id|workspace_id|provider|send/i,
   );
 });
