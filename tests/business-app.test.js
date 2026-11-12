@@ -2604,6 +2604,28 @@ test('assistant renderer requires active current preferences and selected topics
     .toThrow('Assistant preview is unavailable');
 });
 
+test('assistant renderer binds preview period to daily or weekly frequency', () => {
+  document.body.innerHTML = '<ul id="assistant-preview-items"></ul>';
+
+  const longDaily = safeAssistantPreviewFixture();
+  longDaily.period_start = '2026-11-09T14:00:00Z';
+  expect(() => app.renderAssistantDigestPreview(
+    document, longDaily, safeAssistantPreferenceFixture()))
+    .toThrow('Assistant preview period is unavailable');
+
+  const shortWeekly = safeAssistantPreviewFixture();
+  const weeklyPreference = safeAssistantPreferenceFixture();
+  weeklyPreference.frequency = 'weekly';
+  expect(() => app.renderAssistantDigestPreview(
+    document, shortWeekly, weeklyPreference))
+    .toThrow('Assistant preview period is unavailable');
+
+  const weekly = safeAssistantPreviewFixture();
+  weekly.period_start = '2026-11-04T14:00:00Z';
+  expect(app.renderAssistantDigestPreview(
+    document, weekly, weeklyPreference)).toBe(weekly);
+});
+
 test('assistant digest renderer uses text-only content and hardened source links', () => {
   document.body.innerHTML = '<ul id="assistant-preview-items"></ul>';
   const fixture = safeAssistantPreviewFixture();
@@ -2633,6 +2655,11 @@ test('assistant digest preview enforces item count and period consistency', () =
   const reversedPeriod = safeAssistantPreviewFixture();
   reversedPeriod.period_start = reversedPeriod.period_end;
   expect(() => app.validatedAssistantDigestPreview(reversedPeriod))
+    .toThrow('Assistant preview period is unavailable');
+
+  const futurePeriod = safeAssistantPreviewFixture();
+  futurePeriod.period_end = '2026-11-11T14:02:00Z';
+  expect(() => app.validatedAssistantDigestPreview(futurePeriod))
     .toThrow('Assistant preview period is unavailable');
 
   const tooMany = safeAssistantPreviewFixture();
