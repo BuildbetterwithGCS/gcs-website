@@ -699,8 +699,8 @@
     return value;
   }
 
-  function leadListPath(cursor = null) {
-    if (cursor === null) return '/leads';
+  function leadListPath(cursor) {
+    if (arguments.length === 0 || cursor === null) return '/leads';
     if (typeof cursor !== 'string'
       || !/^[A-Za-z0-9_-]{32,256}$/.test(cursor)) {
       throw new Error('Lead list continuation is unavailable');
