@@ -2454,8 +2454,12 @@ test('assistant help supports direct links, multi-word search, and keyboard acce
 
   input.value = 'live email delivery';
   input.dispatchEvent(new Event('input'));
+  const pilotGuide = document.getElementById('pilot-readiness-guide');
   expect(guide.hidden).toBe(false);
-  expect(count.textContent).toBe('1 of ' + guideTotal + ' guides shown');
+  expect(pilotGuide.hidden).toBe(false);
+  expect(count.textContent).toBe('2 of ' + guideTotal + ' guides shown');
+  expect([...document.querySelectorAll('#guides details')]
+    .filter(item => !item.hidden)).toEqual([pilotGuide, guide]);
 
   input.value = 'assistant fabricated evidence';
   input.dispatchEvent(new Event('input'));
