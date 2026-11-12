@@ -582,6 +582,42 @@
     return value;
   }
 
+  const LEAD_ACTIONS = new Set([
+    'qualify', 'mark_estimated', 'close_won', 'close_lost',
+    'set_follow_up', 'clear_follow_up',
+  ]);
+
+  function leadActionRequest(leadRef, expectedRevision, action, followUpAt,
+    getRandomValues, now = Date.now()) {
+    if (typeof leadRef !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(leadRef)
+      || !Number.isInteger(expectedRevision) || expectedRevision < 0
+      || !LEAD_ACTIONS.has(action)
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Lead action is unavailable');
+    }
+    let boundedFollowUp = null;
+    if (action === 'set_follow_up') {
+      try {
+        boundedFollowUp = leadTimestamp(followUpAt);
+      } catch (_error) {
+        throw new Error('Lead action is unavailable');
+      }
+      if (Date.parse(boundedFollowUp) <= Number(now)) {
+        throw new Error('Lead action is unavailable');
+      }
+    } else if (followUpAt !== null) {
+      throw new Error('Lead action is unavailable');
+    }
+    return {
+      lead_ref: leadRef,
+      expected_revision: expectedRevision,
+      action,
+      follow_up_at: boundedFollowUp,
+      idempotency_key: idempotencyKey(getRandomValues),
+    };
+  }
+
   function validatedLeadList(value) {
     const listFields = new Set([
       'schema_version', 'checked_at', 'returned', 'truncated', 'items',
@@ -1651,7 +1687,7 @@
     dashboardSummaryValues, clearDashboardSummary,
     validatedAccessStatus, renderAccessStatus, clearAccessStatus,
     validatedAssetInventory, filterAssetItems,
-    validatedLeadList, renderLeadList,
+    validatedLeadList, renderLeadList, leadActionRequest,
     validatedAssistantPreference,
     validatedPendingLeaveQueue, renderPendingLeaveQueue,
     validatedAssignedWorkQueue, renderAssignedWorkQueue,
