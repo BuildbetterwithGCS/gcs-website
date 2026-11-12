@@ -2477,6 +2477,7 @@ function safeLeadListFixture() {
     truncated: false,
     items: [{
       lead_ref: 'LEAD-TEST-001',
+      revision: 7,
       customer_label: 'Example Parking Structure',
       stage: 'qualified',
       owner_label: 'Manager',
@@ -2536,6 +2537,16 @@ test('tenant lead list enforces count, truncation, stages, and item limits', () 
   const invalidStage = safeLeadListFixture();
   invalidStage.items[0].stage = 'contacted-without-approval';
   expect(() => app.validatedLeadList(invalidStage))
+    .toThrow('Lead list is unavailable');
+
+  const invalidRevision = safeLeadListFixture();
+  invalidRevision.items[0].revision = -1;
+  expect(() => app.validatedLeadList(invalidRevision))
+    .toThrow('Lead list is unavailable');
+
+  const missingRevision = safeLeadListFixture();
+  delete missingRevision.items[0].revision;
+  expect(() => app.validatedLeadList(missingRevision))
     .toThrow('Lead list is unavailable');
 
   const tooMany = safeLeadListFixture();
