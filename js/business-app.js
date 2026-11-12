@@ -582,17 +582,25 @@
     return value;
   }
 
-  const LEAD_ACTIONS = new Set([
-    'qualify', 'mark_estimated', 'close_won', 'close_lost',
-    'set_follow_up', 'clear_follow_up',
-  ]);
+  const LEAD_TRANSITIONS = Object.freeze({
+    new: new Set(['qualify', 'close_lost', 'set_follow_up', 'clear_follow_up']),
+    qualified: new Set([
+      'mark_estimated', 'close_lost', 'set_follow_up', 'clear_follow_up',
+    ]),
+    estimated: new Set([
+      'close_won', 'close_lost', 'set_follow_up', 'clear_follow_up',
+    ]),
+    won: new Set(),
+    lost: new Set(),
+  });
 
-  function leadActionRequest(leadRef, expectedRevision, action, followUpAt,
-    getRandomValues, now = Date.now()) {
+  function leadActionRequest(leadRef, expectedRevision, currentStage, action,
+    followUpAt, getRandomValues, now = Date.now()) {
+    const allowedActions = LEAD_TRANSITIONS[currentStage];
     if (typeof leadRef !== 'string'
       || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(leadRef)
       || !Number.isInteger(expectedRevision) || expectedRevision < 0
-      || !LEAD_ACTIONS.has(action)
+      || !allowedActions || !allowedActions.has(action)
       || !Number.isFinite(Number(now))) {
       throw new Error('Lead action is unavailable');
     }
