@@ -2475,6 +2475,7 @@ function safeLeadListFixture() {
     checked_at: '2026-11-12T10:30:00Z',
     returned: 1,
     truncated: false,
+    next_cursor: null,
     items: [{
       lead_ref: 'LEAD-TEST-001',
       revision: 7,
@@ -2571,11 +2572,46 @@ test('tenant lead list enforces count, truncation, stages, and item limits', () 
     .toThrow('Lead list is unavailable');
 });
 
+test('tenant lead list requires an opaque cursor exactly for truncated pages', () => {
+  const page = safeLeadListFixture();
+  page.truncated = true;
+  page.next_cursor = 'cursor_' + 'a'.repeat(32);
+  expect(app.validatedLeadList(page)).toBe(page);
+
+  for (const cursor of [
+    null,
+    '',
+    'short',
+    'tenant:other-tenant',
+    'cursor with spaces',
+    'a'.repeat(257),
+  ]) {
+    const invalid = safeLeadListFixture();
+    invalid.truncated = true;
+    invalid.next_cursor = cursor;
+    expect(() => app.validatedLeadList(invalid))
+      .toThrow('Lead list is unavailable');
+  }
+
+  const cursorWithoutMore = safeLeadListFixture();
+  cursorWithoutMore.next_cursor = 'b'.repeat(32);
+  expect(() => app.validatedLeadList(cursorWithoutMore))
+    .toThrow('Lead list is unavailable');
+
+  const empty = safeLeadListFixture();
+  empty.items = [];
+  empty.returned = 0;
+  empty.truncated = false;
+  empty.next_cursor = null;
+  expect(app.validatedLeadList(empty)).toBe(empty);
+});
+
 test('tenant lead renderer uses text only and discloses truncation', () => {
   document.body.innerHTML = '<ul id="lead-list"></ul>';
   const fixture = safeLeadListFixture();
   fixture.items[0].customer_label = '<img src=x onerror=alert(1)>';
   fixture.truncated = true;
+  fixture.next_cursor = 'a'.repeat(32);
 
   app.renderLeadList(document, fixture);
 
