@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pilot readiness | GCS Business</title>
+<meta name="description" content="Synthetic-first Nexus pilot capability inventory, acceptance checklist, and guided onboarding plan.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://buildbetterwithgcs.com/business/help/pilot.html">
+<link rel="icon" href="../../assets/gcs-favicon.svg" type="image/svg+xml">
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#152d47;background:#f5f8fb}*{box-sizing:border-box}body{margin:0}header,footer{background:#102b4b;color:white}.wrap{max-width:1080px;margin:auto;padding:0 22px}header{padding:22px 0 30px}header a,footer a{color:white}.brand{display:inline-block;background:white;border-radius:10px;padding:6px}.brand img{display:block;width:min(190px,55vw);height:auto}.back{display:block;margin-top:14px}h1{font-size:clamp(2rem,5vw,3rem);margin-bottom:8px}h2{margin-top:36px}p,li{line-height:1.65}main{padding:32px 0 70px}.notice{background:#fff4dc;border-left:4px solid #d48a13;padding:16px;border-radius:6px}.table-wrap{overflow-x:auto;background:white;border:1px solid #d8e3ef;border-radius:14px}table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;vertical-align:top;padding:14px;border-bottom:1px solid #d8e3ef}th{background:#eaf2f8}tbody tr:last-child td{border-bottom:0}.status{font-weight:750}.staged{color:#175d9b}.blocked{color:#9a5b00}.gap{color:#9b2c2c}.checklist,.phases{background:white;border:1px solid #d8e3ef;border-radius:14px;padding:20px 24px}.checklist li,.phases li{margin-bottom:10px}.evidence{font-size:.94rem;color:#516579}.gate{font-weight:750}.cta{display:inline-block;margin-top:22px;padding:12px 16px;border-radius:10px;background:#175d9b;color:white;text-decoration:none}.cta:focus-visible,a:focus-visible{outline:3px solid #f5a623;outline-offset:3px}footer{padding:25px 0}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style></head><body>
+<header><div class="wrap"><a class="brand" href="../" aria-label="GCS Business home"><img src="../../assets/gcs-logo.svg" alt="GCS — Build Better Organizations" width="190" height="60"></a><a class="back" href="./">← How To center</a><h1>Synthetic pilot readiness</h1><p>Capability inventory, acceptance checks, and a safe onboarding sequence.</p></div></header>
+<main class="wrap">
+<p class="notice"><strong>Development evidence only:</strong> This page does not create a tenant, invite a company, charge a card, send email, collect customer data, or prove any provider-backed capability is live. Use synthetic identities and records until every stated gate passes.</p>
+
+<h2>Evidence snapshot</h2>
+<p class="evidence">Snapshot date: November 11, 2026. Staged-code findings reference founder PR <a href="https://github.com/BuildbetterwithGCS/gcs-founder/pull/130">#130</a>; customer help references website PR <a href="https://github.com/BuildbetterwithGCS/gcs-website/pull/59">#59</a>; the safe assistant client contract references website PR <a href="https://github.com/BuildbetterwithGCS/gcs-website/pull/60">#60</a>. Open or green pull requests are not production proof.</p>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Pilot area</th><th scope="col">Current evidence</th><th scope="col">Acceptance gate</th></tr></thead>
+<tbody>
+<tr><td>Signup, subscription selection, entitlements</td><td><span class="status staged">Staged code/tests</span><br>Pending selections and fail-closed entitlement checks exist in PR #130.</td><td>Provider test-mode checkout, signed webhook fixtures, activation/revocation, independent billing review, and hosted verification.</td></tr>
+<tr><td>Tenant workspace, roles, employee login</td><td><span class="status staged">Staged code/tests</span><br>Session-derived actors, workspace roles, and cross-tenant denial paths exist in PR #130.</td><td>Independent security/privacy review plus protected runtime identity, revocation, expiry, backup, and restore evidence.</td></tr>
+<tr><td>Timekeeping, PTO/leave, overtime options</td><td><span class="status staged">Staged code/tests</span><br>Clock, leave, approval, and policy-option workflows exist without payroll calculation.</td><td>Role-based end-to-end tests in a synthetic tenant and explicit confirmation that wages, tax, payroll, and legal compliance remain outside the pilot.</td></tr>
+<tr><td>Work orders and invoice status</td><td><span class="status staged">Staged code/tests</span><br>Assignment, completion, draft, and status tracking exist without dispatch optimization, invoice delivery, or payment settlement.</td><td>Synthetic manager/employee journey, audit evidence, and separately verified delivery/payment systems before any live claim.</td></tr>
+<tr><td>Excel onboarding and imported assets</td><td><span class="status staged">Staged code/tests</span><br>Bounded XLSX inspection, preview, receipt, insert-only commit, and restart tests exist in PR #130.</td><td>Independent data/security review, protected hosted storage, malware controls, backup/restore, and synthetic HTTP verification.</td></tr>
+<tr><td>AI operations assistant</td><td><span class="status blocked">Split, unexposed work</span><br>Server preview/settings work is awaiting CI/review in PR #130; PR #60 validates safe client data but makes no route call.</td><td>Exact-head CI, independent tenant-isolation/privacy review, entitlement and role tests, no-fabrication evidence, audit logs, and deployed end-to-end preview verification.</td></tr>
+<tr><td>Email digests and unsubscribe</td><td><span class="status gap">Not live</span><br>Preferences and boundaries are documented; no verified provider delivery is claimed.</td><td>Verified provider credentials, opt-in/out, frequency controls, deduplication, unsubscribe/compliance handling, bounce/failure behavior, audit evidence, and actual test delivery.</td></tr>
+<tr><td>Bid discovery and qualification</td><td><span class="status gap">Not pilot-ready</span><br>No verified live radius search or current source coverage is claimed here.</td><td>Real source authorization, trade/location/radius and multi-branch tests, freshness timestamps, deduplication, provenance links, and zero fabricated opportunities.</td></tr>
+<tr><td>CRM, leads, estimates, proposals, dispatch</td><td><span class="status gap">Inventory gap</span><br>No complete customer-facing workflow is verified.</td><td>Tenant-scoped records, permissions, lifecycle states, audit history, exports, deletion/retention rules, and synthetic cross-module acceptance tests.</td></tr>
+<tr><td>Materials, expenses, subcontractors, documents</td><td><span class="status gap">Inventory gap</span><br>No complete customer-facing workflow or production storage is verified.</td><td>Data model, role boundaries, safe uploads, retention, backup/restore, audit evidence, and independent privacy/security review.</td></tr>
+</tbody></table></div>
+
+<h2>Pilot acceptance checklist</h2>
+<ul class="checklist">
+<li><span class="gate">Release gates:</span> exact-head CI is green, required independent reviews are approved, and the protected deployment matches the reviewed commit.</li>
+<li><span class="gate">Isolation:</span> two synthetic tenants prove cross-tenant reads and writes fail for every pilot module.</li>
+<li><span class="gate">Roles:</span> separate synthetic administrator, manager, and employee identities see only their allowed actions and records.</li>
+<li><span class="gate">Subscription:</span> test mode proves pending access is denied and only verified, reviewed evidence can grant an entitlement.</li>
+<li><span class="gate">Operations:</span> synthetic users complete time, leave, approval, work-order, invoice-status, and asset-import journeys without payroll or payment claims.</li>
+<li><span class="gate">Assistant:</span> every task, lead, work item, and bid update is tenant- and role-scoped; bid items retain source and freshness evidence; fabricated records are rejected.</li>
+<li><span class="gate">Email:</span> opt-in, frequency, deduplication, unsubscribe, audit, failure handling, and one actual test delivery are independently verified before readiness is claimed.</li>
+<li><span class="gate">Recovery:</span> restart, backup/restore, revocation, rollback, and failed-provider paths preserve isolation and do not duplicate actions.</li>
+<li><span class="gate">Evidence:</span> commits, test runs, reviewed deploy IDs, screenshots or response evidence, known gaps, and the exact next action are recorded.</li>
+</ul>
+
+<h2>Guided onboarding sequence</h2>
+<ol class="phases">
+<li><strong>Prerequisites:</strong> keep all real company data and contact details out of the system while any required gate above is incomplete.</li>
+<li><strong>Synthetic company:</strong> create an invented contractor tenant with invented employees, customers, jobs, invoices, assets, and bids.</li>
+<li><strong>Identity and access:</strong> test administrator, manager, and employee journeys; repeat denial tests from a second synthetic tenant.</li>
+<li><strong>Core operations:</strong> complete signup in test mode, entitlement denial/activation fixtures, timekeeping, leave, approvals, work orders, invoice status, and asset onboarding.</li>
+<li><strong>Assistant and bids:</strong> preview only permission-scoped updates with retained source/freshness evidence; do not send email or present unverified opportunities.</li>
+<li><strong>Provider validation:</strong> verify billing and email credentials in approved test modes, signed events, delivery/failure behavior, unsubscribe handling, and rollback.</li>
+<li><strong>Independent review:</strong> obtain required security, privacy, accessibility, billing, data, and provider review for the exact release candidate.</li>
+<li><strong>Founder handoff:</strong> only after prerequisites pass, request the minimum explicit approval and contact/configuration details needed for a real volunteer pilot. Do not contact, invite, charge, or access the volunteer company before that point.</li>
+</ol>
+
+<p><a class="cta" href="./#pilot-readiness-guide">Return to the pilot How To guide</a></p>
+</main><footer><div class="wrap"><a href="./">How To center</a> · <a href="../">Business overview</a></div></footer>
+</body></html>
