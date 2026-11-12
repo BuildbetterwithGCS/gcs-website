@@ -2543,8 +2543,33 @@ test('How To pilot checklist remains synthetic-first and release-gated', () => {
   expect(help).toContain('provider credentials, unsubscribe controls, and actual delivery');
   expect(help).toContain('trade, location, radius, and multiple branches');
   expect(help).toContain('Obtain independent security/privacy review');
+  expect(help).toContain('href="pilot.html"');
   expect(help).toContain(
     'does not contact, invite, charge, or onboard a real company');
   expect(help).not.toContain('Coastal Concrete Restoration');
   expect(help).not.toContain('pilot is ready');
+});
+
+
+test('pilot readiness page maps evidence, gaps, and acceptance gates truthfully', () => {
+  const pilot = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'pilot.html'), 'utf8');
+
+  expect(pilot).toContain('<meta name="robots" content="noindex,nofollow">');
+  expect(pilot).toContain('Development evidence only:');
+  expect(pilot).toContain('gcs-founder/pull/130');
+  expect(pilot).toContain('gcs-website/pull/59');
+  expect(pilot).toContain('gcs-website/pull/60');
+  expect(pilot).toContain('Staged code/tests');
+  expect(pilot).toContain('Split, unexposed work');
+  expect(pilot).toContain('Not pilot-ready');
+  expect(pilot).toContain('Inventory gap');
+  expect(pilot).toContain('Provider test-mode checkout');
+  expect(pilot).toContain('two synthetic tenants prove cross-tenant reads and writes fail');
+  expect(pilot).toContain('one actual test delivery');
+  expect(pilot).toContain(
+    'Do not contact, invite, charge, or access the volunteer company before that point.');
+  expect(pilot).not.toContain('Coastal Concrete Restoration');
+  expect(pilot).not.toContain('class="status live"');
+  expect(pilot).not.toContain('pilot is ready');
 });
