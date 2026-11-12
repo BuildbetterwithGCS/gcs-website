@@ -2525,3 +2525,22 @@ test('business overview explains tier fit without publishing unverified prices',
   expect(business).not.toContain('<h3>1. Tell us about your business</h3>');
   expect(business).not.toMatch(/\$\d/);
 });
+
+
+test('How To pilot checklist remains synthetic-first and release-gated', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+
+  expect(help).toContain('href="#pilot-readiness-guide"');
+  expect(help).toContain('id="pilot-readiness-guide"');
+  expect(help).toContain('Create a separate synthetic test tenant.');
+  expect(help).toContain('cross-tenant access is denied');
+  expect(help).toContain('unverified or pending entitlement grants no access');
+  expect(help).toContain('provider credentials, unsubscribe controls, and actual delivery');
+  expect(help).toContain('trade, location, radius, and multiple branches');
+  expect(help).toContain('Obtain independent security/privacy review');
+  expect(help).toContain(
+    'does not contact, invite, charge, or onboard a real company');
+  expect(help).not.toContain('Coastal Concrete Restoration');
+  expect(help).not.toContain('pilot is ready');
+});
