@@ -7,6 +7,7 @@ function validPage() {
     checked_at: '2026-11-12T19:00:00Z',
     returned: 2,
     truncated: false,
+    next_cursor: null,
     items: [
       {
         estimate_ref: 'estimate-one',
@@ -86,6 +87,7 @@ test('renders safe summaries without internal references or delivery claims', ()
     title: '<script>alert(1)</script>',
   };
   page.truncated = true;
+  page.next_cursor = 'a'.repeat(32);
   app.renderEstimateList(document, page);
   expect(document.querySelector('img')).toBeNull();
   expect(document.querySelector('script')).toBeNull();
@@ -252,4 +254,46 @@ test('draft confirmation rejects altered or over-shared request evidence', () =>
     expect(() => app.validatedEstimateDraftResult(result, altered, now))
       .toThrow('Estimate draft confirmation is unavailable');
   }
+});
+
+
+test('estimate pagination requires a bounded opaque cursor only when truncated', () => {
+  const page = validPage();
+  const cursor = 'a'.repeat(32);
+  expect(app.validatedEstimateList({
+    ...page,
+    truncated: true,
+    next_cursor: cursor,
+  }).next_cursor).toBe(cursor);
+  for (const invalid of [
+    { ...page, truncated: true, next_cursor: null },
+    { ...page, truncated: true, next_cursor: 'short' },
+    { ...page, truncated: true, next_cursor: 'tenant/workspace/customer' },
+    { ...page, truncated: false, next_cursor: cursor },
+    { ...page, returned: 0, items: [], truncated: true, next_cursor: cursor },
+  ]) {
+    expect(() => app.validatedEstimateList(invalid))
+      .toThrow('Estimate list is unavailable');
+  }
+});
+
+test('estimate continuation path carries only an opaque cursor', () => {
+  const cursor = 'b'.repeat(32);
+  expect(app.estimateListPath()).toBe('/estimates');
+  expect(app.estimateListPath(null)).toBe('/estimates');
+  expect(app.estimateListPath(cursor)).toBe('/estimates?cursor=' + cursor);
+  for (const invalid of [
+    undefined,
+    '',
+    'short',
+    'tenant=synthetic-a',
+    'workspace/synthetic-a',
+    'x'.repeat(257),
+  ]) {
+    expect(() => app.estimateListPath(invalid))
+      .toThrow('Estimate list continuation is unavailable');
+  }
+  expect(String(app.estimateListPath)).not.toMatch(
+    /tenant|workspace|customer|email|phone|address|provider/i,
+  );
 });
