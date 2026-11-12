@@ -2468,3 +2468,100 @@ test('assistant help supports direct links, multi-word search, and keyboard acce
     .toBe(guideTotal + ' of ' + guideTotal + ' guides shown');
   expect(empty.hidden).toBe(true);
 });
+
+function safeLeadListFixture() {
+  return {
+    schema_version: 'tenant-lead-list-v1',
+    checked_at: '2026-11-12T10:30:00Z',
+    returned: 1,
+    truncated: false,
+    items: [{
+      lead_ref: 'LEAD-TEST-001',
+      customer_label: 'Example Parking Structure',
+      stage: 'qualified',
+      owner_label: 'Manager',
+      next_action: 'Review synthetic scope',
+      follow_up_at: null,
+      updated_at: '2026-11-12T10:00:00Z',
+    }],
+  };
+}
+
+test('tenant lead list accepts only the minimized bounded contract', () => {
+  const fixture = safeLeadListFixture();
+  expect(app.validatedLeadList(fixture)).toBe(fixture);
+
+  const tenantLeak = safeLeadListFixture();
+  tenantLeak.tenant_id = 'other-tenant';
+  expect(() => app.validatedLeadList(tenantLeak))
+    .toThrow('Lead list is unavailable');
+
+  const contactLeak = safeLeadListFixture();
+  contactLeak.items[0].email = 'person@example.invalid';
+  expect(() => app.validatedLeadList(contactLeak))
+    .toThrow('Lead list is unavailable');
+
+  const duplicate = safeLeadListFixture();
+  const copy = JSON.parse(JSON.stringify(duplicate.items[0]));
+  copy.lead_ref = duplicate.items[0].lead_ref.toLowerCase();
+  duplicate.items.push(copy);
+  duplicate.returned = 2;
+  expect(() => app.validatedLeadList(duplicate))
+    .toThrow('Lead list is unavailable');
+
+  const futureUpdate = safeLeadListFixture();
+  futureUpdate.items[0].updated_at = '2026-11-12T10:31:00Z';
+  expect(() => app.validatedLeadList(futureUpdate))
+    .toThrow('Lead list is unavailable');
+
+  const controlText = safeLeadListFixture();
+  controlText.items[0].customer_label = 'Example\u202eCustomer';
+  expect(() => app.validatedLeadList(controlText))
+    .toThrow('Lead list is unavailable');
+});
+
+test('tenant lead list enforces count, truncation, stages, and item limits', () => {
+  const wrongCount = safeLeadListFixture();
+  wrongCount.returned = 2;
+  expect(() => app.validatedLeadList(wrongCount))
+    .toThrow('Lead list is unavailable');
+
+  const emptyTruncated = safeLeadListFixture();
+  emptyTruncated.items = [];
+  emptyTruncated.returned = 0;
+  emptyTruncated.truncated = true;
+  expect(() => app.validatedLeadList(emptyTruncated))
+    .toThrow('Lead list is unavailable');
+
+  const invalidStage = safeLeadListFixture();
+  invalidStage.items[0].stage = 'contacted-without-approval';
+  expect(() => app.validatedLeadList(invalidStage))
+    .toThrow('Lead list is unavailable');
+
+  const tooMany = safeLeadListFixture();
+  tooMany.items = Array.from({ length: 101 }, (_, index) => ({
+    ...safeLeadListFixture().items[0],
+    lead_ref: 'LEAD-TEST-' + String(index).padStart(3, '0'),
+  }));
+  tooMany.returned = 101;
+  expect(() => app.validatedLeadList(tooMany))
+    .toThrow('Lead list is unavailable');
+});
+
+test('tenant lead renderer uses text only and discloses truncation', () => {
+  document.body.innerHTML = '<ul id="lead-list"></ul>';
+  const fixture = safeLeadListFixture();
+  fixture.items[0].customer_label = '<img src=x onerror=alert(1)>';
+  fixture.truncated = true;
+
+  app.renderLeadList(document, fixture);
+
+  const list = document.getElementById('lead-list');
+  expect(list.querySelector('strong').textContent)
+    .toBe('<img src=x onerror=alert(1)>');
+  expect(list.querySelector('img')).toBeNull();
+  expect(list.textContent).not.toContain('LEAD-TEST-001');
+  expect(list.textContent).not.toContain('example.invalid');
+  expect(list.querySelector('.lead-list-truncated').textContent)
+    .toBe('More permitted leads are available; this list is incomplete.');
+});
