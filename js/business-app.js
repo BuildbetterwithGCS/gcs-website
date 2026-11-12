@@ -875,8 +875,19 @@
     return value;
   }
 
-  function renderAssistantDigestPreview(doc, value) {
+  function renderAssistantDigestPreview(doc, value, preferenceValue) {
     const preview = validatedAssistantDigestPreview(value);
+    let preference;
+    try {
+      preference = validatedAssistantPreference(preferenceValue);
+    } catch (_error) {
+      throw new Error('Assistant preview is unavailable');
+    }
+    if (!preference.enabled || preference.frequency === 'paused'
+      || preview.preference_revision !== preference.revision
+      || preview.items.some(item => !preference.topics.includes(item.topic))) {
+      throw new Error('Assistant preview is unavailable');
+    }
     const list = doc.getElementById('assistant-preview-items');
     if (!list) throw new Error('Assistant preview container is unavailable');
     list.replaceChildren();
