@@ -2468,3 +2468,437 @@ test('assistant help supports direct links, multi-word search, and keyboard acce
     .toBe(guideTotal + ' of ' + guideTotal + ' guides shown');
   expect(empty.hidden).toBe(true);
 });
+
+function safeLeadListFixture() {
+  return {
+    schema_version: 'tenant-lead-list-v1',
+    checked_at: '2026-11-12T10:30:00Z',
+    returned: 1,
+    truncated: false,
+    next_cursor: null,
+    items: [{
+      lead_ref: 'LEAD-TEST-001',
+      revision: 7,
+      customer_label: 'Example Parking Structure',
+      stage: 'qualified',
+      owner_label: 'Manager',
+      next_action: 'Review synthetic scope',
+      follow_up_at: null,
+      updated_at: '2026-11-12T10:00:00Z',
+    }],
+  };
+}
+
+test('tenant lead list accepts only the minimized bounded contract', () => {
+  const fixture = safeLeadListFixture();
+  expect(app.validatedLeadList(fixture)).toBe(fixture);
+
+  const tenantLeak = safeLeadListFixture();
+  tenantLeak.tenant_id = 'other-tenant';
+  expect(() => app.validatedLeadList(tenantLeak))
+    .toThrow('Lead list is unavailable');
+
+  const contactLeak = safeLeadListFixture();
+  contactLeak.items[0].email = 'person@example.invalid';
+  expect(() => app.validatedLeadList(contactLeak))
+    .toThrow('Lead list is unavailable');
+
+  const duplicate = safeLeadListFixture();
+  const copy = JSON.parse(JSON.stringify(duplicate.items[0]));
+  copy.lead_ref = duplicate.items[0].lead_ref.toLowerCase();
+  duplicate.items.push(copy);
+  duplicate.returned = 2;
+  expect(() => app.validatedLeadList(duplicate))
+    .toThrow('Lead list is unavailable');
+
+  const futureUpdate = safeLeadListFixture();
+  futureUpdate.items[0].updated_at = '2026-11-12T10:31:00Z';
+  expect(() => app.validatedLeadList(futureUpdate))
+    .toThrow('Lead list is unavailable');
+
+  const controlText = safeLeadListFixture();
+  controlText.items[0].customer_label = 'Example\u202eCustomer';
+  expect(() => app.validatedLeadList(controlText))
+    .toThrow('Lead list is unavailable');
+
+  for (const timestamp of [
+    '2026-11-12T05:30:00-05:00',
+    '2026-02-30T10:00:00Z',
+    '2026-11-12 10:00:00Z',
+    '2026-11-12T10:00:00.000Z',
+  ]) {
+    const nonCanonical = safeLeadListFixture();
+    nonCanonical.items[0].updated_at = timestamp;
+    expect(() => app.validatedLeadList(nonCanonical))
+      .toThrow('Lead list is unavailable');
+  }
+});
+
+test('tenant lead list enforces count, truncation, stages, and item limits', () => {
+  const wrongCount = safeLeadListFixture();
+  wrongCount.returned = 2;
+  expect(() => app.validatedLeadList(wrongCount))
+    .toThrow('Lead list is unavailable');
+
+  const emptyTruncated = safeLeadListFixture();
+  emptyTruncated.items = [];
+  emptyTruncated.returned = 0;
+  emptyTruncated.truncated = true;
+  expect(() => app.validatedLeadList(emptyTruncated))
+    .toThrow('Lead list is unavailable');
+
+  const invalidStage = safeLeadListFixture();
+  invalidStage.items[0].stage = 'contacted-without-approval';
+  expect(() => app.validatedLeadList(invalidStage))
+    .toThrow('Lead list is unavailable');
+
+  const invalidRevision = safeLeadListFixture();
+  invalidRevision.items[0].revision = -1;
+  expect(() => app.validatedLeadList(invalidRevision))
+    .toThrow('Lead list is unavailable');
+
+  const missingRevision = safeLeadListFixture();
+  delete missingRevision.items[0].revision;
+  expect(() => app.validatedLeadList(missingRevision))
+    .toThrow('Lead list is unavailable');
+
+  const tooMany = safeLeadListFixture();
+  tooMany.items = Array.from({ length: 101 }, (_, index) => ({
+    ...safeLeadListFixture().items[0],
+    lead_ref: 'LEAD-TEST-' + String(index).padStart(3, '0'),
+  }));
+  tooMany.returned = 101;
+  expect(() => app.validatedLeadList(tooMany))
+    .toThrow('Lead list is unavailable');
+});
+
+test('tenant lead list requires an opaque cursor exactly for truncated pages', () => {
+  const page = safeLeadListFixture();
+  page.truncated = true;
+  page.next_cursor = 'cursor_' + 'a'.repeat(32);
+  expect(app.validatedLeadList(page)).toBe(page);
+
+  for (const cursor of [
+    null,
+    '',
+    'short',
+    'tenant:other-tenant',
+    'cursor with spaces',
+    'a'.repeat(257),
+  ]) {
+    const invalid = safeLeadListFixture();
+    invalid.truncated = true;
+    invalid.next_cursor = cursor;
+    expect(() => app.validatedLeadList(invalid))
+      .toThrow('Lead list is unavailable');
+  }
+
+  const cursorWithoutMore = safeLeadListFixture();
+  cursorWithoutMore.next_cursor = 'b'.repeat(32);
+  expect(() => app.validatedLeadList(cursorWithoutMore))
+    .toThrow('Lead list is unavailable');
+
+  const empty = safeLeadListFixture();
+  empty.items = [];
+  empty.returned = 0;
+  empty.truncated = false;
+  empty.next_cursor = null;
+  expect(app.validatedLeadList(empty)).toBe(empty);
+});
+
+test('lead continuation path carries only the validated opaque cursor', () => {
+  const cursor = 'cursor_' + 'c'.repeat(32);
+  expect(app.leadListPath()).toBe('/leads');
+  expect(app.leadListPath(null)).toBe('/leads');
+  expect(app.leadListPath(cursor)).toBe('/leads?cursor=' + cursor);
+  expect(app.leadListPath(cursor)).not.toMatch(
+    /tenant|workspace|actor|role|email|phone|provider/i);
+
+  for (const invalid of [
+    '', 'short', 'tenant:other-tenant', 'cursor with spaces',
+    'cursor/value', 'a'.repeat(257), undefined, 42,
+  ]) {
+    expect(() => app.leadListPath(invalid))
+      .toThrow('Lead list continuation is unavailable');
+  }
+});
+
+test('tenant lead renderer uses text only and discloses truncation', () => {
+  document.body.innerHTML = '<ul id="lead-list"></ul>';
+  const fixture = safeLeadListFixture();
+  fixture.items[0].customer_label = '<img src=x onerror=alert(1)>';
+  fixture.truncated = true;
+  fixture.next_cursor = 'a'.repeat(32);
+
+  app.renderLeadList(document, fixture);
+
+  const list = document.getElementById('lead-list');
+  expect(list.querySelector('strong').textContent)
+    .toBe('<img src=x onerror=alert(1)>');
+  expect(list.querySelector('img')).toBeNull();
+  expect(list.textContent).not.toContain('LEAD-TEST-001');
+  expect(list.textContent).not.toContain('example.invalid');
+  expect(list.querySelector('.lead-list-truncated').textContent)
+    .toBe('More permitted leads are available; this list is incomplete.');
+});
+
+test('lead action request is optimistic, idempotent, and identity-free', () => {
+  const request = app.leadActionRequest(
+    'LEAD-TEST-001', 7, 'new', 'qualify', null,
+    bytes => bytes.fill(7), Date.parse('2026-11-12T10:00:00Z'));
+
+  expect(request).toEqual({
+    lead_ref: 'LEAD-TEST-001',
+    expected_revision: 7,
+    action: 'qualify',
+    follow_up_at: null,
+    idempotency_key: 'nexus-' + '07'.repeat(24),
+  });
+  expect(JSON.stringify(request)).not.toMatch(
+    /tenant|actor|role|email|phone|address|provider|outreach/i);
+
+  const followUp = app.leadActionRequest(
+    'LEAD-TEST-001', 8, 'qualified', 'set_follow_up',
+    '2026-11-13T10:00:00Z', bytes => bytes.fill(8),
+    Date.parse('2026-11-12T10:00:00Z'));
+  expect(followUp.follow_up_at).toBe('2026-11-13T10:00:00Z');
+  expect(followUp.idempotency_key).toBe('nexus-' + '08'.repeat(24));
+});
+
+test('lead actions follow the bounded lifecycle and closed leads fail closed', () => {
+  const random = bytes => bytes.fill(2);
+  const now = Date.parse('2026-11-12T10:00:00Z');
+
+  expect(app.leadActionRequest(
+    'LEAD-TEST-001', 1, 'qualified', 'mark_estimated', null, random, now,
+  ).action).toBe('mark_estimated');
+  expect(app.leadActionRequest(
+    'LEAD-TEST-001', 2, 'estimated', 'close_won', null, random, now,
+  ).action).toBe('close_won');
+
+  for (const [stage, action] of [
+    ['new', 'mark_estimated'],
+    ['new', 'close_won'],
+    ['qualified', 'close_won'],
+    ['estimated', 'qualify'],
+    ['won', 'set_follow_up'],
+    ['lost', 'clear_follow_up'],
+    ['unknown', 'qualify'],
+  ]) {
+    expect(() => app.leadActionRequest(
+      'LEAD-TEST-001', 3, stage, action, null, random, now,
+    )).toThrow('Lead action is unavailable');
+  }
+});
+
+test('lead action confirmation binds the exact revision and lifecycle result', () => {
+  const now = Date.parse('2026-11-12T10:00:00Z');
+  const request = app.leadActionRequest(
+    'LEAD-TEST-001', 7, 'new', 'qualify', null,
+    bytes => bytes.fill(3), now);
+  const result = {
+    schema_version: 'tenant-lead-action-v1',
+    lead_ref: 'LEAD-TEST-001',
+    previous_revision: 7,
+    revision: 8,
+    stage: 'qualified',
+    follow_up_at: null,
+    updated_at: '2026-11-12T10:00:00Z',
+    replayed: false,
+  };
+
+  expect(app.validatedLeadActionResult(result, request, now)).toBe(result);
+  expect(app.validatedLeadActionResult(
+    { ...result, replayed: true }, request, now,
+  ).replayed).toBe(true);
+  expect(Object.keys(result).sort()).toEqual([
+    'follow_up_at', 'lead_ref', 'previous_revision', 'replayed', 'revision',
+    'schema_version', 'stage', 'updated_at',
+  ]);
+  for (const forbidden of [
+    'tenant_id', 'actor_id', 'role', 'email', 'phone', 'address',
+    'provider', 'outreach',
+  ]) {
+    expect(result).not.toHaveProperty(forbidden);
+  }
+});
+
+test('lead action confirmation requires the exact follow-up outcome', () => {
+  const now = Date.parse('2026-11-12T10:00:00Z');
+  const request = app.leadActionRequest(
+    'LEAD-TEST-001', 8, 'qualified', 'set_follow_up',
+    '2026-11-13T10:00:00Z', bytes => bytes.fill(4), now);
+  const result = {
+    schema_version: 'tenant-lead-action-v1',
+    lead_ref: 'LEAD-TEST-001',
+    previous_revision: 8,
+    revision: 9,
+    stage: 'qualified',
+    follow_up_at: '2026-11-13T10:00:00Z',
+    updated_at: '2026-11-12T10:00:00Z',
+    replayed: false,
+  };
+
+  expect(app.validatedLeadActionResult(result, request, now)).toBe(result);
+  for (const invalid of [
+    { ...result, follow_up_at: null },
+    { ...result, follow_up_at: '2026-11-14T10:00:00Z' },
+    { ...result, stage: 'won' },
+  ]) {
+    expect(() => app.validatedLeadActionResult(invalid, request, now))
+      .toThrow('Lead action confirmation is unavailable');
+  }
+});
+
+test('lead action confirmation rejects leakage and mismatched mutation evidence', () => {
+  const now = Date.parse('2026-11-12T10:00:00Z');
+  const request = app.leadActionRequest(
+    'LEAD-TEST-001', 7, 'estimated', 'close_won', null,
+    bytes => bytes.fill(5), now);
+  const result = {
+    schema_version: 'tenant-lead-action-v1',
+    lead_ref: 'LEAD-TEST-001',
+    previous_revision: 7,
+    revision: 8,
+    stage: 'won',
+    follow_up_at: null,
+    updated_at: '2026-11-12T10:00:00Z',
+    replayed: false,
+  };
+
+  for (const invalid of [
+    { ...result, tenant_id: 'other-tenant' },
+    { ...result, email: 'person@example.invalid' },
+    { ...result, lead_ref: 'LEAD-OTHER-001' },
+    { ...result, previous_revision: 6 },
+    { ...result, revision: 9 },
+    { ...result, stage: 'estimated' },
+    { ...result, follow_up_at: '2026-11-13T10:00:00Z' },
+    { ...result, updated_at: '2026-11-12T10:05:01Z' },
+    { ...result, replayed: 'false' },
+  ]) {
+    expect(() => app.validatedLeadActionResult(invalid, request, now))
+      .toThrow('Lead action confirmation is unavailable');
+  }
+});
+
+test('lead action request rejects outreach, stale inputs, and unsafe retries', () => {
+  const random = bytes => bytes.fill(1);
+  const now = Date.parse('2026-11-12T10:00:00Z');
+
+  for (const action of ['contact', 'send_email', 'call_customer', 'submit_bid']) {
+    expect(() => app.leadActionRequest(
+      'LEAD-TEST-001', 1, 'new', action, null, random, now))
+      .toThrow('Lead action is unavailable');
+  }
+  expect(() => app.leadActionRequest(
+    'bad ref', 1, 'new', 'qualify', null, random, now))
+    .toThrow('Lead action is unavailable');
+  expect(() => app.leadActionRequest(
+    'LEAD-TEST-001', -1, 'new', 'qualify', null, random, now))
+    .toThrow('Lead action is unavailable');
+  expect(() => app.leadActionRequest(
+    'LEAD-TEST-001', 1, 'new', 'set_follow_up',
+    '2026-11-12T09:59:00Z', random, now))
+    .toThrow('Lead action is unavailable');
+  expect(() => app.leadActionRequest(
+    'LEAD-TEST-001', 1, 'new', 'set_follow_up',
+    '2027-11-14T10:00:00Z', random, now))
+    .toThrow('Lead action is unavailable');
+  expect(() => app.leadActionRequest(
+    'LEAD-TEST-001', 1, 'new', 'set_follow_up',
+    '2026-11-13T05:00:00-05:00', random, now))
+    .toThrow('Lead action is unavailable');
+  expect(() => app.leadActionRequest(
+    'LEAD-TEST-001', 1, 'new', 'qualify',
+    '2026-11-13T10:00:00Z', random, now))
+    .toThrow('Lead action is unavailable');
+  expect(() => app.leadActionRequest(
+    'LEAD-TEST-001', 1, 'new', 'qualify', null, undefined, now))
+    .toThrow('Secure browser randomness is required');
+});
+
+
+test('lead pagination chain preserves one snapshot and rejects replay or loops', () => {
+  const cursor = 'a'.repeat(32);
+  const checkedAt = '2026-11-12T15:00:00Z';
+  const firstItem = {
+    lead_ref: 'lead-one',
+    revision: 2,
+    customer_label: 'Synthetic customer one',
+    stage: 'qualified',
+    owner_label: 'Estimator',
+    next_action: 'Prepare synthetic estimate',
+    follow_up_at: null,
+    updated_at: '2026-11-12T14:30:00Z',
+  };
+  const secondItem = {
+    ...firstItem,
+    lead_ref: 'lead-two',
+    revision: 0,
+    customer_label: 'Synthetic customer two',
+    stage: 'new',
+    next_action: 'Qualify synthetic lead',
+  };
+  const first = {
+    schema_version: 'tenant-lead-list-v1',
+    checked_at: checkedAt,
+    returned: 1,
+    truncated: true,
+    next_cursor: cursor,
+    items: [firstItem],
+  };
+  const second = {
+    ...first,
+    returned: 1,
+    truncated: false,
+    next_cursor: null,
+    items: [secondItem],
+  };
+  expect(app.validatedLeadPageChain([
+    { requested_cursor: null, page: first },
+    { requested_cursor: cursor, page: second },
+  ])).toEqual({
+    checked_at: checkedAt,
+    items: [firstItem, secondItem],
+    next_cursor: null,
+    complete: true,
+  });
+
+  const invalidChains = [
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: 'b'.repeat(32), page: second },
+    ],
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: cursor, page: { ...second, items: [firstItem] } },
+    ],
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: cursor, page: {
+        ...second, truncated: true, next_cursor: cursor,
+      } },
+    ],
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: cursor, page: {
+        ...second, checked_at: '2026-11-12T15:00:01Z',
+      } },
+    ],
+    [
+      { requested_cursor: null, page: { ...first, truncated: false, next_cursor: null } },
+      { requested_cursor: null, page: second },
+    ],
+  ];
+  for (const chain of invalidChains) {
+    expect(() => app.validatedLeadPageChain(chain))
+      .toThrow('Lead list continuation is unavailable');
+  }
+  expect(() => app.validatedLeadPageChain([]))
+    .toThrow('Lead list continuation is unavailable');
+  expect(() => app.validatedLeadPageChain(Array.from(
+    { length: 21 },
+    () => ({ requested_cursor: null, page: second }),
+  ))).toThrow('Lead list continuation is unavailable');
+});

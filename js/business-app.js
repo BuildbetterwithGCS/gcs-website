@@ -16,6 +16,7 @@
   const XLSX_CONTENT_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
   const MAX_WORKBOOK_BYTES = 5 * 1024 * 1024;
   const MAX_PROVIDER_SESSION_MS = 24 * 60 * 60 * 1000;
+  const MAX_LEAD_FOLLOW_UP_MS = 366 * 24 * 60 * 60 * 1000;
   const PREVIEW_RECEIPT_HEADER = 'X-Nexus-Preview-Receipt';
   const ASSISTANT_FREQUENCIES = new Set(['paused', 'daily', 'weekly']);
   const ASSISTANT_TOPICS = new Set([
@@ -559,6 +560,280 @@
     table.hidden = value.returned === 0;
     truncated.hidden = !value.truncated;
     return value;
+  }
+
+  const LEAD_STAGES = new Set([
+    'new', 'qualified', 'estimated', 'won', 'lost',
+  ]);
+
+  function safeLeadText(value, maximum, optional = false) {
+    if (optional && value === null) return null;
+    if (typeof value !== 'string' || value.length < 1 || value.length > maximum
+      || /[\u0000-\u001f\u007f\u202a-\u202e\u2066-\u2069]/.test(value)) {
+      throw new Error('Lead list is unavailable');
+    }
+    return value;
+  }
+
+  function leadTimestamp(value) {
+    const parsed = typeof value === 'string' ? Date.parse(value) : NaN;
+    if (typeof value !== 'string'
+      || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(value)
+      || !Number.isFinite(parsed)
+      || new Date(parsed).toISOString() !== value.replace('Z', '.000Z')) {
+      throw new Error('Lead list is unavailable');
+    }
+    return value;
+  }
+
+  const LEAD_TRANSITIONS = Object.freeze({
+    new: new Set(['qualify', 'close_lost', 'set_follow_up', 'clear_follow_up']),
+    qualified: new Set([
+      'mark_estimated', 'close_lost', 'set_follow_up', 'clear_follow_up',
+    ]),
+    estimated: new Set([
+      'close_won', 'close_lost', 'set_follow_up', 'clear_follow_up',
+    ]),
+    won: new Set(),
+    lost: new Set(),
+  });
+
+  function leadActionRequest(leadRef, expectedRevision, currentStage, action,
+    followUpAt, getRandomValues, now = Date.now()) {
+    const allowedActions = LEAD_TRANSITIONS[currentStage];
+    if (typeof leadRef !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(leadRef)
+      || !Number.isInteger(expectedRevision) || expectedRevision < 0
+      || !allowedActions || !allowedActions.has(action)
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Lead action is unavailable');
+    }
+    let boundedFollowUp = null;
+    if (action === 'set_follow_up') {
+      try {
+        boundedFollowUp = leadTimestamp(followUpAt);
+      } catch (_error) {
+        throw new Error('Lead action is unavailable');
+      }
+      const followUpTime = Date.parse(boundedFollowUp);
+      if (followUpTime <= Number(now)
+        || followUpTime - Number(now) > MAX_LEAD_FOLLOW_UP_MS) {
+        throw new Error('Lead action is unavailable');
+      }
+    } else if (followUpAt !== null) {
+      throw new Error('Lead action is unavailable');
+    }
+    return {
+      lead_ref: leadRef,
+      expected_revision: expectedRevision,
+      action,
+      follow_up_at: boundedFollowUp,
+      idempotency_key: idempotencyKey(getRandomValues),
+    };
+  }
+
+  function validatedLeadActionResult(value, request, now = Date.now()) {
+    const resultFields = new Set([
+      'schema_version', 'lead_ref', 'previous_revision', 'revision',
+      'stage', 'follow_up_at', 'updated_at', 'replayed',
+    ]);
+    const requestFields = new Set([
+      'lead_ref', 'expected_revision', 'action', 'follow_up_at',
+      'idempotency_key',
+    ]);
+    if (!value || typeof value !== 'object' || Array.isArray(value)
+      || Object.keys(value).length !== resultFields.size
+      || Object.keys(value).some(key => !resultFields.has(key))
+      || !request || typeof request !== 'object' || Array.isArray(request)
+      || Object.keys(request).length !== requestFields.size
+      || Object.keys(request).some(key => !requestFields.has(key))
+      || value.schema_version !== 'tenant-lead-action-v1'
+      || value.lead_ref !== request.lead_ref
+      || value.previous_revision !== request.expected_revision
+      || !Number.isInteger(value.revision)
+      || value.revision !== request.expected_revision + 1
+      || !LEAD_STAGES.has(value.stage)
+      || typeof value.replayed !== 'boolean'
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Lead action confirmation is unavailable');
+    }
+    const nextStages = {
+      qualify: 'qualified',
+      mark_estimated: 'estimated',
+      close_won: 'won',
+      close_lost: 'lost',
+      set_follow_up: null,
+      clear_follow_up: null,
+    };
+    if (!Object.prototype.hasOwnProperty.call(nextStages, request.action)) {
+      throw new Error('Lead action confirmation is unavailable');
+    }
+    const expectedStage = nextStages[request.action];
+    if ((expectedStage !== null && value.stage !== expectedStage)
+      || (expectedStage === null
+        && !['new', 'qualified', 'estimated'].includes(value.stage))) {
+      throw new Error('Lead action confirmation is unavailable');
+    }
+    let followUp = null;
+    if (value.follow_up_at !== null) {
+      try {
+        followUp = leadTimestamp(value.follow_up_at);
+      } catch (_error) {
+        throw new Error('Lead action confirmation is unavailable');
+      }
+    }
+    if ((request.action === 'set_follow_up'
+        && followUp !== request.follow_up_at)
+      || (request.action !== 'set_follow_up' && followUp !== null)) {
+      throw new Error('Lead action confirmation is unavailable');
+    }
+    let updatedAt;
+    try {
+      updatedAt = Date.parse(leadTimestamp(value.updated_at));
+    } catch (_error) {
+      throw new Error('Lead action confirmation is unavailable');
+    }
+    if (updatedAt > Number(now) + (5 * 60 * 1000)) {
+      throw new Error('Lead action confirmation is unavailable');
+    }
+    return value;
+  }
+
+  function validatedLeadPageChain(entries) {
+    if (!Array.isArray(entries) || entries.length < 1 || entries.length > 20) {
+      throw new Error('Lead list continuation is unavailable');
+    }
+    const items = [];
+    const seenRefs = new Set();
+    const consumedCursors = new Set();
+    let expectedCursor = null;
+    let checkedAt = null;
+    let complete = false;
+    for (const entry of entries) {
+      const entryFields = new Set(['requested_cursor', 'page']);
+      if (!entry || typeof entry !== 'object' || Array.isArray(entry)
+        || Object.keys(entry).length !== entryFields.size
+        || Object.keys(entry).some(key => !entryFields.has(key))
+        || entry.requested_cursor !== expectedCursor
+        || complete) {
+        throw new Error('Lead list continuation is unavailable');
+      }
+      if (entry.requested_cursor !== null) {
+        if (typeof entry.requested_cursor !== 'string'
+          || !/^[A-Za-z0-9_-]{32,256}$/.test(entry.requested_cursor)
+          || consumedCursors.has(entry.requested_cursor)) {
+          throw new Error('Lead list continuation is unavailable');
+        }
+        consumedCursors.add(entry.requested_cursor);
+      }
+      const page = validatedLeadList(entry.page);
+      if (checkedAt === null) checkedAt = page.checked_at;
+      if (page.checked_at !== checkedAt) {
+        throw new Error('Lead list continuation is unavailable');
+      }
+      for (const item of page.items) {
+        const key = item.lead_ref.toLocaleLowerCase();
+        if (seenRefs.has(key)) {
+          throw new Error('Lead list continuation is unavailable');
+        }
+        seenRefs.add(key);
+        items.push(item);
+      }
+      if (page.next_cursor !== null
+        && (page.next_cursor === entry.requested_cursor
+          || consumedCursors.has(page.next_cursor))) {
+        throw new Error('Lead list continuation is unavailable');
+      }
+      expectedCursor = page.next_cursor;
+      complete = !page.truncated;
+    }
+    return {
+      checked_at: checkedAt,
+      items,
+      next_cursor: expectedCursor,
+      complete,
+    };
+  }
+
+  function leadListPath(cursor) {
+    if (arguments.length === 0 || cursor === null) return '/leads';
+    if (typeof cursor !== 'string'
+      || !/^[A-Za-z0-9_-]{32,256}$/.test(cursor)) {
+      throw new Error('Lead list continuation is unavailable');
+    }
+    return '/leads?cursor=' + encodeURIComponent(cursor);
+  }
+
+  function validatedLeadList(value) {
+    const listFields = new Set([
+      'schema_version', 'checked_at', 'returned', 'truncated', 'next_cursor',
+      'items',
+    ]);
+    const hasCursor = typeof value?.next_cursor === 'string'
+      && /^[A-Za-z0-9_-]{32,256}$/.test(value.next_cursor);
+    if (!value || typeof value !== 'object' || Array.isArray(value)
+      || Object.keys(value).length !== listFields.size
+      || Object.keys(value).some(key => !listFields.has(key))
+      || value.schema_version !== 'tenant-lead-list-v1'
+      || !Array.isArray(value.items) || value.items.length > 100
+      || value.returned !== value.items.length
+      || typeof value.truncated !== 'boolean'
+      || (value.truncated && value.items.length === 0)
+      || (value.truncated ? !hasCursor : value.next_cursor !== null)) {
+      throw new Error('Lead list is unavailable');
+    }
+    const checkedAt = Date.parse(leadTimestamp(value.checked_at));
+    const itemFields = new Set([
+      'lead_ref', 'revision', 'customer_label', 'stage', 'owner_label',
+      'next_action', 'follow_up_at', 'updated_at',
+    ]);
+    const seen = new Set();
+    for (const item of value.items) {
+      if (!item || typeof item !== 'object' || Array.isArray(item)
+        || Object.keys(item).length !== itemFields.size
+        || Object.keys(item).some(key => !itemFields.has(key))
+        || typeof item.lead_ref !== 'string'
+        || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(item.lead_ref)
+        || !Number.isInteger(item.revision) || item.revision < 0
+        || !LEAD_STAGES.has(item.stage)) {
+        throw new Error('Lead list is unavailable');
+      }
+      safeLeadText(item.customer_label, 160);
+      safeLeadText(item.owner_label, 100, true);
+      safeLeadText(item.next_action, 200);
+      const updatedAt = Date.parse(leadTimestamp(item.updated_at));
+      if (updatedAt > checkedAt) throw new Error('Lead list is unavailable');
+      if (item.follow_up_at !== null) leadTimestamp(item.follow_up_at);
+      const dedupeKey = item.lead_ref.toLocaleLowerCase();
+      if (seen.has(dedupeKey)) throw new Error('Lead list is unavailable');
+      seen.add(dedupeKey);
+    }
+    return value;
+  }
+
+  function renderLeadList(doc, value) {
+    const list = doc.getElementById('lead-list');
+    if (!list) throw new Error('Lead list container is unavailable');
+    const page = validatedLeadList(value);
+    list.replaceChildren();
+    for (const item of page.items) {
+      const row = doc.createElement('li');
+      const customer = doc.createElement('strong');
+      customer.textContent = item.customer_label;
+      const stage = doc.createElement('span');
+      stage.textContent = 'Stage: ' + item.stage;
+      const action = doc.createElement('span');
+      action.textContent = item.next_action;
+      row.append(customer, stage, action);
+      list.append(row);
+    }
+    if (page.truncated) {
+      const notice = doc.createElement('li');
+      notice.className = 'lead-list-truncated';
+      notice.textContent = 'More permitted leads are available; this list is incomplete.';
+      list.append(notice);
+    }
+    return page;
   }
 
   function dollarsToCents(value) {
@@ -1563,7 +1838,9 @@
     dashboardSummaryValues, clearDashboardSummary,
     validatedAccessStatus, renderAccessStatus, clearAccessStatus,
     validatedAssetInventory, filterAssetItems,
-    validatedAssistantPreference,
+    validatedLeadList, validatedLeadPageChain, renderLeadList, leadListPath,
+    leadActionRequest,
+    validatedLeadActionResult, validatedAssistantPreference,
     validatedPendingLeaveQueue, renderPendingLeaveQueue,
     validatedAssignedWorkQueue, renderAssignedWorkQueue,
     formatInvoiceAmount, validatedInvoiceSummaries, renderInvoiceSummaries,
