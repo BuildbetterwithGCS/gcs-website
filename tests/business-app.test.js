@@ -2606,6 +2606,23 @@ test('tenant lead list requires an opaque cursor exactly for truncated pages', (
   expect(app.validatedLeadList(empty)).toBe(empty);
 });
 
+test('lead continuation path carries only the validated opaque cursor', () => {
+  const cursor = 'cursor_' + 'c'.repeat(32);
+  expect(app.leadListPath()).toBe('/leads');
+  expect(app.leadListPath(null)).toBe('/leads');
+  expect(app.leadListPath(cursor)).toBe('/leads?cursor=' + cursor);
+  expect(app.leadListPath(cursor)).not.toMatch(
+    /tenant|workspace|actor|role|email|phone|provider/i);
+
+  for (const invalid of [
+    '', 'short', 'tenant:other-tenant', 'cursor with spaces',
+    'cursor/value', 'a'.repeat(257), undefined, 42,
+  ]) {
+    expect(() => app.leadListPath(invalid))
+      .toThrow('Lead list continuation is unavailable');
+  }
+});
+
 test('tenant lead renderer uses text only and discloses truncation', () => {
   document.body.innerHTML = '<ul id="lead-list"></ul>';
   const fixture = safeLeadListFixture();
