@@ -699,6 +699,62 @@
     return value;
   }
 
+  function validatedLeadPageChain(entries) {
+    if (!Array.isArray(entries) || entries.length < 1 || entries.length > 20) {
+      throw new Error('Lead list continuation is unavailable');
+    }
+    const items = [];
+    const seenRefs = new Set();
+    const consumedCursors = new Set();
+    let expectedCursor = null;
+    let checkedAt = null;
+    let complete = false;
+    for (const entry of entries) {
+      const entryFields = new Set(['requested_cursor', 'page']);
+      if (!entry || typeof entry !== 'object' || Array.isArray(entry)
+        || Object.keys(entry).length !== entryFields.size
+        || Object.keys(entry).some(key => !entryFields.has(key))
+        || entry.requested_cursor !== expectedCursor
+        || complete) {
+        throw new Error('Lead list continuation is unavailable');
+      }
+      if (entry.requested_cursor !== null) {
+        if (typeof entry.requested_cursor !== 'string'
+          || !/^[A-Za-z0-9_-]{32,256}$/.test(entry.requested_cursor)
+          || consumedCursors.has(entry.requested_cursor)) {
+          throw new Error('Lead list continuation is unavailable');
+        }
+        consumedCursors.add(entry.requested_cursor);
+      }
+      const page = validatedLeadList(entry.page);
+      if (checkedAt === null) checkedAt = page.checked_at;
+      if (page.checked_at !== checkedAt) {
+        throw new Error('Lead list continuation is unavailable');
+      }
+      for (const item of page.items) {
+        const key = item.lead_ref.toLocaleLowerCase();
+        if (seenRefs.has(key)) {
+          throw new Error('Lead list continuation is unavailable');
+        }
+        seenRefs.add(key);
+        items.push(item);
+      }
+      if (page.next_cursor !== null
+        && (page.next_cursor === entry.requested_cursor
+          || consumedCursors.has(page.next_cursor))) {
+        throw new Error('Lead list continuation is unavailable');
+      }
+      expectedCursor = page.next_cursor;
+      complete = !page.truncated;
+    }
+    return {
+      checked_at: checkedAt,
+      items,
+      next_cursor: expectedCursor,
+      complete,
+    };
+  }
+
   function leadListPath(cursor) {
     if (arguments.length === 0 || cursor === null) return '/leads';
     if (typeof cursor !== 'string'
@@ -1782,7 +1838,8 @@
     dashboardSummaryValues, clearDashboardSummary,
     validatedAccessStatus, renderAccessStatus, clearAccessStatus,
     validatedAssetInventory, filterAssetItems,
-    validatedLeadList, renderLeadList, leadListPath, leadActionRequest,
+    validatedLeadList, validatedLeadPageChain, renderLeadList, leadListPath,
+    leadActionRequest,
     validatedLeadActionResult, validatedAssistantPreference,
     validatedPendingLeaveQueue, renderPendingLeaveQueue,
     validatedAssignedWorkQueue, renderAssignedWorkQueue,
