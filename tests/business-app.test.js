@@ -2506,3 +2506,19 @@ test('How To center provides plain-language role-based starting points', () => {
     'They do not save settings, import data, charge a payment method, or send email.');
   expect(help).not.toContain('class="quick-start-number"');
 });
+
+
+test('business overview explains tier fit without publishing unverified prices', () => {
+  const business = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'index.html'), 'utf8');
+
+  expect(business).toContain('Choose the level that fits how you work.');
+  expect(business).toContain('Best for small teams getting organized');
+  expect(business).toContain('Best for growing crews and managers');
+  expect(business).toContain('Best for established multi-crew operations');
+  expect(business).toContain('Best for multi-location organizations');
+  expect(business).toContain(
+    'Names, features, pricing, and availability are proposals, not active subscriptions.');
+  expect(business).not.toContain('<h3>1. Tell us about your business</h3>');
+  expect(business).not.toMatch(/\$\d/);
+});
