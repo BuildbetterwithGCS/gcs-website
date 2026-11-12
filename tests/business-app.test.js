@@ -2646,10 +2646,32 @@ test('assistant digest renderer uses text-only content and hardened source links
   expect(row.textContent).not.toContain('record_id');
 });
 
+test('assistant digest renderer discloses an incomplete bounded preview', () => {
+  document.body.innerHTML = '<ul id="assistant-preview-items"></ul>';
+  const fixture = safeAssistantPreviewFixture();
+  fixture.truncated = true;
+
+  app.renderAssistantDigestPreview(
+    document, fixture, safeAssistantPreferenceFixture());
+
+  const notice = document.querySelector('.assistant-preview-truncated');
+  expect(notice).not.toBeNull();
+  expect(notice.textContent)
+    .toBe('More permitted updates are available; this preview is incomplete.');
+  expect(document.querySelectorAll('#assistant-preview-items > li')).toHaveLength(2);
+});
+
 test('assistant digest preview enforces item count and period consistency', () => {
   const wrongCount = safeAssistantPreviewFixture();
   wrongCount.returned = 2;
   expect(() => app.validatedAssistantDigestPreview(wrongCount))
+    .toThrow('Assistant preview is unavailable');
+
+  const emptyTruncated = safeAssistantPreviewFixture();
+  emptyTruncated.items = [];
+  emptyTruncated.returned = 0;
+  emptyTruncated.truncated = true;
+  expect(() => app.validatedAssistantDigestPreview(emptyTruncated))
     .toThrow('Assistant preview is unavailable');
 
   const reversedPeriod = safeAssistantPreviewFixture();
