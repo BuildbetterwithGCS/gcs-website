@@ -153,6 +153,49 @@
     };
   }
 
+  function validatedEstimateDraftResult(value, request, now = Date.now()) {
+    const resultFields = [
+      'schema_version', 'estimate_ref', 'revision', 'status',
+      'customer_label', 'title', 'amount_cents', 'expires_on',
+      'created_at', 'updated_at', 'replayed',
+    ];
+    const requestFields = [
+      'customer_label', 'title', 'scope_summary', 'amount_cents',
+      'expires_on', 'idempotency_key',
+    ];
+    if (!exactKeys(value, resultFields)
+      || !exactKeys(request, requestFields)
+      || value.schema_version !== 'tenant-estimate-draft-v1'
+      || typeof value.estimate_ref !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(value.estimate_ref)
+      || value.revision !== 0
+      || value.status !== 'draft'
+      || value.customer_label !== request.customer_label
+      || value.title !== request.title
+      || value.amount_cents !== request.amount_cents
+      || value.expires_on !== request.expires_on
+      || typeof request.idempotency_key !== 'string'
+      || !/^estimate-[a-f0-9]{48}$/.test(request.idempotency_key)
+      || typeof value.replayed !== 'boolean'
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Estimate draft confirmation is unavailable');
+    }
+    let createdAt;
+    let updatedAt;
+    try {
+      safeText(request.scope_summary, 2000);
+      calendarDate(value.expires_on);
+      createdAt = Date.parse(canonicalTimestamp(value.created_at));
+      updatedAt = Date.parse(canonicalTimestamp(value.updated_at));
+    } catch (_error) {
+      throw new Error('Estimate draft confirmation is unavailable');
+    }
+    if (createdAt !== updatedAt || createdAt > Number(now) + (5 * 60 * 1000)) {
+      throw new Error('Estimate draft confirmation is unavailable');
+    }
+    return value;
+  }
+
   function formatAmount(cents) {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -186,5 +229,8 @@
     return page;
   }
 
-  return { validatedEstimateList, estimateDraftRequest, renderEstimateList };
+  return {
+    validatedEstimateList, estimateDraftRequest, validatedEstimateDraftResult,
+    renderEstimateList,
+  };
 });
