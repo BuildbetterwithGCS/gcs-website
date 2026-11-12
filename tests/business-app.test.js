@@ -2519,6 +2519,18 @@ test('tenant lead list accepts only the minimized bounded contract', () => {
   controlText.items[0].customer_label = 'Example\u202eCustomer';
   expect(() => app.validatedLeadList(controlText))
     .toThrow('Lead list is unavailable');
+
+  for (const timestamp of [
+    '2026-11-12T05:30:00-05:00',
+    '2026-02-30T10:00:00Z',
+    '2026-11-12 10:00:00Z',
+    '2026-11-12T10:00:00.000Z',
+  ]) {
+    const nonCanonical = safeLeadListFixture();
+    nonCanonical.items[0].updated_at = timestamp;
+    expect(() => app.validatedLeadList(nonCanonical))
+      .toThrow('Lead list is unavailable');
+  }
 });
 
 test('tenant lead list enforces count, truncation, stages, and item limits', () => {
@@ -2644,6 +2656,14 @@ test('lead action request rejects outreach, stale inputs, and unsafe retries', (
   expect(() => app.leadActionRequest(
     'LEAD-TEST-001', 1, 'new', 'set_follow_up',
     '2026-11-12T09:59:00Z', random, now))
+    .toThrow('Lead action is unavailable');
+  expect(() => app.leadActionRequest(
+    'LEAD-TEST-001', 1, 'new', 'set_follow_up',
+    '2027-11-14T10:00:00Z', random, now))
+    .toThrow('Lead action is unavailable');
+  expect(() => app.leadActionRequest(
+    'LEAD-TEST-001', 1, 'new', 'set_follow_up',
+    '2026-11-13T05:00:00-05:00', random, now))
     .toThrow('Lead action is unavailable');
   expect(() => app.leadActionRequest(
     'LEAD-TEST-001', 1, 'new', 'qualify',
