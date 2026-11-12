@@ -699,6 +699,15 @@
     return value;
   }
 
+  function leadListPath(cursor = null) {
+    if (cursor === null) return '/leads';
+    if (typeof cursor !== 'string'
+      || !/^[A-Za-z0-9_-]{32,256}$/.test(cursor)) {
+      throw new Error('Lead list continuation is unavailable');
+    }
+    return '/leads?cursor=' + encodeURIComponent(cursor);
+  }
+
   function validatedLeadList(value) {
     const listFields = new Set([
       'schema_version', 'checked_at', 'returned', 'truncated', 'next_cursor',
@@ -1773,7 +1782,7 @@
     dashboardSummaryValues, clearDashboardSummary,
     validatedAccessStatus, renderAccessStatus, clearAccessStatus,
     validatedAssetInventory, filterAssetItems,
-    validatedLeadList, renderLeadList, leadActionRequest,
+    validatedLeadList, renderLeadList, leadListPath, leadActionRequest,
     validatedLeadActionResult, validatedAssistantPreference,
     validatedPendingLeaveQueue, renderPendingLeaveQueue,
     validatedAssignedWorkQueue, renderAssignedWorkQueue,
