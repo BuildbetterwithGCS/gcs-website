@@ -821,7 +821,7 @@
     }
     const periodStart = boundedTimestamp(value.period_start, 'period');
     const periodEnd = boundedTimestamp(value.period_end, 'period');
-    boundedTimestamp(value.checked_at, 'check time');
+    const checkedAt = Date.parse(boundedTimestamp(value.checked_at, 'check time'));
     if (Date.parse(periodStart) >= Date.parse(periodEnd)) {
       throw new Error('Assistant preview period is unavailable');
     }
@@ -832,6 +832,7 @@
       'freshness_status', 'observed_at', 'source_updated_at', 'is_synthetic',
       'source_url', 'location_known', 'within_radius',
     ]);
+    const seenItems = new Set();
     value.items.forEach(item => {
       if (!hasExactFields(item, itemFields)
         || !ASSISTANT_TOPICS.has(item.topic)
@@ -852,9 +853,24 @@
         || ![null, true, false].includes(evidence.within_radius)) {
         throw new Error('Assistant preview evidence is unavailable');
       }
-      boundedTimestamp(evidence.observed_at, 'evidence time');
-      boundedTimestamp(evidence.source_updated_at, 'source time');
-      safeEvidenceUrl(evidence.source_url);
+      const observedAt = Date.parse(
+        boundedTimestamp(evidence.observed_at, 'evidence time'));
+      const sourceUpdatedAt = Date.parse(
+        boundedTimestamp(evidence.source_updated_at, 'source time'));
+      const sourceUrl = safeEvidenceUrl(evidence.source_url);
+      if (sourceUpdatedAt > observedAt || observedAt > checkedAt
+        || (item.topic === 'bid_opportunities'
+          && (sourceUrl === null || evidence.location_known !== true
+            || evidence.within_radius !== true))) {
+        throw new Error('Assistant preview evidence is unavailable');
+      }
+      const itemKey = JSON.stringify([
+        item.topic, item.title, item.action_label, item.deadline_at, sourceUrl,
+      ]);
+      if (seenItems.has(itemKey)) {
+        throw new Error('Assistant preview item is unavailable');
+      }
+      seenItems.add(itemKey);
     });
     return value;
   }
