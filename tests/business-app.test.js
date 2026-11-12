@@ -2565,3 +2565,51 @@ test('tenant lead renderer uses text only and discloses truncation', () => {
   expect(list.querySelector('.lead-list-truncated').textContent)
     .toBe('More permitted leads are available; this list is incomplete.');
 });
+
+test('lead action request is optimistic, idempotent, and identity-free', () => {
+  const request = app.leadActionRequest(
+    'LEAD-TEST-001', 7, 'qualify', null,
+    bytes => bytes.fill(7), Date.parse('2026-11-12T10:00:00Z'));
+
+  expect(request).toEqual({
+    lead_ref: 'LEAD-TEST-001',
+    expected_revision: 7,
+    action: 'qualify',
+    follow_up_at: null,
+    idempotency_key: 'nexus-' + '07'.repeat(24),
+  });
+  expect(JSON.stringify(request)).not.toMatch(
+    /tenant|actor|role|email|phone|address|provider|outreach/i);
+
+  const followUp = app.leadActionRequest(
+    'LEAD-TEST-001', 8, 'set_follow_up', '2026-11-13T10:00:00Z',
+    bytes => bytes.fill(8), Date.parse('2026-11-12T10:00:00Z'));
+  expect(followUp.follow_up_at).toBe('2026-11-13T10:00:00Z');
+  expect(followUp.idempotency_key).toBe('nexus-' + '08'.repeat(24));
+});
+
+test('lead action request rejects outreach, stale inputs, and unsafe retries', () => {
+  const random = bytes => bytes.fill(1);
+  const now = Date.parse('2026-11-12T10:00:00Z');
+
+  for (const action of ['contact', 'send_email', 'call_customer', 'submit_bid']) {
+    expect(() => app.leadActionRequest(
+      'LEAD-TEST-001', 1, action, null, random, now))
+      .toThrow('Lead action is unavailable');
+  }
+  expect(() => app.leadActionRequest(
+    'bad ref', 1, 'qualify', null, random, now))
+    .toThrow('Lead action is unavailable');
+  expect(() => app.leadActionRequest(
+    'LEAD-TEST-001', -1, 'qualify', null, random, now))
+    .toThrow('Lead action is unavailable');
+  expect(() => app.leadActionRequest(
+    'LEAD-TEST-001', 1, 'set_follow_up', '2026-11-12T09:59:00Z', random, now))
+    .toThrow('Lead action is unavailable');
+  expect(() => app.leadActionRequest(
+    'LEAD-TEST-001', 1, 'qualify', '2026-11-13T10:00:00Z', random, now))
+    .toThrow('Lead action is unavailable');
+  expect(() => app.leadActionRequest(
+    'LEAD-TEST-001', 1, 'qualify', null, undefined, now))
+    .toThrow('Secure browser randomness is required');
+});
