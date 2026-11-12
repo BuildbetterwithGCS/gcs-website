@@ -822,7 +822,8 @@
     const periodStart = boundedTimestamp(value.period_start, 'period');
     const periodEnd = boundedTimestamp(value.period_end, 'period');
     const checkedAt = Date.parse(boundedTimestamp(value.checked_at, 'check time'));
-    if (Date.parse(periodStart) >= Date.parse(periodEnd)) {
+    if (Date.parse(periodStart) >= Date.parse(periodEnd)
+      || Date.parse(periodEnd) > checkedAt) {
       throw new Error('Assistant preview period is unavailable');
     }
     const itemFields = new Set([
@@ -887,6 +888,14 @@
       || preview.preference_revision !== preference.revision
       || preview.items.some(item => !preference.topics.includes(item.topic))) {
       throw new Error('Assistant preview is unavailable');
+    }
+    const periodMs = Date.parse(preview.period_end) - Date.parse(preview.period_start);
+    const dayMs = 24 * 60 * 60 * 1000;
+    if ((preference.frequency === 'daily'
+        && (periodMs < 22 * 60 * 60 * 1000 || periodMs > 26 * 60 * 60 * 1000))
+      || (preference.frequency === 'weekly'
+        && (periodMs < 6 * dayMs || periodMs > 8 * dayMs))) {
+      throw new Error('Assistant preview period is unavailable');
     }
     const list = doc.getElementById('assistant-preview-items');
     if (!list) throw new Error('Assistant preview container is unavailable');
