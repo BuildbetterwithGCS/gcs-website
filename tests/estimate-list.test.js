@@ -297,3 +297,72 @@ test('estimate continuation path carries only an opaque cursor', () => {
     /tenant|workspace|customer|email|phone|address|provider/i,
   );
 });
+
+
+test('estimate page chain preserves one snapshot and rejects replay or loops', () => {
+  const page = validPage();
+  const cursor = 'c'.repeat(32);
+  const first = {
+    ...page,
+    returned: 1,
+    truncated: true,
+    next_cursor: cursor,
+    items: [page.items[0]],
+  };
+  const second = {
+    ...page,
+    returned: 1,
+    truncated: false,
+    next_cursor: null,
+    items: [page.items[1]],
+  };
+  expect(app.validatedEstimatePageChain([
+    { requested_cursor: null, page: first },
+    { requested_cursor: cursor, page: second },
+  ])).toEqual({
+    checked_at: page.checked_at,
+    items: [page.items[0], page.items[1]],
+    next_cursor: null,
+    complete: true,
+  });
+
+  const invalidChains = [
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: 'd'.repeat(32), page: second },
+    ],
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: cursor, page: { ...second, items: [page.items[0]] } },
+    ],
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: cursor, page: {
+        ...second, truncated: true, next_cursor: cursor,
+      } },
+    ],
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: cursor, page: {
+        ...second, checked_at: '2026-11-12T19:00:01Z',
+      } },
+    ],
+    [
+      { requested_cursor: null, page: { ...first, truncated: false, next_cursor: null } },
+      { requested_cursor: null, page: second },
+    ],
+    [
+      { requested_cursor: null, page: first, tenant_id: 'must-not-be-accepted' },
+    ],
+  ];
+  for (const chain of invalidChains) {
+    expect(() => app.validatedEstimatePageChain(chain))
+      .toThrow('Estimate list continuation is unavailable');
+  }
+  expect(() => app.validatedEstimatePageChain([]))
+    .toThrow('Estimate list continuation is unavailable');
+  expect(() => app.validatedEstimatePageChain(Array.from(
+    { length: 21 },
+    () => ({ requested_cursor: null, page: second }),
+  ))).toThrow('Estimate list continuation is unavailable');
+});
