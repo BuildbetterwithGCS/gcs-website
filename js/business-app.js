@@ -816,7 +816,8 @@
       || !Number.isInteger(value.preference_revision) || value.preference_revision < 0
       || !Array.isArray(value.items) || value.items.length > 100
       || value.returned !== value.items.length
-      || typeof value.truncated !== 'boolean') {
+      || typeof value.truncated !== 'boolean'
+      || (value.truncated && value.items.length === 0)) {
       throw new Error('Assistant preview is unavailable');
     }
     const periodStart = boundedTimestamp(value.period_start, 'period');
@@ -919,6 +920,13 @@
       }
       list.append(row);
     });
+    if (preview.truncated) {
+      const notice = doc.createElement('li');
+      notice.className = 'assistant-preview-truncated';
+      notice.textContent =
+        'More permitted updates are available; this preview is incomplete.';
+      list.append(notice);
+    }
     return preview;
   }
 
