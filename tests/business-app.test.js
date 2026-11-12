@@ -2519,6 +2519,9 @@ test('business overview explains tier fit without publishing unverified prices',
   expect(business).toContain('Best for multi-location organizations');
   expect(business).toContain(
     'Names, features, pricing, and availability are proposals, not active subscriptions.');
+  expect(business).toContain('href="app/">Open the workspace preview</a>');
+  expect(business).toContain('href="help/">Read How To help</a>');
+  expect(business).not.toContain('href="app/">Start subscription</a>');
   expect(business).not.toContain('<h3>1. Tell us about your business</h3>');
   expect(business).not.toMatch(/\$\d/);
 });
