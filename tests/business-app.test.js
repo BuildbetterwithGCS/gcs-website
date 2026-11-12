@@ -2658,8 +2658,16 @@ test('lead action confirmation binds the exact revision and lifecycle result', (
   expect(app.validatedLeadActionResult(
     { ...result, replayed: true }, request, now,
   ).replayed).toBe(true);
-  expect(JSON.stringify(result)).not.toMatch(
-    /tenant|actor|role|email|phone|address|provider|outreach/i);
+  expect(Object.keys(result).sort()).toEqual([
+    'follow_up_at', 'lead_ref', 'previous_revision', 'replayed', 'revision',
+    'schema_version', 'stage', 'updated_at',
+  ]);
+  for (const forbidden of [
+    'tenant_id', 'actor_id', 'role', 'email', 'phone', 'address',
+    'provider', 'outreach',
+  ]) {
+    expect(result).not.toHaveProperty(forbidden);
+  }
 });
 
 test('lead action confirmation requires the exact follow-up outcome', () => {
