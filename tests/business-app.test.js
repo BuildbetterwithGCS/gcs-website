@@ -2817,3 +2817,88 @@ test('lead action request rejects outreach, stale inputs, and unsafe retries', (
     'LEAD-TEST-001', 1, 'new', 'qualify', null, undefined, now))
     .toThrow('Secure browser randomness is required');
 });
+
+
+test('lead pagination chain preserves one snapshot and rejects replay or loops', () => {
+  const cursor = 'a'.repeat(32);
+  const checkedAt = '2026-11-12T15:00:00Z';
+  const firstItem = {
+    lead_ref: 'lead-one',
+    revision: 2,
+    customer_label: 'Synthetic customer one',
+    stage: 'qualified',
+    owner_label: 'Estimator',
+    next_action: 'Prepare synthetic estimate',
+    follow_up_at: null,
+    updated_at: '2026-11-12T14:30:00Z',
+  };
+  const secondItem = {
+    ...firstItem,
+    lead_ref: 'lead-two',
+    revision: 0,
+    customer_label: 'Synthetic customer two',
+    stage: 'new',
+    next_action: 'Qualify synthetic lead',
+  };
+  const first = {
+    schema_version: 'tenant-lead-list-v1',
+    checked_at: checkedAt,
+    returned: 1,
+    truncated: true,
+    next_cursor: cursor,
+    items: [firstItem],
+  };
+  const second = {
+    ...first,
+    returned: 1,
+    truncated: false,
+    next_cursor: null,
+    items: [secondItem],
+  };
+  expect(app.validatedLeadPageChain([
+    { requested_cursor: null, page: first },
+    { requested_cursor: cursor, page: second },
+  ])).toEqual({
+    checked_at: checkedAt,
+    items: [firstItem, secondItem],
+    next_cursor: null,
+    complete: true,
+  });
+
+  const invalidChains = [
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: 'b'.repeat(32), page: second },
+    ],
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: cursor, page: { ...second, items: [firstItem] } },
+    ],
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: cursor, page: {
+        ...second, truncated: true, next_cursor: cursor,
+      } },
+    ],
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: cursor, page: {
+        ...second, checked_at: '2026-11-12T15:00:01Z',
+      } },
+    ],
+    [
+      { requested_cursor: null, page: { ...first, truncated: false, next_cursor: null } },
+      { requested_cursor: null, page: second },
+    ],
+  ];
+  for (const chain of invalidChains) {
+    expect(() => app.validatedLeadPageChain(chain))
+      .toThrow('Lead list continuation is unavailable');
+  }
+  expect(() => app.validatedLeadPageChain([]))
+    .toThrow('Lead list continuation is unavailable');
+  expect(() => app.validatedLeadPageChain(Array.from(
+    { length: 21 },
+    () => ({ requested_cursor: null, page: second }),
+  ))).toThrow('Lead list continuation is unavailable');
+});
