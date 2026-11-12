@@ -632,6 +632,73 @@
     };
   }
 
+  function validatedLeadActionResult(value, request, now = Date.now()) {
+    const resultFields = new Set([
+      'schema_version', 'lead_ref', 'previous_revision', 'revision',
+      'stage', 'follow_up_at', 'updated_at', 'replayed',
+    ]);
+    const requestFields = new Set([
+      'lead_ref', 'expected_revision', 'action', 'follow_up_at',
+      'idempotency_key',
+    ]);
+    if (!value || typeof value !== 'object' || Array.isArray(value)
+      || Object.keys(value).length !== resultFields.size
+      || Object.keys(value).some(key => !resultFields.has(key))
+      || !request || typeof request !== 'object' || Array.isArray(request)
+      || Object.keys(request).length !== requestFields.size
+      || Object.keys(request).some(key => !requestFields.has(key))
+      || value.schema_version !== 'tenant-lead-action-v1'
+      || value.lead_ref !== request.lead_ref
+      || value.previous_revision !== request.expected_revision
+      || !Number.isInteger(value.revision)
+      || value.revision !== request.expected_revision + 1
+      || !LEAD_STAGES.has(value.stage)
+      || typeof value.replayed !== 'boolean'
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Lead action confirmation is unavailable');
+    }
+    const nextStages = {
+      qualify: 'qualified',
+      mark_estimated: 'estimated',
+      close_won: 'won',
+      close_lost: 'lost',
+      set_follow_up: null,
+      clear_follow_up: null,
+    };
+    if (!Object.prototype.hasOwnProperty.call(nextStages, request.action)) {
+      throw new Error('Lead action confirmation is unavailable');
+    }
+    const expectedStage = nextStages[request.action];
+    if ((expectedStage !== null && value.stage !== expectedStage)
+      || (expectedStage === null
+        && !['new', 'qualified', 'estimated'].includes(value.stage))) {
+      throw new Error('Lead action confirmation is unavailable');
+    }
+    let followUp = null;
+    if (value.follow_up_at !== null) {
+      try {
+        followUp = leadTimestamp(value.follow_up_at);
+      } catch (_error) {
+        throw new Error('Lead action confirmation is unavailable');
+      }
+    }
+    if ((request.action === 'set_follow_up'
+        && followUp !== request.follow_up_at)
+      || (request.action !== 'set_follow_up' && followUp !== null)) {
+      throw new Error('Lead action confirmation is unavailable');
+    }
+    let updatedAt;
+    try {
+      updatedAt = Date.parse(leadTimestamp(value.updated_at));
+    } catch (_error) {
+      throw new Error('Lead action confirmation is unavailable');
+    }
+    if (updatedAt > Number(now) + (5 * 60 * 1000)) {
+      throw new Error('Lead action confirmation is unavailable');
+    }
+    return value;
+  }
+
   function validatedLeadList(value) {
     const listFields = new Set([
       'schema_version', 'checked_at', 'returned', 'truncated', 'items',
@@ -1703,7 +1770,7 @@
     validatedAccessStatus, renderAccessStatus, clearAccessStatus,
     validatedAssetInventory, filterAssetItems,
     validatedLeadList, renderLeadList, leadActionRequest,
-    validatedAssistantPreference,
+    validatedLeadActionResult, validatedAssistantPreference,
     validatedPendingLeaveQueue, renderPendingLeaveQueue,
     validatedAssignedWorkQueue, renderAssignedWorkQueue,
     formatInvoiceAmount, validatedInvoiceSummaries, renderInvoiceSummaries,
