@@ -2461,7 +2461,7 @@ test('assistant help supports direct links, multi-word search, and keyboard acce
   expect([...document.querySelectorAll('#guides details')]
     .filter(item => !item.hidden)).toEqual([pilotGuide, guide]);
 
-  input.value = 'assistant fabricated evidence';
+  input.value = 'assistant imaginary evidence';
   input.dispatchEvent(new Event('input'));
   expect(count.textContent).toBe('0 of ' + guideTotal + ' guides shown');
   expect(empty.hidden).toBe(false);
