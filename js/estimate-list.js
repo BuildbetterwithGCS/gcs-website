@@ -110,6 +110,49 @@
     return value;
   }
 
+  function estimateIdempotencyKey(getRandomValues) {
+    if (typeof getRandomValues !== 'function') {
+      throw new Error('Estimate draft is unavailable');
+    }
+    const bytes = new Uint8Array(24);
+    getRandomValues(bytes);
+    return 'estimate-' + Array.from(
+      bytes,
+      value => value.toString(16).padStart(2, '0'),
+    ).join('');
+  }
+
+  function estimateDraftRequest(customerLabel, title, scopeSummary, amountCents,
+    expiresOn, getRandomValues, now = Date.now()) {
+    if (!Number.isFinite(Number(now))
+      || !Number.isInteger(amountCents)
+      || amountCents < 1 || amountCents > 1000000000) {
+      throw new Error('Estimate draft is unavailable');
+    }
+    try {
+      safeText(customerLabel, 160);
+      safeText(title, 200);
+      safeText(scopeSummary, 2000);
+      calendarDate(expiresOn);
+    } catch (_error) {
+      throw new Error('Estimate draft is unavailable');
+    }
+    const currentDate = new Date(Number(now)).toISOString().slice(0, 10);
+    const lastDate = new Date(Number(now) + (180 * 24 * 60 * 60 * 1000))
+      .toISOString().slice(0, 10);
+    if (expiresOn < currentDate || expiresOn > lastDate) {
+      throw new Error('Estimate draft is unavailable');
+    }
+    return {
+      customer_label: customerLabel,
+      title,
+      scope_summary: scopeSummary,
+      amount_cents: amountCents,
+      expires_on: expiresOn,
+      idempotency_key: estimateIdempotencyKey(getRandomValues),
+    };
+  }
+
   function formatAmount(cents) {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -143,5 +186,5 @@
     return page;
   }
 
-  return { validatedEstimateList, renderEstimateList };
+  return { validatedEstimateList, estimateDraftRequest, renderEstimateList };
 });
