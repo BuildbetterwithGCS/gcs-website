@@ -634,7 +634,7 @@
     }
     const checkedAt = Date.parse(leadTimestamp(value.checked_at));
     const itemFields = new Set([
-      'lead_ref', 'customer_label', 'stage', 'owner_label',
+      'lead_ref', 'revision', 'customer_label', 'stage', 'owner_label',
       'next_action', 'follow_up_at', 'updated_at',
     ]);
     const seen = new Set();
@@ -644,6 +644,7 @@
         || Object.keys(item).some(key => !itemFields.has(key))
         || typeof item.lead_ref !== 'string'
         || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(item.lead_ref)
+        || !Number.isInteger(item.revision) || item.revision < 0
         || !LEAD_STAGES.has(item.stage)) {
         throw new Error('Lead list is unavailable');
       }
