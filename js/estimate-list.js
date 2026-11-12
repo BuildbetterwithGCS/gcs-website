@@ -124,6 +124,59 @@
     return '/estimates?cursor=' + encodeURIComponent(cursor);
   }
 
+  function validatedEstimatePageChain(entries) {
+    if (!Array.isArray(entries) || entries.length < 1 || entries.length > 20) {
+      throw new Error('Estimate list continuation is unavailable');
+    }
+    const items = [];
+    const seenRefs = new Set();
+    const consumedCursors = new Set();
+    let expectedCursor = null;
+    let checkedAt = null;
+    let complete = false;
+    for (const entry of entries) {
+      if (!exactKeys(entry, ['requested_cursor', 'page'])
+        || entry.requested_cursor !== expectedCursor
+        || complete) {
+        throw new Error('Estimate list continuation is unavailable');
+      }
+      if (entry.requested_cursor !== null) {
+        if (typeof entry.requested_cursor !== 'string'
+          || !/^[A-Za-z0-9_-]{32,256}$/.test(entry.requested_cursor)
+          || consumedCursors.has(entry.requested_cursor)) {
+          throw new Error('Estimate list continuation is unavailable');
+        }
+        consumedCursors.add(entry.requested_cursor);
+      }
+      const page = validatedEstimateList(entry.page);
+      if (checkedAt === null) checkedAt = page.checked_at;
+      if (page.checked_at !== checkedAt) {
+        throw new Error('Estimate list continuation is unavailable');
+      }
+      for (const item of page.items) {
+        const key = item.estimate_ref.toLocaleLowerCase();
+        if (seenRefs.has(key)) {
+          throw new Error('Estimate list continuation is unavailable');
+        }
+        seenRefs.add(key);
+        items.push(item);
+      }
+      if (page.next_cursor !== null
+        && (page.next_cursor === entry.requested_cursor
+          || consumedCursors.has(page.next_cursor))) {
+        throw new Error('Estimate list continuation is unavailable');
+      }
+      expectedCursor = page.next_cursor;
+      complete = !page.truncated;
+    }
+    return {
+      checked_at: checkedAt,
+      items,
+      next_cursor: expectedCursor,
+      complete,
+    };
+  }
+
   function estimateIdempotencyKey(getRandomValues) {
     if (typeof getRandomValues !== 'function') {
       throw new Error('Estimate draft is unavailable');
@@ -244,7 +297,7 @@
   }
 
   return {
-    validatedEstimateList, estimateListPath, estimateDraftRequest,
-    validatedEstimateDraftResult, renderEstimateList,
+    validatedEstimateList, estimateListPath, validatedEstimatePageChain,
+    estimateDraftRequest, validatedEstimateDraftResult, renderEstimateList,
   };
 });
