@@ -2573,3 +2573,36 @@ test('pilot readiness page maps evidence, gaps, and acceptance gates truthfully'
   expect(pilot).not.toContain('class="status live"');
   expect(pilot).not.toContain('pilot is ready');
 });
+
+test('synthetic contractor pack stays isolated, fictional, and action-free', () => {
+  const pilot = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'pilot.html'), 'utf8');
+  const fixture = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'pilot-fixture.html'), 'utf8');
+
+  expect(pilot).toContain('href="pilot-fixture.html"');
+  expect(fixture).toContain('<meta name="robots" content="noindex,nofollow">');
+  expect(fixture).toContain('All records below are fictional.');
+  expect(fixture).toContain('example.invalid');
+  expect(fixture).toContain('TEST-RESTORATION-A');
+  expect(fixture).toContain('TEST-RESTORATION-B');
+  expect(fixture).toContain('Every Tenant A session must be denied access to Tenant B');
+  expect(fixture).toContain('LEAD-TEST-001');
+  expect(fixture).toContain('EST-TEST-001');
+  expect(fixture).toContain('JOB-TEST-001');
+  expect(fixture).toContain('WO-TEST-001');
+  expect(fixture).toContain('PUNCH-TEST-001');
+  expect(fixture).toContain('LEAVE-TEST-001');
+  expect(fixture).toContain('EXP-TEST-001');
+  expect(fixture).toContain('SUB-TEST-001');
+  expect(fixture).toContain('INV-TEST-001');
+  expect(fixture).toContain('DOC-TEST-001');
+  expect(fixture).toContain('Do not create a fake opportunity.');
+  expect(fixture).toContain('A zero-result response is acceptable; a fabricated bid is not.');
+  expect(fixture).toContain('Immediate stop rules');
+  expect(fixture).toContain('explicit opt-in, deduplication, unsubscribe handling');
+  expect(fixture).not.toContain('Coastal Concrete Restoration');
+  expect(fixture).not.toContain('Orlando');
+  expect(fixture).not.toMatch(/@(gmail|outlook|yahoo)\.com/i);
+  expect(fixture).not.toContain('pilot is ready');
+});
