@@ -2489,3 +2489,20 @@ test('business workspace and help center use the canonical GCS brand assets', ()
   expect(stylesheet).toContain('.topbar-logo img');
   expect(stylesheet).toContain('.topbar-brand{align-items:flex-start;flex-direction:column}');
 });
+
+
+test('How To center provides plain-language role-based starting points', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+
+  expect(help).toContain('id="quick-start-heading"');
+  expect(help).toContain('What do you need help with?');
+  expect(help).toContain('href="#subscription-checkout-guide"');
+  expect(help).toContain('href="#time-clock-guide"');
+  expect(help).toContain('href="#manager-leave-review-guide"');
+  expect(help).toContain('href="#asset-spreadsheet-guide"');
+  expect(help).toContain('href="#assistant-updates-guide"');
+  expect(help).toContain(
+    'They do not save settings, import data, charge a payment method, or send email.');
+  expect(help).not.toContain('class="quick-start-number"');
+});
