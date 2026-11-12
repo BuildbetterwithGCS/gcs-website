@@ -2522,6 +2522,48 @@ test('assistant digest preview accepts only the exact safe response contract', (
     .toThrow('Assistant preview evidence is unavailable');
 });
 
+test('assistant bid preview requires in-radius source evidence and valid chronology', () => {
+  const missingSource = safeAssistantPreviewFixture();
+  missingSource.items[0].evidence.source_url = null;
+  expect(() => app.validatedAssistantDigestPreview(missingSource))
+    .toThrow('Assistant preview evidence is unavailable');
+
+  const unknownLocation = safeAssistantPreviewFixture();
+  unknownLocation.items[0].evidence.location_known = null;
+  expect(() => app.validatedAssistantDigestPreview(unknownLocation))
+    .toThrow('Assistant preview evidence is unavailable');
+
+  const outsideRadius = safeAssistantPreviewFixture();
+  outsideRadius.items[0].evidence.within_radius = false;
+  expect(() => app.validatedAssistantDigestPreview(outsideRadius))
+    .toThrow('Assistant preview evidence is unavailable');
+
+  const futureSource = safeAssistantPreviewFixture();
+  futureSource.items[0].evidence.source_updated_at = '2026-11-11T13:56:00Z';
+  expect(() => app.validatedAssistantDigestPreview(futureSource))
+    .toThrow('Assistant preview evidence is unavailable');
+
+  const futureObservation = safeAssistantPreviewFixture();
+  futureObservation.items[0].evidence.observed_at = '2026-11-11T14:02:00Z';
+  expect(() => app.validatedAssistantDigestPreview(futureObservation))
+    .toThrow('Assistant preview evidence is unavailable');
+});
+
+test('assistant digest preview rejects exact duplicate items', () => {
+  const duplicate = safeAssistantPreviewFixture();
+  duplicate.items.push(JSON.parse(JSON.stringify(duplicate.items[0])));
+  duplicate.returned = 2;
+  expect(() => app.validatedAssistantDigestPreview(duplicate))
+    .toThrow('Assistant preview item is unavailable');
+
+  const distinctSource = safeAssistantPreviewFixture();
+  const second = JSON.parse(JSON.stringify(distinctSource.items[0]));
+  second.evidence.source_url = 'https://example.gov/opportunity/second';
+  distinctSource.items.push(second);
+  distinctSource.returned = 2;
+  expect(app.validatedAssistantDigestPreview(distinctSource)).toBe(distinctSource);
+});
+
 test('assistant digest renderer uses text-only content and hardened source links', () => {
   document.body.innerHTML = '<ul id="assistant-preview-items"></ul>';
   const fixture = safeAssistantPreviewFixture();
