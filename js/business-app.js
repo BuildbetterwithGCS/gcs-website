@@ -16,6 +16,7 @@
   const XLSX_CONTENT_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
   const MAX_WORKBOOK_BYTES = 5 * 1024 * 1024;
   const MAX_PROVIDER_SESSION_MS = 24 * 60 * 60 * 1000;
+  const MAX_LEAD_FOLLOW_UP_MS = 366 * 24 * 60 * 60 * 1000;
   const PREVIEW_RECEIPT_HEADER = 'X-Nexus-Preview-Receipt';
   const ASSISTANT_FREQUENCIES = new Set(['paused', 'daily', 'weekly']);
   const ASSISTANT_TOPICS = new Set([
@@ -575,8 +576,11 @@
   }
 
   function leadTimestamp(value) {
-    if (typeof value !== 'string' || value.length < 20 || value.length > 40
-      || !Number.isFinite(Date.parse(value))) {
+    const parsed = typeof value === 'string' ? Date.parse(value) : NaN;
+    if (typeof value !== 'string'
+      || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(value)
+      || !Number.isFinite(parsed)
+      || new Date(parsed).toISOString() !== value.replace('Z', '.000Z')) {
       throw new Error('Lead list is unavailable');
     }
     return value;
@@ -611,7 +615,9 @@
       } catch (_error) {
         throw new Error('Lead action is unavailable');
       }
-      if (Date.parse(boundedFollowUp) <= Number(now)) {
+      const followUpTime = Date.parse(boundedFollowUp);
+      if (followUpTime <= Number(now)
+        || followUpTime - Number(now) > MAX_LEAD_FOLLOW_UP_MS) {
         throw new Error('Lead action is unavailable');
       }
     } else if (followUpAt !== null) {
