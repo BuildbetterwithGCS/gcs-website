@@ -2579,7 +2579,7 @@ test('tenant lead renderer uses text only and discloses truncation', () => {
 
 test('lead action request is optimistic, idempotent, and identity-free', () => {
   const request = app.leadActionRequest(
-    'LEAD-TEST-001', 7, 'qualify', null,
+    'LEAD-TEST-001', 7, 'new', 'qualify', null,
     bytes => bytes.fill(7), Date.parse('2026-11-12T10:00:00Z'));
 
   expect(request).toEqual({
@@ -2593,10 +2593,37 @@ test('lead action request is optimistic, idempotent, and identity-free', () => {
     /tenant|actor|role|email|phone|address|provider|outreach/i);
 
   const followUp = app.leadActionRequest(
-    'LEAD-TEST-001', 8, 'set_follow_up', '2026-11-13T10:00:00Z',
-    bytes => bytes.fill(8), Date.parse('2026-11-12T10:00:00Z'));
+    'LEAD-TEST-001', 8, 'qualified', 'set_follow_up',
+    '2026-11-13T10:00:00Z', bytes => bytes.fill(8),
+    Date.parse('2026-11-12T10:00:00Z'));
   expect(followUp.follow_up_at).toBe('2026-11-13T10:00:00Z');
   expect(followUp.idempotency_key).toBe('nexus-' + '08'.repeat(24));
+});
+
+test('lead actions follow the bounded lifecycle and closed leads fail closed', () => {
+  const random = bytes => bytes.fill(2);
+  const now = Date.parse('2026-11-12T10:00:00Z');
+
+  expect(app.leadActionRequest(
+    'LEAD-TEST-001', 1, 'qualified', 'mark_estimated', null, random, now,
+  ).action).toBe('mark_estimated');
+  expect(app.leadActionRequest(
+    'LEAD-TEST-001', 2, 'estimated', 'close_won', null, random, now,
+  ).action).toBe('close_won');
+
+  for (const [stage, action] of [
+    ['new', 'mark_estimated'],
+    ['new', 'close_won'],
+    ['qualified', 'close_won'],
+    ['estimated', 'qualify'],
+    ['won', 'set_follow_up'],
+    ['lost', 'clear_follow_up'],
+    ['unknown', 'qualify'],
+  ]) {
+    expect(() => app.leadActionRequest(
+      'LEAD-TEST-001', 3, stage, action, null, random, now,
+    )).toThrow('Lead action is unavailable');
+  }
 });
 
 test('lead action request rejects outreach, stale inputs, and unsafe retries', () => {
@@ -2605,22 +2632,24 @@ test('lead action request rejects outreach, stale inputs, and unsafe retries', (
 
   for (const action of ['contact', 'send_email', 'call_customer', 'submit_bid']) {
     expect(() => app.leadActionRequest(
-      'LEAD-TEST-001', 1, action, null, random, now))
+      'LEAD-TEST-001', 1, 'new', action, null, random, now))
       .toThrow('Lead action is unavailable');
   }
   expect(() => app.leadActionRequest(
-    'bad ref', 1, 'qualify', null, random, now))
+    'bad ref', 1, 'new', 'qualify', null, random, now))
     .toThrow('Lead action is unavailable');
   expect(() => app.leadActionRequest(
-    'LEAD-TEST-001', -1, 'qualify', null, random, now))
+    'LEAD-TEST-001', -1, 'new', 'qualify', null, random, now))
     .toThrow('Lead action is unavailable');
   expect(() => app.leadActionRequest(
-    'LEAD-TEST-001', 1, 'set_follow_up', '2026-11-12T09:59:00Z', random, now))
+    'LEAD-TEST-001', 1, 'new', 'set_follow_up',
+    '2026-11-12T09:59:00Z', random, now))
     .toThrow('Lead action is unavailable');
   expect(() => app.leadActionRequest(
-    'LEAD-TEST-001', 1, 'qualify', '2026-11-13T10:00:00Z', random, now))
+    'LEAD-TEST-001', 1, 'new', 'qualify',
+    '2026-11-13T10:00:00Z', random, now))
     .toThrow('Lead action is unavailable');
   expect(() => app.leadActionRequest(
-    'LEAD-TEST-001', 1, 'qualify', null, undefined, now))
+    'LEAD-TEST-001', 1, 'new', 'qualify', null, undefined, now))
     .toThrow('Secure browser randomness is required');
 });
