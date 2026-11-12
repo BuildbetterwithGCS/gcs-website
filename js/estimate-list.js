@@ -60,14 +60,19 @@
 
   function validatedEstimateList(value) {
     const listFields = [
-      'schema_version', 'checked_at', 'returned', 'truncated', 'items',
+      'schema_version', 'checked_at', 'returned', 'truncated', 'next_cursor',
+      'items',
     ];
+    const hasCursor = typeof value?.next_cursor === 'string'
+      && /^[A-Za-z0-9_-]{32,256}$/.test(value.next_cursor);
     if (!exactKeys(value, listFields)
       || value.schema_version !== 'tenant-estimate-list-v1'
       || !Array.isArray(value.items) || value.items.length > 100
       || !Number.isInteger(value.returned)
       || value.returned !== value.items.length
-      || typeof value.truncated !== 'boolean') {
+      || typeof value.truncated !== 'boolean'
+      || (value.truncated && value.items.length === 0)
+      || (value.truncated ? !hasCursor : value.next_cursor !== null)) {
       throw new Error('Estimate list is unavailable');
     }
     const checkedAt = Date.parse(canonicalTimestamp(value.checked_at));
@@ -108,6 +113,15 @@
       seen.add(dedupeKey);
     }
     return value;
+  }
+
+  function estimateListPath(cursor) {
+    if (arguments.length === 0 || cursor === null) return '/estimates';
+    if (typeof cursor !== 'string'
+      || !/^[A-Za-z0-9_-]{32,256}$/.test(cursor)) {
+      throw new Error('Estimate list continuation is unavailable');
+    }
+    return '/estimates?cursor=' + encodeURIComponent(cursor);
   }
 
   function estimateIdempotencyKey(getRandomValues) {
@@ -230,7 +244,7 @@
   }
 
   return {
-    validatedEstimateList, estimateDraftRequest, validatedEstimateDraftResult,
-    renderEstimateList,
+    validatedEstimateList, estimateListPath, estimateDraftRequest,
+    validatedEstimateDraftResult, renderEstimateList,
   };
 });
