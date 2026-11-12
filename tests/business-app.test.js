@@ -2638,6 +2638,89 @@ test('lead actions follow the bounded lifecycle and closed leads fail closed', (
   }
 });
 
+test('lead action confirmation binds the exact revision and lifecycle result', () => {
+  const now = Date.parse('2026-11-12T10:00:00Z');
+  const request = app.leadActionRequest(
+    'LEAD-TEST-001', 7, 'new', 'qualify', null,
+    bytes => bytes.fill(3), now);
+  const result = {
+    schema_version: 'tenant-lead-action-v1',
+    lead_ref: 'LEAD-TEST-001',
+    previous_revision: 7,
+    revision: 8,
+    stage: 'qualified',
+    follow_up_at: null,
+    updated_at: '2026-11-12T10:00:00Z',
+    replayed: false,
+  };
+
+  expect(app.validatedLeadActionResult(result, request, now)).toBe(result);
+  expect(app.validatedLeadActionResult(
+    { ...result, replayed: true }, request, now,
+  ).replayed).toBe(true);
+  expect(JSON.stringify(result)).not.toMatch(
+    /tenant|actor|role|email|phone|address|provider|outreach/i);
+});
+
+test('lead action confirmation requires the exact follow-up outcome', () => {
+  const now = Date.parse('2026-11-12T10:00:00Z');
+  const request = app.leadActionRequest(
+    'LEAD-TEST-001', 8, 'qualified', 'set_follow_up',
+    '2026-11-13T10:00:00Z', bytes => bytes.fill(4), now);
+  const result = {
+    schema_version: 'tenant-lead-action-v1',
+    lead_ref: 'LEAD-TEST-001',
+    previous_revision: 8,
+    revision: 9,
+    stage: 'qualified',
+    follow_up_at: '2026-11-13T10:00:00Z',
+    updated_at: '2026-11-12T10:00:00Z',
+    replayed: false,
+  };
+
+  expect(app.validatedLeadActionResult(result, request, now)).toBe(result);
+  for (const invalid of [
+    { ...result, follow_up_at: null },
+    { ...result, follow_up_at: '2026-11-14T10:00:00Z' },
+    { ...result, stage: 'won' },
+  ]) {
+    expect(() => app.validatedLeadActionResult(invalid, request, now))
+      .toThrow('Lead action confirmation is unavailable');
+  }
+});
+
+test('lead action confirmation rejects leakage and mismatched mutation evidence', () => {
+  const now = Date.parse('2026-11-12T10:00:00Z');
+  const request = app.leadActionRequest(
+    'LEAD-TEST-001', 7, 'estimated', 'close_won', null,
+    bytes => bytes.fill(5), now);
+  const result = {
+    schema_version: 'tenant-lead-action-v1',
+    lead_ref: 'LEAD-TEST-001',
+    previous_revision: 7,
+    revision: 8,
+    stage: 'won',
+    follow_up_at: null,
+    updated_at: '2026-11-12T10:00:00Z',
+    replayed: false,
+  };
+
+  for (const invalid of [
+    { ...result, tenant_id: 'other-tenant' },
+    { ...result, email: 'person@example.invalid' },
+    { ...result, lead_ref: 'LEAD-OTHER-001' },
+    { ...result, previous_revision: 6 },
+    { ...result, revision: 9 },
+    { ...result, stage: 'estimated' },
+    { ...result, follow_up_at: '2026-11-13T10:00:00Z' },
+    { ...result, updated_at: '2026-11-12T10:05:01Z' },
+    { ...result, replayed: 'false' },
+  ]) {
+    expect(() => app.validatedLeadActionResult(invalid, request, now))
+      .toThrow('Lead action confirmation is unavailable');
+  }
+});
+
 test('lead action request rejects outreach, stale inputs, and unsafe retries', () => {
   const random = bytes => bytes.fill(1);
   const now = Date.parse('2026-11-12T10:00:00Z');
