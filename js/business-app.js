@@ -701,8 +701,11 @@
 
   function validatedLeadList(value) {
     const listFields = new Set([
-      'schema_version', 'checked_at', 'returned', 'truncated', 'items',
+      'schema_version', 'checked_at', 'returned', 'truncated', 'next_cursor',
+      'items',
     ]);
+    const hasCursor = typeof value?.next_cursor === 'string'
+      && /^[A-Za-z0-9_-]{32,256}$/.test(value.next_cursor);
     if (!value || typeof value !== 'object' || Array.isArray(value)
       || Object.keys(value).length !== listFields.size
       || Object.keys(value).some(key => !listFields.has(key))
@@ -710,7 +713,8 @@
       || !Array.isArray(value.items) || value.items.length > 100
       || value.returned !== value.items.length
       || typeof value.truncated !== 'boolean'
-      || (value.truncated && value.items.length === 0)) {
+      || (value.truncated && value.items.length === 0)
+      || (value.truncated ? !hasCursor : value.next_cursor !== null)) {
       throw new Error('Lead list is unavailable');
     }
     const checkedAt = Date.parse(leadTimestamp(value.checked_at));
