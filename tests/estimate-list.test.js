@@ -171,3 +171,85 @@ test('estimate draft builder remains unconnected and cannot send a proposal', ()
     /fetch\s*\(|request\s*\(\s*['\"]|email|phone|address|tenant_id|workspace_id|provider|send/i,
   );
 });
+
+
+test('accepts only an exact request-bound estimate draft confirmation', () => {
+  const now = Date.parse('2026-11-12T21:00:00Z');
+  const request = app.estimateDraftRequest(
+    'Synthetic customer',
+    'Synthetic concrete repair',
+    'Synthetic bounded repair scope.',
+    175000,
+    '2026-12-12',
+    bytes => { bytes.fill(0xcd); return bytes; },
+    now,
+  );
+  const result = {
+    schema_version: 'tenant-estimate-draft-v1',
+    estimate_ref: 'estimate-three',
+    revision: 0,
+    status: 'draft',
+    customer_label: request.customer_label,
+    title: request.title,
+    amount_cents: request.amount_cents,
+    expires_on: request.expires_on,
+    created_at: '2026-11-12T21:00:00Z',
+    updated_at: '2026-11-12T21:00:00Z',
+    replayed: false,
+  };
+  expect(app.validatedEstimateDraftResult(result, request, now)).toEqual(result);
+  const invalid = [
+    { ...result, tenant_id: 'must-not-reach-browser' },
+    { ...result, provider: 'must-not-reach-browser' },
+    { ...result, contact_email: 'private@example.invalid' },
+    { ...result, estimate_ref: 'bad ref' },
+    { ...result, revision: 1 },
+    { ...result, status: 'sent' },
+    { ...result, customer_label: 'Different customer' },
+    { ...result, title: 'Different work' },
+    { ...result, amount_cents: 175001 },
+    { ...result, expires_on: '2026-12-13' },
+    { ...result, created_at: '2026-11-12T21:05:01Z',
+      updated_at: '2026-11-12T21:05:01Z' },
+    { ...result, updated_at: '2026-11-12T21:00:01Z' },
+    { ...result, replayed: 'false' },
+  ];
+  for (const value of invalid) {
+    expect(() => app.validatedEstimateDraftResult(value, request, now))
+      .toThrow('Estimate draft confirmation is unavailable');
+  }
+});
+
+test('draft confirmation rejects altered or over-shared request evidence', () => {
+  const now = Date.parse('2026-11-12T21:00:00Z');
+  const request = app.estimateDraftRequest(
+    'Synthetic customer',
+    'Synthetic proposal',
+    'Synthetic bounded scope.',
+    10000,
+    '2026-12-12',
+    bytes => { bytes.fill(1); return bytes; },
+    now,
+  );
+  const result = {
+    schema_version: 'tenant-estimate-draft-v1',
+    estimate_ref: 'estimate-four',
+    revision: 0,
+    status: 'draft',
+    customer_label: request.customer_label,
+    title: request.title,
+    amount_cents: request.amount_cents,
+    expires_on: request.expires_on,
+    created_at: '2026-11-12T21:00:00Z',
+    updated_at: '2026-11-12T21:00:00Z',
+    replayed: true,
+  };
+  for (const altered of [
+    { ...request, tenant_id: 'must-not-be-accepted' },
+    { ...request, idempotency_key: 'estimate-invalid' },
+    { ...request, scope_summary: '' },
+  ]) {
+    expect(() => app.validatedEstimateDraftResult(result, altered, now))
+      .toThrow('Estimate draft confirmation is unavailable');
+  }
+});
