@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Synthetic contractor test pack | GCS Business</title>
+<meta name="description" content="Invented contractor tenant data and expected outcomes for a safe Nexus pilot rehearsal.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="canonical" href="https://buildbetterwithgcs.com/business/help/pilot-fixture.html">
+<link rel="icon" href="../../assets/gcs-favicon.svg" type="image/svg+xml">
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#152d47;background:#f5f8fb}*{box-sizing:border-box}body{margin:0}header,footer{background:#102b4b;color:white}.wrap{max-width:1080px;margin:auto;padding:0 22px}header{padding:22px 0 30px}header a,footer a{color:white}.brand{display:inline-block;background:white;border-radius:10px;padding:6px}.brand img{display:block;width:min(190px,55vw);height:auto}.back{display:block;margin-top:14px}h1{font-size:clamp(2rem,5vw,3rem);margin-bottom:8px}h2{margin-top:36px}p,li{line-height:1.65}main{padding:32px 0 70px}.notice{background:#fff4dc;border-left:4px solid #d48a13;padding:16px;border-radius:6px}.table-wrap{overflow-x:auto;background:white;border:1px solid #d8e3ef;border-radius:14px;margin:14px 0}table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;vertical-align:top;padding:13px;border-bottom:1px solid #d8e3ef}th{background:#eaf2f8}tbody tr:last-child td{border-bottom:0}code{background:#eaf2f8;padding:2px 5px;border-radius:4px}.cases,.stops{background:white;border:1px solid #d8e3ef;border-radius:14px;padding:20px 24px}.cases li,.stops li{margin-bottom:10px}.stop{color:#9b2c2c;font-weight:750}.cta{display:inline-block;margin-top:22px;padding:12px 16px;border-radius:10px;background:#175d9b;color:white;text-decoration:none}.cta:focus-visible,a:focus-visible{outline:3px solid #f5a623;outline-offset:3px}footer{padding:25px 0}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style></head><body>
+<header><div class="wrap"><a class="brand" href="../" aria-label="GCS Business home"><img src="../../assets/gcs-logo.svg" alt="GCS — Build Better Organizations" width="190" height="60"></a><a class="back" href="pilot.html">← Pilot readiness</a><h1>Synthetic contractor test pack</h1><p>Invented identities, records, and expected outcomes for a safe end-to-end rehearsal.</p></div></header>
+<main class="wrap">
+<p class="notice"><strong>All records below are fictional.</strong> Use them only in a separate test environment. Do not replace them with the volunteer company's name, employees, customers, addresses, documents, credentials, billing details, bids, or contact information. Addresses ending in <code>example.invalid</code> cannot receive email.</p>
+
+<h2>Two-tenant isolation fixture</h2>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Field</th><th scope="col">Tenant A</th><th scope="col">Tenant B isolation control</th></tr></thead>
+<tbody>
+<tr><td>Organization</td><td>Example Restoration Test Company</td><td>Isolation Control Test Company</td></tr>
+<tr><td>Workspace key</td><td><code>TEST-RESTORATION-A</code></td><td><code>TEST-RESTORATION-B</code></td></tr>
+<tr><td>Service area</td><td>TEST-CENTRAL-FL, 25-mile test radius</td><td>TEST-NORTH-FL, 10-mile test radius</td></tr>
+<tr><td>Administrator</td><td><code>ava.admin@example.invalid</code></td><td><code>taylor.admin@example.invalid</code></td></tr>
+<tr><td>Manager</td><td><code>marco.manager@example.invalid</code></td><td><code>jamie.manager@example.invalid</code></td></tr>
+<tr><td>Employee</td><td><code>riley.crew@example.invalid</code></td><td><code>casey.crew@example.invalid</code></td></tr>
+<tr><td>Expected isolation</td><td colspan="2">Every Tenant A session must be denied access to Tenant B records and vice versa, including guessed identifiers, stale links, exports, summaries, and continuation tokens.</td></tr>
+</tbody></table></div>
+
+<h2>Invented operational records</h2>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Area</th><th scope="col">Synthetic record</th><th scope="col">Expected pilot behavior</th></tr></thead>
+<tbody>
+<tr><td>Customer lead</td><td><code>LEAD-TEST-001</code> · Example Parking Structure</td><td>Tenant A manager can review and assign a follow-up. Employee access follows the configured role. No outreach is sent.</td></tr>
+<tr><td>Estimate/proposal</td><td><code>EST-TEST-001</code> · deck coating repair</td><td>If the module is unavailable, record a tested gap; do not simulate acceptance, signature, pricing approval, or delivery.</td></tr>
+<tr><td>Project/job</td><td><code>JOB-TEST-001</code> · Example garage restoration</td><td>Remains Tenant A-only and links only to Tenant A work, time, materials, documents, and invoice records.</td></tr>
+<tr><td>Work order</td><td><code>WO-TEST-001</code> · inspect spalled concrete</td><td>Manager assigns it to Riley; Riley sees only assigned work and may mark it complete once.</td></tr>
+<tr><td>Timekeeping</td><td><code>PUNCH-TEST-001</code></td><td>Riley clocks in and out using the same open punch. A duplicate clock action is denied. No wage, location, overtime-pay, or payroll claim is produced.</td></tr>
+<tr><td>PTO/leave</td><td><code>LEAVE-TEST-001</code> · one synthetic day</td><td>Riley submits; Marco reviews once. The decision does not alter payroll or prove policy compliance.</td></tr>
+<tr><td>Overtime option</td><td><code>POLICY-TEST-001</code> · review threshold only</td><td>Configuration may flag a review case but must not calculate pay, tax, or legal compliance.</td></tr>
+<tr><td>Material/expense</td><td><code>EXP-TEST-001</code> · invented repair material</td><td>If unavailable, record the gap. Never enter real receipts, card data, bank data, or reimbursement instructions.</td></tr>
+<tr><td>Subcontractor</td><td><code>SUB-TEST-001</code> · Example Testing Partner</td><td>If unavailable, record the gap. No invitation, contract, credential, insurance, or payment action is performed.</td></tr>
+<tr><td>Invoice</td><td><code>INV-TEST-001</code> · synthetic status only</td><td>Draft/issued/paid/void are tracking labels; no invoice is delivered and no payment or settlement is claimed.</td></tr>
+<tr><td>Document</td><td><code>DOC-TEST-001</code> · harmless plain-text fixture</td><td>Use only an approved non-sensitive test file. If secure uploads are unavailable, record the gap rather than uploading real content.</td></tr>
+<tr><td>Assistant digest</td><td>Tenant A daily preview for selected topics</td><td>Includes only authorized Tenant A items, uses the current preference revision, discloses truncation, and sends no email.</td></tr>
+<tr><td>Bid search</td><td>Trade: concrete restoration · area: TEST-CENTRAL-FL · radius: 25</td><td>Use query inputs only. Do not create a fake opportunity. Return no item unless a permitted real source supplies current provenance, known location, and in-radius evidence.</td></tr>
+</tbody></table></div>
+
+<h2>Scripted acceptance sequence</h2>
+<ol class="cases">
+<li>Create both synthetic tenants with separate identities and sessions. Confirm pending or unverified entitlement grants no module access.</li>
+<li>Activate only the approved test entitlement fixture. Confirm unselected modules remain denied and revocation removes access.</li>
+<li>Run cross-tenant read and write attempts for dashboards, leads, jobs, work orders, punches, leave, invoices, documents, assistant previews, and any cursor or export.</li>
+<li>Complete Tenant A administrator, manager, and employee journeys. Repeat unauthorized actions from the wrong role and confirm no mutation occurs.</li>
+<li>Run the synthetic work order, time punch, leave review, invoice-status, and safe asset-import journeys. Capture exact pass/fail evidence.</li>
+<li>Attempt every currently missing module. Record a tested gap; do not substitute a mock screen for an accepted workflow.</li>
+<li>Preview the assistant with enabled daily settings and selected topics. Verify stale preference, opt-out, duplicate, synthetic evidence, unknown location, outside-radius, unsafe URL, and cross-tenant cases all fail closed.</li>
+<li>Run the bid query without injecting a result. A zero-result response is acceptable; a fabricated bid is not.</li>
+<li>Exercise restart, revocation, rollback, and backup/restore evidence for the exact release candidate.</li>
+<li>Stop with synthetic data. Real onboarding begins only after independent review, production gates, and explicit approval plus minimum contact/configuration details.</li>
+</ol>
+
+<h2>Immediate stop rules</h2>
+<ul class="stops">
+<li><span class="stop">Stop</span> if any record, summary, export, link, token, or cursor crosses tenant boundaries.</li>
+<li><span class="stop">Stop</span> if a pending, stale, canceled, or unverified entitlement grants access.</li>
+<li><span class="stop">Stop</span> if an employee can approve manager work or access an unassigned record.</li>
+<li><span class="stop">Stop</span> if a bid or lead appears without retained source and freshness evidence.</li>
+<li><span class="stop">Stop</span> if email can send without verified credentials, explicit opt-in, deduplication, unsubscribe handling, audit evidence, and an approved test recipient.</li>
+<li><span class="stop">Stop</span> if any step asks for a bank password, real payment method, customer outreach, bid submission, contract signature, or unsupported live-payroll claim.</li>
+</ul>
+
+<h2>Evidence to record</h2>
+<p>Record the exact commit, CI run, protected deploy ID, synthetic tenant identifiers, role tested, input, expected result, actual result, denial evidence, reviewer, unresolved blocker, rollback result, and exact next action. Never paste secrets, raw provider payloads, real customer data, or sensitive document contents into the checkpoint.</p>
+
+<p><a class="cta" href="pilot.html">Return to the readiness matrix</a></p>
+</main><footer><div class="wrap"><a href="./">How To center</a> · <a href="../">Business overview</a></div></footer>
+</body></html>

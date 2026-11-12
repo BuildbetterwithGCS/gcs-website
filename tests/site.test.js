@@ -169,6 +169,10 @@ assert('CTA nav class styled', contains(css, '.nav__link--cta'));
 assert('Legacy get-started class aliased', contains(css, '.nav__link--get-started'));
 assert('Captions-only player modifier styled', contains(css, '.ndp-player--captions-only'));
 assert('Audio unavailable button hidden', contains(css, '.ndp-btn--audio-unavailable { display: none; }'));
+assert('Laptop hero uses a bounded compact height',
+  contains(css, '@media (min-width: 761px) and (max-height: 1000px)')
+  && contains(css, 'min-height: clamp(560px, 72vh, 680px)')
+  && contains(css, 'font-size: clamp(2.5rem, 4vw, 3.25rem)'));
 
 section('Private-sector intake');
 assert('Request form includes construction and specialty contractors', containsCI(requestDemo, 'Construction or specialty contractor'));

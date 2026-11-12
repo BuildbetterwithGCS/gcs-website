@@ -2454,10 +2454,14 @@ test('assistant help supports direct links, multi-word search, and keyboard acce
 
   input.value = 'live email delivery';
   input.dispatchEvent(new Event('input'));
+  const pilotGuide = document.getElementById('pilot-readiness-guide');
   expect(guide.hidden).toBe(false);
-  expect(count.textContent).toBe('1 of ' + guideTotal + ' guides shown');
+  expect(pilotGuide.hidden).toBe(false);
+  expect(count.textContent).toBe('2 of ' + guideTotal + ' guides shown');
+  expect([...document.querySelectorAll('#guides details')]
+    .filter(item => !item.hidden)).toEqual([pilotGuide, guide]);
 
-  input.value = 'assistant fabricated evidence';
+  input.value = 'assistant imaginary evidence';
   input.dispatchEvent(new Event('input'));
   expect(count.textContent).toBe('0 of ' + guideTotal + ' guides shown');
   expect(empty.hidden).toBe(false);
@@ -2467,4 +2471,138 @@ test('assistant help supports direct links, multi-word search, and keyboard acce
   expect(count.textContent)
     .toBe(guideTotal + ' of ' + guideTotal + ' guides shown');
   expect(empty.hidden).toBe(true);
+});
+
+
+test('business workspace and help center use the canonical GCS brand assets', () => {
+  const portal = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  const stylesheet = fs.readFileSync(
+    path.join(__dirname, '..', 'css', 'business-app.css'), 'utf8');
+
+  for (const page of [portal, help]) {
+    expect(page).toContain('src="../../assets/gcs-logo.svg"');
+    expect(page).toContain('alt="GCS — Build Better Organizations"');
+    expect(page).toContain('aria-label="GCS Business home"');
+    expect(page).toContain('href="../../assets/gcs-favicon.svg"');
+  }
+  expect(portal).toContain('class="topbar-logo"');
+  expect(help).toContain('class="help-brand"');
+  expect(stylesheet).toContain('.topbar-logo img');
+  expect(stylesheet).toContain('.topbar-brand{align-items:flex-start;flex-direction:column}');
+});
+
+
+test('How To center provides plain-language role-based starting points', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+
+  expect(help).toContain('id="quick-start-heading"');
+  expect(help).toContain('What do you need help with?');
+  expect(help).toContain('href="#subscription-checkout-guide"');
+  expect(help).toContain('href="#time-clock-guide"');
+  expect(help).toContain('href="#manager-leave-review-guide"');
+  expect(help).toContain('href="#asset-spreadsheet-guide"');
+  expect(help).toContain('href="#assistant-updates-guide"');
+  expect(help).toContain(
+    'They do not save settings, import data, charge a payment method, or send email.');
+  expect(help).not.toContain('class="quick-start-number"');
+});
+
+
+test('business overview explains tier fit without publishing unverified prices', () => {
+  const business = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'index.html'), 'utf8');
+
+  expect(business).toContain('Choose the level that fits how you work.');
+  expect(business).toContain('Best for small teams getting organized');
+  expect(business).toContain('Best for growing crews and managers');
+  expect(business).toContain('Best for established multi-crew operations');
+  expect(business).toContain('Best for multi-location organizations');
+  expect(business).toContain(
+    'Names, features, pricing, and availability are proposals, not active subscriptions.');
+  expect(business).toContain('href="app/">Open the workspace preview</a>');
+  expect(business).toContain('href="help/">Read How To help</a>');
+  expect(business).not.toContain('href="app/">Start subscription</a>');
+  expect(business).not.toContain('<h3>1. Tell us about your business</h3>');
+  expect(business).not.toMatch(/\$\d/);
+});
+
+
+test('How To pilot checklist remains synthetic-first and release-gated', () => {
+  const help = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+
+  expect(help).toContain('href="#pilot-readiness-guide"');
+  expect(help).toContain('id="pilot-readiness-guide"');
+  expect(help).toContain('Create a separate synthetic test tenant.');
+  expect(help).toContain('cross-tenant access is denied');
+  expect(help).toContain('unverified or pending entitlement grants no access');
+  expect(help).toContain('provider credentials, unsubscribe controls, and actual delivery');
+  expect(help).toContain('trade, location, radius, and multiple branches');
+  expect(help).toContain('Obtain independent security/privacy review');
+  expect(help).toContain('href="pilot.html"');
+  expect(help).toContain(
+    'does not contact, invite, charge, or onboard a real company');
+  expect(help).not.toContain('Coastal Concrete Restoration');
+  expect(help).not.toContain('pilot is ready');
+});
+
+
+test('pilot readiness page maps evidence, gaps, and acceptance gates truthfully', () => {
+  const pilot = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'pilot.html'), 'utf8');
+
+  expect(pilot).toContain('<meta name="robots" content="noindex,nofollow">');
+  expect(pilot).toContain('Development evidence only:');
+  expect(pilot).toContain('gcs-founder/pull/130');
+  expect(pilot).toContain('gcs-website/pull/59');
+  expect(pilot).toContain('gcs-website/pull/60');
+  expect(pilot).toContain('Staged code/tests');
+  expect(pilot).toContain('Split, unexposed work');
+  expect(pilot).toContain('Not pilot-ready');
+  expect(pilot).toContain('Inventory gap');
+  expect(pilot).toContain('Provider test-mode checkout');
+  expect(pilot).toContain('two synthetic tenants prove cross-tenant reads and writes fail');
+  expect(pilot).toContain('one actual test delivery');
+  expect(pilot).toContain(
+    'Do not contact, invite, charge, or access the volunteer company before that point.');
+  expect(pilot).not.toContain('Coastal Concrete Restoration');
+  expect(pilot).not.toContain('class="status live"');
+  expect(pilot).not.toContain('pilot is ready');
+});
+
+test('synthetic contractor pack stays isolated, fictional, and action-free', () => {
+  const pilot = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'pilot.html'), 'utf8');
+  const fixture = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'pilot-fixture.html'), 'utf8');
+
+  expect(pilot).toContain('href="pilot-fixture.html"');
+  expect(fixture).toContain('<meta name="robots" content="noindex,nofollow">');
+  expect(fixture).toContain('All records below are fictional.');
+  expect(fixture).toContain('example.invalid');
+  expect(fixture).toContain('TEST-RESTORATION-A');
+  expect(fixture).toContain('TEST-RESTORATION-B');
+  expect(fixture).toContain('Every Tenant A session must be denied access to Tenant B');
+  expect(fixture).toContain('LEAD-TEST-001');
+  expect(fixture).toContain('EST-TEST-001');
+  expect(fixture).toContain('JOB-TEST-001');
+  expect(fixture).toContain('WO-TEST-001');
+  expect(fixture).toContain('PUNCH-TEST-001');
+  expect(fixture).toContain('LEAVE-TEST-001');
+  expect(fixture).toContain('EXP-TEST-001');
+  expect(fixture).toContain('SUB-TEST-001');
+  expect(fixture).toContain('INV-TEST-001');
+  expect(fixture).toContain('DOC-TEST-001');
+  expect(fixture).toContain('Do not create a fake opportunity.');
+  expect(fixture).toContain('A zero-result response is acceptable; a fabricated bid is not.');
+  expect(fixture).toContain('Immediate stop rules');
+  expect(fixture).toContain('explicit opt-in, deduplication, unsubscribe handling');
+  expect(fixture).not.toContain('Coastal Concrete Restoration');
+  expect(fixture).not.toContain('Orlando');
+  expect(fixture).not.toMatch(/@(gmail|outlook|yahoo)\.com/i);
+  expect(fixture).not.toContain('pilot is ready');
 });
