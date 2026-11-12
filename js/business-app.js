@@ -561,6 +561,94 @@
     return value;
   }
 
+  const LEAD_STAGES = new Set([
+    'new', 'qualified', 'estimated', 'won', 'lost',
+  ]);
+
+  function safeLeadText(value, maximum, optional = false) {
+    if (optional && value === null) return null;
+    if (typeof value !== 'string' || value.length < 1 || value.length > maximum
+      || /[\u0000-\u001f\u007f\u202a-\u202e\u2066-\u2069]/.test(value)) {
+      throw new Error('Lead list is unavailable');
+    }
+    return value;
+  }
+
+  function leadTimestamp(value) {
+    if (typeof value !== 'string' || value.length < 20 || value.length > 40
+      || !Number.isFinite(Date.parse(value))) {
+      throw new Error('Lead list is unavailable');
+    }
+    return value;
+  }
+
+  function validatedLeadList(value) {
+    const listFields = new Set([
+      'schema_version', 'checked_at', 'returned', 'truncated', 'items',
+    ]);
+    if (!value || typeof value !== 'object' || Array.isArray(value)
+      || Object.keys(value).length !== listFields.size
+      || Object.keys(value).some(key => !listFields.has(key))
+      || value.schema_version !== 'tenant-lead-list-v1'
+      || !Array.isArray(value.items) || value.items.length > 100
+      || value.returned !== value.items.length
+      || typeof value.truncated !== 'boolean'
+      || (value.truncated && value.items.length === 0)) {
+      throw new Error('Lead list is unavailable');
+    }
+    const checkedAt = Date.parse(leadTimestamp(value.checked_at));
+    const itemFields = new Set([
+      'lead_ref', 'customer_label', 'stage', 'owner_label',
+      'next_action', 'follow_up_at', 'updated_at',
+    ]);
+    const seen = new Set();
+    for (const item of value.items) {
+      if (!item || typeof item !== 'object' || Array.isArray(item)
+        || Object.keys(item).length !== itemFields.size
+        || Object.keys(item).some(key => !itemFields.has(key))
+        || typeof item.lead_ref !== 'string'
+        || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(item.lead_ref)
+        || !LEAD_STAGES.has(item.stage)) {
+        throw new Error('Lead list is unavailable');
+      }
+      safeLeadText(item.customer_label, 160);
+      safeLeadText(item.owner_label, 100, true);
+      safeLeadText(item.next_action, 200);
+      const updatedAt = Date.parse(leadTimestamp(item.updated_at));
+      if (updatedAt > checkedAt) throw new Error('Lead list is unavailable');
+      if (item.follow_up_at !== null) leadTimestamp(item.follow_up_at);
+      const dedupeKey = item.lead_ref.toLocaleLowerCase();
+      if (seen.has(dedupeKey)) throw new Error('Lead list is unavailable');
+      seen.add(dedupeKey);
+    }
+    return value;
+  }
+
+  function renderLeadList(doc, value) {
+    const list = doc.getElementById('lead-list');
+    if (!list) throw new Error('Lead list container is unavailable');
+    const page = validatedLeadList(value);
+    list.replaceChildren();
+    for (const item of page.items) {
+      const row = doc.createElement('li');
+      const customer = doc.createElement('strong');
+      customer.textContent = item.customer_label;
+      const stage = doc.createElement('span');
+      stage.textContent = 'Stage: ' + item.stage;
+      const action = doc.createElement('span');
+      action.textContent = item.next_action;
+      row.append(customer, stage, action);
+      list.append(row);
+    }
+    if (page.truncated) {
+      const notice = doc.createElement('li');
+      notice.className = 'lead-list-truncated';
+      notice.textContent = 'More permitted leads are available; this list is incomplete.';
+      list.append(notice);
+    }
+    return page;
+  }
+
   function dollarsToCents(value) {
     if (!/^\d+(\.\d{1,2})?$/.test(String(value).trim())) {
       throw new Error('Enter a valid dollar amount');
@@ -1563,6 +1651,7 @@
     dashboardSummaryValues, clearDashboardSummary,
     validatedAccessStatus, renderAccessStatus, clearAccessStatus,
     validatedAssetInventory, filterAssetItems,
+    validatedLeadList, renderLeadList,
     validatedAssistantPreference,
     validatedPendingLeaveQueue, renderPendingLeaveQueue,
     validatedAssignedWorkQueue, renderAssignedWorkQueue,
