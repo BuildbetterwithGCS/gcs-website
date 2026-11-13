@@ -1,0 +1,532 @@
+(function (root, factory) {
+  'use strict';
+  const api = factory();
+  if (typeof module === 'object' && module.exports) {
+    module.exports = api;
+  } else {
+    root.GCSEstimateList = api;
+  }
+})(typeof window !== 'undefined' ? window : globalThis, function () {
+  'use strict';
+
+  const ESTIMATE_STATUSES = new Set([
+    'draft', 'sent', 'accepted', 'rejected', 'expired',
+  ]);
+  const STATUS_LABELS = Object.freeze({
+    draft: 'Draft',
+    sent: 'Sent',
+    accepted: 'Accepted',
+    rejected: 'Rejected',
+    expired: 'Expired',
+  });
+
+  function exactKeys(value, keys) {
+    return value
+      && typeof value === 'object'
+      && !Array.isArray(value)
+      && Object.keys(value).sort().join('|') === keys.slice().sort().join('|');
+  }
+
+  function safeText(value, maximum) {
+    if (typeof value !== 'string' || value.length < 1 || value.length > maximum
+      || /[\u0000-\u001f\u007f\u202a-\u202e\u2066-\u2069]/.test(value)) {
+      throw new Error('Estimate list is unavailable');
+    }
+    return value;
+  }
+
+  function canonicalTimestamp(value) {
+    const parsed = typeof value === 'string' ? Date.parse(value) : NaN;
+    if (typeof value !== 'string'
+      || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(value)
+      || !Number.isFinite(parsed)
+      || new Date(parsed).toISOString() !== value.replace('Z', '.000Z')) {
+      throw new Error('Estimate list is unavailable');
+    }
+    return value;
+  }
+
+  function calendarDate(value) {
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+      throw new Error('Estimate list is unavailable');
+    }
+    const parsed = Date.parse(value + 'T00:00:00Z');
+    if (!Number.isFinite(parsed)
+      || new Date(parsed).toISOString().slice(0, 10) !== value) {
+      throw new Error('Estimate list is unavailable');
+    }
+    return value;
+  }
+
+  function validatedEstimateList(value) {
+    const listFields = [
+      'schema_version', 'checked_at', 'returned', 'truncated', 'next_cursor',
+      'items',
+    ];
+    const hasCursor = typeof value?.next_cursor === 'string'
+      && /^[A-Za-z0-9_-]{32,256}$/.test(value.next_cursor);
+    if (!exactKeys(value, listFields)
+      || value.schema_version !== 'tenant-estimate-list-v1'
+      || !Array.isArray(value.items) || value.items.length > 100
+      || !Number.isInteger(value.returned)
+      || value.returned !== value.items.length
+      || typeof value.truncated !== 'boolean'
+      || (value.truncated && value.items.length === 0)
+      || (value.truncated ? !hasCursor : value.next_cursor !== null)) {
+      throw new Error('Estimate list is unavailable');
+    }
+    const checkedAt = Date.parse(canonicalTimestamp(value.checked_at));
+    const checkedDate = value.checked_at.slice(0, 10);
+    const itemFields = [
+      'estimate_ref', 'revision', 'customer_label', 'title', 'status',
+      'amount_cents', 'expires_on', 'sent_at', 'updated_at',
+    ];
+    const seen = new Set();
+    for (const item of value.items) {
+      if (!exactKeys(item, itemFields)
+        || typeof item.estimate_ref !== 'string'
+        || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(item.estimate_ref)
+        || !Number.isInteger(item.revision) || item.revision < 0
+        || !ESTIMATE_STATUSES.has(item.status)
+        || !Number.isInteger(item.amount_cents)
+        || item.amount_cents < 0 || item.amount_cents > 1000000000) {
+        throw new Error('Estimate list is unavailable');
+      }
+      safeText(item.customer_label, 160);
+      safeText(item.title, 200);
+      const updatedAt = Date.parse(canonicalTimestamp(item.updated_at));
+      if (updatedAt > checkedAt) throw new Error('Estimate list is unavailable');
+      let sentAt = null;
+      if (item.sent_at !== null) sentAt = canonicalTimestamp(item.sent_at);
+      let expiresOn = null;
+      if (item.expires_on !== null) expiresOn = calendarDate(item.expires_on);
+      if ((item.status === 'draft' && sentAt !== null)
+        || (item.status !== 'draft' && sentAt === null)
+        || (expiresOn !== null && sentAt !== null
+          && expiresOn < sentAt.slice(0, 10))
+        || (item.status === 'expired'
+          && (expiresOn === null || expiresOn > checkedDate))) {
+        throw new Error('Estimate list is unavailable');
+      }
+      const dedupeKey = item.estimate_ref.toLocaleLowerCase();
+      if (seen.has(dedupeKey)) throw new Error('Estimate list is unavailable');
+      seen.add(dedupeKey);
+    }
+    return value;
+  }
+
+  function estimateListPath(cursor) {
+    if (arguments.length === 0 || cursor === null) return '/estimates';
+    if (typeof cursor !== 'string'
+      || !/^[A-Za-z0-9_-]{32,256}$/.test(cursor)) {
+      throw new Error('Estimate list continuation is unavailable');
+    }
+    return '/estimates?cursor=' + encodeURIComponent(cursor);
+  }
+
+  function validatedEstimatePageChain(entries) {
+    if (!Array.isArray(entries) || entries.length < 1 || entries.length > 20) {
+      throw new Error('Estimate list continuation is unavailable');
+    }
+    const items = [];
+    const seenRefs = new Set();
+    const consumedCursors = new Set();
+    let expectedCursor = null;
+    let checkedAt = null;
+    let complete = false;
+    for (const entry of entries) {
+      if (!exactKeys(entry, ['requested_cursor', 'page'])
+        || entry.requested_cursor !== expectedCursor
+        || complete) {
+        throw new Error('Estimate list continuation is unavailable');
+      }
+      if (entry.requested_cursor !== null) {
+        if (typeof entry.requested_cursor !== 'string'
+          || !/^[A-Za-z0-9_-]{32,256}$/.test(entry.requested_cursor)
+          || consumedCursors.has(entry.requested_cursor)) {
+          throw new Error('Estimate list continuation is unavailable');
+        }
+        consumedCursors.add(entry.requested_cursor);
+      }
+      const page = validatedEstimateList(entry.page);
+      if (checkedAt === null) checkedAt = page.checked_at;
+      if (page.checked_at !== checkedAt) {
+        throw new Error('Estimate list continuation is unavailable');
+      }
+      for (const item of page.items) {
+        const key = item.estimate_ref.toLocaleLowerCase();
+        if (seenRefs.has(key)) {
+          throw new Error('Estimate list continuation is unavailable');
+        }
+        seenRefs.add(key);
+        items.push(item);
+      }
+      if (page.next_cursor !== null
+        && (page.next_cursor === entry.requested_cursor
+          || consumedCursors.has(page.next_cursor))) {
+        throw new Error('Estimate list continuation is unavailable');
+      }
+      expectedCursor = page.next_cursor;
+      complete = !page.truncated;
+    }
+    return {
+      checked_at: checkedAt,
+      items,
+      next_cursor: expectedCursor,
+      complete,
+    };
+  }
+
+  function estimateIdempotencyKey(getRandomValues) {
+    if (typeof getRandomValues !== 'function') {
+      throw new Error('Estimate draft is unavailable');
+    }
+    const bytes = new Uint8Array(24);
+    getRandomValues(bytes);
+    return 'estimate-' + Array.from(
+      bytes,
+      value => value.toString(16).padStart(2, '0'),
+    ).join('');
+  }
+
+  function estimateDraftRequest(customerLabel, title, scopeSummary, amountCents,
+    expiresOn, getRandomValues, now = Date.now()) {
+    if (!Number.isFinite(Number(now))
+      || !Number.isInteger(amountCents)
+      || amountCents < 1 || amountCents > 1000000000) {
+      throw new Error('Estimate draft is unavailable');
+    }
+    try {
+      safeText(customerLabel, 160);
+      safeText(title, 200);
+      safeText(scopeSummary, 2000);
+      calendarDate(expiresOn);
+    } catch (_error) {
+      throw new Error('Estimate draft is unavailable');
+    }
+    const currentDate = new Date(Number(now)).toISOString().slice(0, 10);
+    const lastDate = new Date(Number(now) + (180 * 24 * 60 * 60 * 1000))
+      .toISOString().slice(0, 10);
+    if (expiresOn < currentDate || expiresOn > lastDate) {
+      throw new Error('Estimate draft is unavailable');
+    }
+    return {
+      customer_label: customerLabel,
+      title,
+      scope_summary: scopeSummary,
+      amount_cents: amountCents,
+      expires_on: expiresOn,
+      idempotency_key: estimateIdempotencyKey(getRandomValues),
+    };
+  }
+
+  function validatedEstimateDraftResult(value, request, now = Date.now()) {
+    const resultFields = [
+      'schema_version', 'estimate_ref', 'revision', 'status',
+      'customer_label', 'title', 'amount_cents', 'expires_on',
+      'created_at', 'updated_at', 'replayed',
+    ];
+    const requestFields = [
+      'customer_label', 'title', 'scope_summary', 'amount_cents',
+      'expires_on', 'idempotency_key',
+    ];
+    if (!exactKeys(value, resultFields)
+      || !exactKeys(request, requestFields)
+      || value.schema_version !== 'tenant-estimate-draft-v1'
+      || typeof value.estimate_ref !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(value.estimate_ref)
+      || value.revision !== 0
+      || value.status !== 'draft'
+      || value.customer_label !== request.customer_label
+      || value.title !== request.title
+      || value.amount_cents !== request.amount_cents
+      || value.expires_on !== request.expires_on
+      || typeof request.idempotency_key !== 'string'
+      || !/^estimate-[a-f0-9]{48}$/.test(request.idempotency_key)
+      || typeof value.replayed !== 'boolean'
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Estimate draft confirmation is unavailable');
+    }
+    let createdAt;
+    let updatedAt;
+    try {
+      safeText(request.scope_summary, 2000);
+      calendarDate(value.expires_on);
+      createdAt = Date.parse(canonicalTimestamp(value.created_at));
+      updatedAt = Date.parse(canonicalTimestamp(value.updated_at));
+    } catch (_error) {
+      throw new Error('Estimate draft confirmation is unavailable');
+    }
+    if (createdAt !== updatedAt || createdAt > Number(now) + (5 * 60 * 1000)) {
+      throw new Error('Estimate draft confirmation is unavailable');
+    }
+    return value;
+  }
+
+  function estimateDraftUpdateRequest(estimateRef, expectedRevision, title,
+    scopeSummary, amountCents, expiresOn, getRandomValues, now = Date.now()) {
+    if (typeof estimateRef !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(estimateRef)
+      || !Number.isInteger(expectedRevision) || expectedRevision < 0
+      || !Number.isFinite(Number(now))
+      || !Number.isInteger(amountCents)
+      || amountCents < 1 || amountCents > 1000000000) {
+      throw new Error('Estimate draft update is unavailable');
+    }
+    try {
+      safeText(title, 200);
+      safeText(scopeSummary, 2000);
+      calendarDate(expiresOn);
+    } catch (_error) {
+      throw new Error('Estimate draft update is unavailable');
+    }
+    const currentDate = new Date(Number(now)).toISOString().slice(0, 10);
+    const lastDate = new Date(Number(now) + (180 * 24 * 60 * 60 * 1000))
+      .toISOString().slice(0, 10);
+    if (expiresOn < currentDate || expiresOn > lastDate) {
+      throw new Error('Estimate draft update is unavailable');
+    }
+    let idempotencyKey;
+    try {
+      idempotencyKey = estimateIdempotencyKey(getRandomValues);
+    } catch (_error) {
+      throw new Error('Estimate draft update is unavailable');
+    }
+    return {
+      estimate_ref: estimateRef,
+      expected_revision: expectedRevision,
+      title,
+      scope_summary: scopeSummary,
+      amount_cents: amountCents,
+      expires_on: expiresOn,
+      idempotency_key: idempotencyKey,
+    };
+  }
+
+  function validatedEstimateDraftUpdateResult(value, request, now = Date.now()) {
+    const resultFields = [
+      'schema_version', 'estimate_ref', 'previous_revision', 'revision',
+      'status', 'title', 'scope_summary', 'amount_cents', 'expires_on',
+      'updated_at', 'replayed',
+    ];
+    const requestFields = [
+      'estimate_ref', 'expected_revision', 'title', 'scope_summary',
+      'amount_cents', 'expires_on', 'idempotency_key',
+    ];
+    if (!exactKeys(value, resultFields)
+      || !exactKeys(request, requestFields)
+      || value.schema_version !== 'tenant-estimate-draft-update-v1'
+      || typeof request.estimate_ref !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(request.estimate_ref)
+      || value.estimate_ref !== request.estimate_ref
+      || !Number.isInteger(request.expected_revision)
+      || request.expected_revision < 0
+      || value.previous_revision !== request.expected_revision
+      || value.revision !== request.expected_revision + 1
+      || value.status !== 'draft'
+      || value.title !== request.title
+      || value.scope_summary !== request.scope_summary
+      || value.amount_cents !== request.amount_cents
+      || value.expires_on !== request.expires_on
+      || typeof request.idempotency_key !== 'string'
+      || !/^estimate-[a-f0-9]{48}$/.test(request.idempotency_key)
+      || typeof value.replayed !== 'boolean'
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Estimate draft update confirmation is unavailable');
+    }
+    let updatedAt;
+    try {
+      safeText(request.title, 200);
+      safeText(request.scope_summary, 2000);
+      calendarDate(request.expires_on);
+      updatedAt = Date.parse(canonicalTimestamp(value.updated_at));
+    } catch (_error) {
+      throw new Error('Estimate draft update confirmation is unavailable');
+    }
+    if (!Number.isInteger(request.amount_cents)
+      || request.amount_cents < 1 || request.amount_cents > 1000000000
+      || updatedAt > Number(now) + (5 * 60 * 1000)) {
+      throw new Error('Estimate draft update confirmation is unavailable');
+    }
+    return value;
+  }
+
+  function validatedEstimateDetail(value, now = Date.now()) {
+    const detailFields = [
+      'schema_version', 'estimate_ref', 'revision', 'customer_label', 'title',
+      'status', 'scope_summary', 'line_items', 'subtotal_cents', 'tax_cents',
+      'total_cents', 'expires_on', 'sent_at', 'updated_at',
+    ];
+    if (!exactKeys(value, detailFields)
+      || value.schema_version !== 'tenant-estimate-detail-v1'
+      || typeof value.estimate_ref !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(value.estimate_ref)
+      || !Number.isInteger(value.revision) || value.revision < 0
+      || !ESTIMATE_STATUSES.has(value.status)
+      || !Array.isArray(value.line_items)
+      || value.line_items.length < 1 || value.line_items.length > 50
+      || !Number.isInteger(value.subtotal_cents)
+      || !Number.isInteger(value.tax_cents)
+      || !Number.isInteger(value.total_cents)
+      || value.subtotal_cents < 0 || value.tax_cents < 0
+      || value.total_cents < 0 || value.total_cents > 1000000000
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Estimate detail is unavailable');
+    }
+    try {
+      safeText(value.customer_label, 160);
+      safeText(value.title, 200);
+      safeText(value.scope_summary, 2000);
+    } catch (_error) {
+      throw new Error('Estimate detail is unavailable');
+    }
+    const itemFields = [
+      'line_ref', 'description', 'quantity_millis', 'unit_amount_cents',
+      'line_total_cents',
+    ];
+    const seen = new Set();
+    let subtotal = 0;
+    for (const item of value.line_items) {
+      if (!exactKeys(item, itemFields)
+        || typeof item.line_ref !== 'string'
+        || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(item.line_ref)
+        || !Number.isInteger(item.quantity_millis)
+        || item.quantity_millis < 1 || item.quantity_millis > 10000000
+        || !Number.isInteger(item.unit_amount_cents)
+        || item.unit_amount_cents < 0 || item.unit_amount_cents > 100000000
+        || !Number.isInteger(item.line_total_cents)
+        || item.line_total_cents < 0 || item.line_total_cents > 1000000000
+        || !Number.isSafeInteger(item.quantity_millis * item.unit_amount_cents)
+        || item.line_total_cents
+          !== Math.round(item.quantity_millis * item.unit_amount_cents / 1000)) {
+        throw new Error('Estimate detail is unavailable');
+      }
+      try {
+        safeText(item.description, 300);
+      } catch (_error) {
+        throw new Error('Estimate detail is unavailable');
+      }
+      const key = item.line_ref.toLocaleLowerCase();
+      if (seen.has(key)) throw new Error('Estimate detail is unavailable');
+      seen.add(key);
+      subtotal += item.line_total_cents;
+      if (!Number.isSafeInteger(subtotal) || subtotal > 1000000000) {
+        throw new Error('Estimate detail is unavailable');
+      }
+    }
+    if (subtotal !== value.subtotal_cents
+      || value.subtotal_cents + value.tax_cents !== value.total_cents) {
+      throw new Error('Estimate detail is unavailable');
+    }
+    let sentAt = null;
+    let expiresOn = null;
+    let updatedAt;
+    try {
+      if (value.sent_at !== null) sentAt = canonicalTimestamp(value.sent_at);
+      if (value.expires_on !== null) expiresOn = calendarDate(value.expires_on);
+      updatedAt = Date.parse(canonicalTimestamp(value.updated_at));
+    } catch (_error) {
+      throw new Error('Estimate detail is unavailable');
+    }
+    const currentDate = new Date(Number(now)).toISOString().slice(0, 10);
+    if (updatedAt > Number(now) + (5 * 60 * 1000)
+      || (value.status === 'draft' && sentAt !== null)
+      || (value.status !== 'draft' && sentAt === null)
+      || (expiresOn !== null && sentAt !== null
+        && expiresOn < sentAt.slice(0, 10))
+      || (value.status === 'expired'
+        && (expiresOn === null || expiresOn > currentDate))) {
+      throw new Error('Estimate detail is unavailable');
+    }
+    return value;
+  }
+
+  function formatAmount(cents) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(cents / 100);
+  }
+
+  function estimateDetailPath(estimateRef) {
+    if (typeof estimateRef !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(estimateRef)) {
+      throw new Error('Estimate detail is unavailable');
+    }
+    return '/estimates/' + encodeURIComponent(estimateRef);
+  }
+
+  function renderEstimateDetail(doc, value, now = Date.now()) {
+    const container = doc && doc.getElementById('estimate-detail');
+    if (!container) throw new Error('Estimate detail container is unavailable');
+    const detail = validatedEstimateDetail(value, now);
+    container.replaceChildren();
+
+    const heading = doc.createElement('h2');
+    heading.textContent = detail.title;
+    const customer = doc.createElement('p');
+    customer.textContent = detail.customer_label;
+    const status = doc.createElement('p');
+    status.textContent = STATUS_LABELS[detail.status];
+    const scope = doc.createElement('p');
+    scope.textContent = detail.scope_summary;
+    const lines = doc.createElement('ul');
+    for (const item of detail.line_items) {
+      const row = doc.createElement('li');
+      const description = doc.createElement('span');
+      description.textContent = item.description;
+      const quantity = doc.createElement('span');
+      quantity.textContent = (item.quantity_millis / 1000).toLocaleString('en-US', {
+        maximumFractionDigits: 3,
+      });
+      const amount = doc.createElement('span');
+      amount.textContent = formatAmount(item.line_total_cents);
+      row.append(description, quantity, amount);
+      lines.append(row);
+    }
+    const subtotal = doc.createElement('p');
+    subtotal.textContent = 'Subtotal: ' + formatAmount(detail.subtotal_cents);
+    const tax = doc.createElement('p');
+    tax.textContent = 'Tax: ' + formatAmount(detail.tax_cents);
+    const total = doc.createElement('strong');
+    total.textContent = 'Total: ' + formatAmount(detail.total_cents);
+    container.append(
+      heading, customer, status, scope, lines, subtotal, tax, total,
+    );
+    return detail;
+  }
+
+  function renderEstimateList(doc, value) {
+    const list = doc && doc.getElementById('estimate-list');
+    if (!list) throw new Error('Estimate list container is unavailable');
+    const page = validatedEstimateList(value);
+    list.replaceChildren();
+    for (const item of page.items) {
+      const row = doc.createElement('li');
+      const customer = doc.createElement('strong');
+      customer.textContent = item.customer_label;
+      const title = doc.createElement('span');
+      title.textContent = item.title;
+      const status = doc.createElement('span');
+      status.textContent = STATUS_LABELS[item.status] + ' · '
+        + formatAmount(item.amount_cents);
+      row.append(customer, title, status);
+      list.append(row);
+    }
+    if (page.truncated) {
+      const notice = doc.createElement('li');
+      notice.className = 'estimate-list-truncated';
+      notice.textContent = 'More permitted estimates are available; this list is incomplete.';
+      list.append(notice);
+    }
+    return page;
+  }
+
+  return {
+    validatedEstimateList, estimateListPath, validatedEstimatePageChain,
+    estimateDraftRequest, validatedEstimateDraftResult,
+    estimateDraftUpdateRequest, validatedEstimateDraftUpdateResult,
+    validatedEstimateDetail, estimateDetailPath, renderEstimateDetail,
+    renderEstimateList,
+  };
+});
