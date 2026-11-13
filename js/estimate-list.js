@@ -286,6 +286,12 @@
     if (expiresOn < currentDate || expiresOn > lastDate) {
       throw new Error('Estimate draft update is unavailable');
     }
+    let idempotencyKey;
+    try {
+      idempotencyKey = estimateIdempotencyKey(getRandomValues);
+    } catch (_error) {
+      throw new Error('Estimate draft update is unavailable');
+    }
     return {
       estimate_ref: estimateRef,
       expected_revision: expectedRevision,
@@ -293,7 +299,7 @@
       scope_summary: scopeSummary,
       amount_cents: amountCents,
       expires_on: expiresOn,
-      idempotency_key: estimateIdempotencyKey(getRandomValues),
+      idempotency_key: idempotencyKey,
     };
   }
 
