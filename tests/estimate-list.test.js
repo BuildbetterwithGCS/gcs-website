@@ -383,6 +383,112 @@ test('draft update fails closed for unsafe or over-shared requests', () => {
 });
 
 
+
+test('accepts only exact reconciled estimate proposal details', () => {
+  const now = Date.parse('2026-11-13T01:35:00Z');
+  const detail = {
+    schema_version: 'tenant-estimate-detail-v1',
+    estimate_ref: 'estimate-five',
+    revision: 2,
+    customer_label: 'Synthetic customer',
+    title: 'Synthetic pool deck restoration',
+    status: 'sent',
+    scope_summary: 'Synthetic preparation and resurfacing scope.',
+    line_items: [
+      {
+        line_ref: 'line-preparation',
+        description: 'Synthetic surface preparation',
+        quantity_millis: 1500,
+        unit_amount_cents: 10000,
+        line_total_cents: 15000,
+      },
+      {
+        line_ref: 'line-finish',
+        description: 'Synthetic decorative finish',
+        quantity_millis: 2000,
+        unit_amount_cents: 25000,
+        line_total_cents: 50000,
+      },
+    ],
+    subtotal_cents: 65000,
+    tax_cents: 4550,
+    total_cents: 69550,
+    expires_on: '2026-12-12',
+    sent_at: '2026-11-12T23:00:00Z',
+    updated_at: '2026-11-12T23:00:00Z',
+  };
+  expect(app.validatedEstimateDetail(detail, now)).toEqual(detail);
+  const invalid = [
+    { ...detail, tenant_id: 'must-not-reach-browser' },
+    { ...detail, contact_email: 'private@example.invalid' },
+    { ...detail, provider: 'must-not-reach-browser' },
+    { ...detail, line_items: [] },
+    { ...detail, subtotal_cents: 65001 },
+    { ...detail, total_cents: 69551 },
+    { ...detail, status: 'draft' },
+    { ...detail, sent_at: null },
+    { ...detail, updated_at: '2026-11-13T01:40:01Z' },
+    { ...detail, line_items: [
+      detail.line_items[0],
+      { ...detail.line_items[1], line_ref: 'LINE-PREPARATION' },
+    ] },
+    { ...detail, line_items: [{
+      ...detail.line_items[0], line_total_cents: 14999,
+    }] },
+    { ...detail, line_items: [{
+      ...detail.line_items[0], description: 'unsafe\u202etext',
+    }] },
+  ];
+  for (const value of invalid) {
+    expect(() => app.validatedEstimateDetail(value, now))
+      .toThrow('Estimate detail is unavailable');
+  }
+});
+
+test('estimate details enforce bounded line items and lifecycle evidence', () => {
+  const now = Date.parse('2026-11-13T01:35:00Z');
+  const item = index => ({
+    line_ref: 'line-' + index,
+    description: 'Synthetic line ' + index,
+    quantity_millis: 1000,
+    unit_amount_cents: 100,
+    line_total_cents: 100,
+  });
+  const draft = {
+    schema_version: 'tenant-estimate-detail-v1',
+    estimate_ref: 'estimate-six',
+    revision: 0,
+    customer_label: 'Synthetic customer',
+    title: 'Synthetic draft',
+    status: 'draft',
+    scope_summary: 'Synthetic draft scope.',
+    line_items: [item(1)],
+    subtotal_cents: 100,
+    tax_cents: 0,
+    total_cents: 100,
+    expires_on: null,
+    sent_at: null,
+    updated_at: '2026-11-13T01:35:00Z',
+  };
+  expect(app.validatedEstimateDetail(draft, now)).toEqual(draft);
+  expect(() => app.validatedEstimateDetail({
+    ...draft,
+    line_items: Array.from({ length: 51 }, (_, index) => item(index)),
+    subtotal_cents: 5100,
+    total_cents: 5100,
+  }, now)).toThrow('Estimate detail is unavailable');
+  expect(() => app.validatedEstimateDetail({
+    ...draft,
+    status: 'expired',
+    sent_at: '2026-11-13T01:00:00Z',
+    expires_on: '2026-11-14',
+  }, now)).toThrow('Estimate detail is unavailable');
+  expect(String(app.validatedEstimateDetail)).not.toMatch(
+    /fetch\s*\(|email|phone|address|tenant_id|workspace_id|provider/i,
+  );
+});
+
+
 test('estimate pagination requires a bounded opaque cursor only when truncated', () => {
   const page = validPage();
   const cursor = 'a'.repeat(32);
