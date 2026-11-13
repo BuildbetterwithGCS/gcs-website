@@ -219,6 +219,105 @@ test('dispatch mutation contract remains unconnected and identity-free', () => {
 });
 
 
+
+test('builds only a future bounded optimistic dispatch reschedule', () => {
+  const now = Date.parse('2026-11-13T05:35:00Z');
+  const request = app.dispatchRescheduleRequest(
+    'assignment-two',
+    4,
+    '2026-11-13T06:00:00Z',
+    '2026-11-13T14:00:00Z',
+    bytes => { bytes.fill(0xef); return bytes; },
+    now,
+  );
+  expect(request).toEqual({
+    assignment_ref: 'assignment-two',
+    expected_revision: 4,
+    starts_at: '2026-11-13T06:00:00Z',
+    ends_at: '2026-11-13T14:00:00Z',
+    requested_at: '2026-11-13T05:35:00Z',
+    idempotency_key: 'dispatch-' + 'ef'.repeat(24),
+  });
+  for (const key of [
+    'tenant_id', 'workspace_id', 'actor_id', 'employee_id', 'crew_ref',
+    'location', 'email', 'phone', 'provider', 'notify',
+  ]) {
+    expect(request).not.toHaveProperty(key);
+  }
+  for (const values of [
+    ['bad ref', 4, '2026-11-13T06:00:00Z', '2026-11-13T14:00:00Z'],
+    ['assignment-two', -1, '2026-11-13T06:00:00Z', '2026-11-13T14:00:00Z'],
+    ['assignment-two', 4, '2026-11-13T05:34:59Z', '2026-11-13T14:00:00Z'],
+    ['assignment-two', 4, '2026-11-13T14:00:00Z', '2026-11-13T14:00:00Z'],
+    ['assignment-two', 4, '2026-11-13T06:00:00Z', '2026-11-14T06:00:01Z'],
+    ['assignment-two', 4, '2027-06-01T06:00:00Z', '2027-06-01T07:00:00Z'],
+  ]) {
+    expect(() => app.dispatchRescheduleRequest(
+      ...values,
+      bytes => { bytes.fill(1); return bytes; },
+      now,
+    )).toThrow('Dispatch reschedule is unavailable');
+  }
+  expect(() => app.dispatchRescheduleRequest(
+    'assignment-two', 4, '2026-11-13T06:00:00Z',
+    '2026-11-13T14:00:00Z', null, now,
+  )).toThrow('Dispatch reschedule is unavailable');
+});
+
+test('accepts only exact request-bound dispatch reschedule confirmations', () => {
+  const now = Date.parse('2026-11-13T05:35:00Z');
+  const request = app.dispatchRescheduleRequest(
+    'assignment-two',
+    4,
+    '2026-11-13T06:00:00Z',
+    '2026-11-13T14:00:00Z',
+    bytes => { bytes.fill(2); return bytes; },
+    now,
+  );
+  const result = {
+    schema_version: 'tenant-dispatch-reschedule-v1',
+    assignment_ref: request.assignment_ref,
+    previous_revision: request.expected_revision,
+    revision: request.expected_revision + 1,
+    status: 'scheduled',
+    starts_at: request.starts_at,
+    ends_at: request.ends_at,
+    updated_at: request.requested_at,
+    replayed: false,
+  };
+  expect(app.validatedDispatchRescheduleResult(result, request, now))
+    .toEqual(result);
+  const invalidResults = [
+    { ...result, tenant_id: 'must-not-reach-browser' },
+    { ...result, actor_id: 'must-not-reach-browser' },
+    { ...result, provider: 'must-not-reach-browser' },
+    { ...result, assignment_ref: 'different-assignment' },
+    { ...result, previous_revision: 3 },
+    { ...result, revision: 6 },
+    { ...result, status: 'en_route' },
+    { ...result, starts_at: '2026-11-13T06:00:01Z' },
+    { ...result, ends_at: '2026-11-13T14:00:01Z' },
+    { ...result, updated_at: '2026-11-13T05:35:01Z' },
+    { ...result, replayed: 'false' },
+  ];
+  for (const value of invalidResults) {
+    expect(() => app.validatedDispatchRescheduleResult(value, request, now))
+      .toThrow('Dispatch reschedule confirmation is unavailable');
+  }
+  for (const altered of [
+    { ...request, tenant_id: 'must-not-be-accepted' },
+    { ...request, idempotency_key: 'dispatch-invalid' },
+    { ...request, expected_revision: -1 },
+  ]) {
+    expect(() => app.validatedDispatchRescheduleResult(result, altered, now))
+      .toThrow('Dispatch reschedule confirmation is unavailable');
+  }
+  expect(String(app.dispatchRescheduleRequest)).not.toMatch(
+    /fetch\s*\(|tenant_id|workspace_id|actor_id|employee_id|crew_ref|location|email|phone|provider|notify/i,
+  );
+});
+
+
 test('renders permitted schedule text without internal references', () => {
   const schedule = validSchedule();
   schedule.items[0] = {
