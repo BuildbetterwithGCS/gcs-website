@@ -257,6 +257,132 @@ test('draft confirmation rejects altered or over-shared request evidence', () =>
 });
 
 
+
+test('builds and confirms only an optimistic draft estimate update', () => {
+  const now = Date.parse('2026-11-12T23:45:00Z');
+  const request = app.estimateDraftUpdateRequest(
+    'estimate-three',
+    4,
+    'Synthetic revised concrete repair',
+    'Synthetic revised scope with no customer contact coordinates.',
+    225000,
+    '2026-12-20',
+    bytes => { bytes.fill(0xef); return bytes; },
+    now,
+  );
+  expect(request).toEqual({
+    estimate_ref: 'estimate-three',
+    expected_revision: 4,
+    title: 'Synthetic revised concrete repair',
+    scope_summary: 'Synthetic revised scope with no customer contact coordinates.',
+    amount_cents: 225000,
+    expires_on: '2026-12-20',
+    idempotency_key: 'estimate-' + 'ef'.repeat(24),
+  });
+  for (const key of [
+    'tenant_id', 'workspace_id', 'customer_label', 'email', 'phone',
+    'address', 'provider', 'send',
+  ]) {
+    expect(request).not.toHaveProperty(key);
+  }
+
+  const result = {
+    schema_version: 'tenant-estimate-draft-update-v1',
+    estimate_ref: request.estimate_ref,
+    previous_revision: request.expected_revision,
+    revision: request.expected_revision + 1,
+    status: 'draft',
+    title: request.title,
+    scope_summary: request.scope_summary,
+    amount_cents: request.amount_cents,
+    expires_on: request.expires_on,
+    updated_at: '2026-11-12T23:45:00Z',
+    replayed: false,
+  };
+  expect(app.validatedEstimateDraftUpdateResult(result, request, now))
+    .toEqual(result);
+
+  const invalidResults = [
+    { ...result, tenant_id: 'must-not-reach-browser' },
+    { ...result, provider: 'must-not-reach-browser' },
+    { ...result, contact_email: 'private@example.invalid' },
+    { ...result, estimate_ref: 'different-estimate' },
+    { ...result, previous_revision: 3 },
+    { ...result, revision: 6 },
+    { ...result, status: 'sent' },
+    { ...result, title: 'Different title' },
+    { ...result, scope_summary: 'Different scope' },
+    { ...result, amount_cents: 225001 },
+    { ...result, expires_on: '2026-12-21' },
+    { ...result, updated_at: '2026-11-12T23:50:01Z' },
+    { ...result, replayed: 'false' },
+  ];
+  for (const value of invalidResults) {
+    expect(() => app.validatedEstimateDraftUpdateResult(value, request, now))
+      .toThrow('Estimate draft update confirmation is unavailable');
+  }
+});
+
+test('draft update fails closed for unsafe or over-shared requests', () => {
+  const now = Date.parse('2026-11-12T23:45:00Z');
+  const make = (overrides = {}) => app.estimateDraftUpdateRequest(
+    overrides.ref ?? 'estimate-three',
+    overrides.revision ?? 4,
+    overrides.title ?? 'Synthetic revised proposal',
+    overrides.scope ?? 'Synthetic revised scope.',
+    overrides.amount ?? 225000,
+    overrides.expires ?? '2026-12-20',
+    Object.prototype.hasOwnProperty.call(overrides, 'random')
+      ? overrides.random
+      : (bytes => { bytes.fill(2); return bytes; }),
+    Object.prototype.hasOwnProperty.call(overrides, 'now') ? overrides.now : now,
+  );
+  for (const overrides of [
+    { ref: 'bad ref' },
+    { revision: -1 },
+    { revision: 1.5 },
+    { title: '' },
+    { scope: 'x'.repeat(2001) },
+    { scope: 'unsafe\u202etext' },
+    { amount: 0 },
+    { amount: 12.5 },
+    { expires: '2026-11-11' },
+    { expires: '2027-06-01' },
+    { random: null },
+    { now: NaN },
+  ]) {
+    expect(() => make(overrides))
+      .toThrow('Estimate draft update is unavailable');
+  }
+
+  const request = make();
+  const result = {
+    schema_version: 'tenant-estimate-draft-update-v1',
+    estimate_ref: request.estimate_ref,
+    previous_revision: request.expected_revision,
+    revision: request.expected_revision + 1,
+    status: 'draft',
+    title: request.title,
+    scope_summary: request.scope_summary,
+    amount_cents: request.amount_cents,
+    expires_on: request.expires_on,
+    updated_at: '2026-11-12T23:45:00Z',
+    replayed: true,
+  };
+  for (const altered of [
+    { ...request, tenant_id: 'must-not-be-accepted' },
+    { ...request, idempotency_key: 'estimate-invalid' },
+    { ...request, expected_revision: -1 },
+  ]) {
+    expect(() => app.validatedEstimateDraftUpdateResult(result, altered, now))
+      .toThrow('Estimate draft update confirmation is unavailable');
+  }
+  expect(String(app.estimateDraftUpdateRequest)).not.toMatch(
+    /fetch\s*\(|email|phone|address|tenant_id|workspace_id|provider|send/i,
+  );
+});
+
+
 test('estimate pagination requires a bounded opaque cursor only when truncated', () => {
   const page = validPage();
   const cursor = 'a'.repeat(32);
