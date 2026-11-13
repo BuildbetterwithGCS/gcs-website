@@ -489,6 +489,69 @@ test('estimate details enforce bounded line items and lifecycle evidence', () =>
 });
 
 
+
+test('builds an opaque detail path and renders proposal text safely', () => {
+  const now = Date.parse('2026-11-13T02:42:00Z');
+  const detail = {
+    schema_version: 'tenant-estimate-detail-v1',
+    estimate_ref: 'estimate-seven',
+    revision: 1,
+    customer_label: '<img src=x onerror=alert(1)>',
+    title: '<script>alert(1)</script>',
+    status: 'draft',
+    scope_summary: 'Synthetic <b>pool deck</b> scope.',
+    line_items: [{
+      line_ref: 'line-seven',
+      description: '<svg onload=alert(1)>Synthetic preparation',
+      quantity_millis: 1250,
+      unit_amount_cents: 20000,
+      line_total_cents: 25000,
+    }],
+    subtotal_cents: 25000,
+    tax_cents: 1750,
+    total_cents: 26750,
+    expires_on: '2026-12-20',
+    sent_at: null,
+    updated_at: '2026-11-13T02:40:00Z',
+  };
+  expect(app.estimateDetailPath(detail.estimate_ref))
+    .toBe('/estimates/estimate-seven');
+  for (const invalid of [
+    '', 'bad ref', 'tenant/customer', 'x'.repeat(65), null,
+  ]) {
+    expect(() => app.estimateDetailPath(invalid))
+      .toThrow('Estimate detail is unavailable');
+  }
+
+  document.body.innerHTML = '<section id="estimate-detail"></section>';
+  expect(app.renderEstimateDetail(document, detail, now)).toEqual(detail);
+  expect(document.querySelector('img')).toBeNull();
+  expect(document.querySelector('script')).toBeNull();
+  expect(document.querySelector('svg')).toBeNull();
+  expect(document.body.textContent).toContain('<img src=x onerror=alert(1)>');
+  expect(document.body.textContent).toContain('<script>alert(1)</script>');
+  expect(document.body.textContent).toContain('1.25');
+  expect(document.body.textContent).toContain('Subtotal: $250.00');
+  expect(document.body.textContent).toContain('Tax: $17.50');
+  expect(document.body.textContent).toContain('Total: $267.50');
+  expect(document.body.textContent).not.toContain('estimate-seven');
+  expect(document.body.textContent).not.toContain('line-seven');
+  expect(document.body.textContent).not.toMatch(/delivered|paid|settled|emailed/i);
+});
+
+test('detail rendering remains disconnected and requires its fixed container', () => {
+  expect(String(app.estimateDetailPath)).not.toMatch(
+    /tenant|workspace|customer|email|phone|address|provider/i,
+  );
+  expect(String(app.renderEstimateDetail)).not.toMatch(
+    /innerHTML|fetch\s*\(|email|phone|address|tenant_id|workspace_id|provider/i,
+  );
+  document.body.innerHTML = '';
+  expect(() => app.renderEstimateDetail(document, {}, Date.now()))
+    .toThrow('Estimate detail container is unavailable');
+});
+
+
 test('estimate pagination requires a bounded opaque cursor only when truncated', () => {
   const page = validPage();
   const cursor = 'a'.repeat(32);
