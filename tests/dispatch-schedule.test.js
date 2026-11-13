@@ -174,6 +174,93 @@ test('dispatch continuation carries only a bounded opaque cursor', () => {
 });
 
 
+
+test('dispatch page chains preserve one snapshot and fail closed', () => {
+  const schedule = validSchedule();
+  const cursor = 'd'.repeat(32);
+  const first = {
+    ...schedule,
+    returned: 1,
+    truncated: true,
+    next_cursor: cursor,
+    items: [schedule.items[0]],
+  };
+  const second = {
+    ...schedule,
+    returned: 1,
+    truncated: false,
+    next_cursor: null,
+    items: [schedule.items[1]],
+  };
+  expect(app.validatedDispatchPageChain([
+    { requested_cursor: null, page: first },
+    { requested_cursor: cursor, page: second },
+  ])).toEqual({
+    checked_at: schedule.checked_at,
+    items: [schedule.items[0], schedule.items[1]],
+    next_cursor: null,
+    complete: true,
+  });
+
+  const overlap = {
+    ...schedule.items[1],
+    assignment_ref: 'assignment-overlap-page',
+    crew_ref: schedule.items[0].crew_ref,
+    starts_at: '2026-11-13T01:30:00Z',
+    ends_at: '2026-11-13T02:30:00Z',
+  };
+  const invalidChains = [
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: 'e'.repeat(32), page: second },
+    ],
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: cursor, page: {
+        ...second, items: [schedule.items[0]],
+      } },
+    ],
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: cursor, page: {
+        ...second, checked_at: '2026-11-13T03:30:01Z',
+      } },
+    ],
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: cursor, page: {
+        ...second, truncated: true, next_cursor: cursor,
+      } },
+    ],
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: cursor, page: {
+        ...second, items: [overlap],
+      } },
+    ],
+    [
+      { requested_cursor: null, page: {
+        ...first, truncated: false, next_cursor: null,
+      } },
+      { requested_cursor: null, page: second },
+    ],
+    [
+      { requested_cursor: null, page: first, tenant_id: 'not-allowed' },
+    ],
+  ];
+  for (const chain of invalidChains) {
+    expect(() => app.validatedDispatchPageChain(chain))
+      .toThrow('Dispatch continuation is unavailable');
+  }
+  expect(() => app.validatedDispatchPageChain([]))
+    .toThrow('Dispatch continuation is unavailable');
+  expect(() => app.validatedDispatchPageChain(Array.from(
+    { length: 21 },
+    () => ({ requested_cursor: null, page: second }),
+  ))).toThrow('Dispatch continuation is unavailable');
+});
+
+
 test('builds only allowed optimistic dispatch status transitions', () => {
   const now = Date.parse('2026-11-13T04:40:30Z');
   const request = app.dispatchStatusRequest(
