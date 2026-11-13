@@ -373,6 +373,120 @@
     return value;
   }
 
+  function dispatchAssignmentRequest(workOrderRef, crewRef, jobLabel,
+    workOrderLabel, crewLabel, locationLabel, startsAtValue, endsAtValue,
+    getRandomValues, now = Date.now()) {
+    if (typeof workOrderRef !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(workOrderRef)
+      || typeof crewRef !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(crewRef)
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Dispatch assignment is unavailable');
+    }
+    let startsAt;
+    let endsAt;
+    try {
+      safeText(jobLabel, 200);
+      safeText(workOrderLabel, 200);
+      safeText(crewLabel, 120);
+      safeText(locationLabel, 200);
+      startsAt = timestamp(startsAtValue);
+      endsAt = timestamp(endsAtValue);
+    } catch (_error) {
+      throw new Error('Dispatch assignment is unavailable');
+    }
+    if (startsAt < Number(now)
+      || startsAt >= endsAt
+      || endsAt - startsAt > 24 * 60 * 60 * 1000
+      || endsAt > Number(now) + 180 * 24 * 60 * 60 * 1000) {
+      throw new Error('Dispatch assignment is unavailable');
+    }
+    let idempotencyKey;
+    try {
+      idempotencyKey = dispatchIdempotencyKey(getRandomValues);
+    } catch (_error) {
+      throw new Error('Dispatch assignment is unavailable');
+    }
+    const requestedAt = new Date(Math.floor(Number(now) / 1000) * 1000)
+      .toISOString().replace('.000Z', 'Z');
+    return {
+      work_order_ref: workOrderRef,
+      crew_ref: crewRef,
+      job_label: jobLabel,
+      work_order_label: workOrderLabel,
+      crew_label: crewLabel,
+      location_label: locationLabel,
+      starts_at: startsAtValue,
+      ends_at: endsAtValue,
+      requested_at: requestedAt,
+      idempotency_key: idempotencyKey,
+    };
+  }
+
+  function validatedDispatchAssignmentResult(value, request,
+    now = Date.now()) {
+    const resultFields = [
+      'schema_version', 'assignment_ref', 'revision', 'status',
+      'work_order_ref', 'crew_ref', 'job_label', 'work_order_label',
+      'crew_label', 'location_label', 'starts_at', 'ends_at', 'created_at',
+      'updated_at', 'replayed',
+    ];
+    const requestFields = [
+      'work_order_ref', 'crew_ref', 'job_label', 'work_order_label',
+      'crew_label', 'location_label', 'starts_at', 'ends_at', 'requested_at',
+      'idempotency_key',
+    ];
+    if (!exactKeys(value, resultFields)
+      || !exactKeys(request, requestFields)
+      || value.schema_version !== 'tenant-dispatch-assignment-v1'
+      || typeof value.assignment_ref !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(value.assignment_ref)
+      || value.revision !== 0
+      || value.status !== 'scheduled'
+      || value.work_order_ref !== request.work_order_ref
+      || value.crew_ref !== request.crew_ref
+      || value.job_label !== request.job_label
+      || value.work_order_label !== request.work_order_label
+      || value.crew_label !== request.crew_label
+      || value.location_label !== request.location_label
+      || value.starts_at !== request.starts_at
+      || value.ends_at !== request.ends_at
+      || value.created_at !== request.requested_at
+      || value.updated_at !== request.requested_at
+      || typeof request.work_order_ref !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(request.work_order_ref)
+      || typeof request.crew_ref !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(request.crew_ref)
+      || typeof request.idempotency_key !== 'string'
+      || !/^dispatch-[a-f0-9]{48}$/.test(request.idempotency_key)
+      || typeof value.replayed !== 'boolean'
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Dispatch assignment confirmation is unavailable');
+    }
+    let startsAt;
+    let endsAt;
+    let createdAt;
+    try {
+      safeText(request.job_label, 200);
+      safeText(request.work_order_label, 200);
+      safeText(request.crew_label, 120);
+      safeText(request.location_label, 200);
+      startsAt = timestamp(value.starts_at);
+      endsAt = timestamp(value.ends_at);
+      createdAt = timestamp(value.created_at);
+    } catch (_error) {
+      throw new Error('Dispatch assignment confirmation is unavailable');
+    }
+    if (startsAt < createdAt
+      || startsAt >= endsAt
+      || endsAt - startsAt > 24 * 60 * 60 * 1000
+      || endsAt > createdAt + 180 * 24 * 60 * 60 * 1000
+      || createdAt > Number(now) + 5 * 60 * 1000) {
+      throw new Error('Dispatch assignment confirmation is unavailable');
+    }
+    return value;
+  }
+
   function renderDispatchSchedule(doc, value) {
     const list = doc && doc.getElementById('dispatch-schedule');
     if (!list) throw new Error('Dispatch schedule container is unavailable');
@@ -409,6 +523,7 @@
     validatedDispatchSchedule, dispatchSchedulePath,
     validatedDispatchPageChain, dispatchStatusRequest,
     validatedDispatchStatusResult, dispatchRescheduleRequest,
-    validatedDispatchRescheduleResult, renderDispatchSchedule,
+    validatedDispatchRescheduleResult, dispatchAssignmentRequest,
+    validatedDispatchAssignmentResult, renderDispatchSchedule,
   };
 });
