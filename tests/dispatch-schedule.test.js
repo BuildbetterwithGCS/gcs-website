@@ -618,6 +618,112 @@ test('accepts only exact request-bound dispatch assignment confirmations', () =>
 });
 
 
+test('builds only revision-bound scheduled crew reassignments', () => {
+  const now = Date.parse('2026-11-13T07:30:00Z');
+  const request = app.dispatchReassignmentRequest(
+    'assignment-three',
+    2,
+    'crew-gamma',
+    'crew-delta',
+    'Synthetic crew delta',
+    bytes => { bytes.fill(0x78); return bytes; },
+    now,
+  );
+  expect(request).toEqual({
+    assignment_ref: 'assignment-three',
+    expected_revision: 2,
+    current_status: 'scheduled',
+    current_crew_ref: 'crew-gamma',
+    next_crew_ref: 'crew-delta',
+    next_crew_label: 'Synthetic crew delta',
+    requested_at: '2026-11-13T07:30:00Z',
+    idempotency_key: 'dispatch-' + '78'.repeat(24),
+  });
+  for (const key of [
+    'tenant_id', 'workspace_id', 'actor_id', 'employee_id',
+    'email', 'phone', 'provider', 'notify', 'latitude', 'longitude',
+  ]) {
+    expect(request).not.toHaveProperty(key);
+  }
+  for (const values of [
+    ['bad ref', 2, 'crew-gamma', 'crew-delta', 'Crew delta'],
+    ['assignment-three', -1, 'crew-gamma', 'crew-delta', 'Crew delta'],
+    ['assignment-three', 2, 'bad ref', 'crew-delta', 'Crew delta'],
+    ['assignment-three', 2, 'crew-gamma', 'bad ref', 'Crew delta'],
+    ['assignment-three', 2, 'crew-gamma', 'CREW-GAMMA', 'Crew gamma'],
+    ['assignment-three', 2, 'crew-gamma', 'crew-delta', ''],
+  ]) {
+    expect(() => app.dispatchReassignmentRequest(
+      ...values,
+      bytes => { bytes.fill(1); return bytes; },
+      now,
+    )).toThrow('Dispatch reassignment is unavailable');
+  }
+  expect(() => app.dispatchReassignmentRequest(
+    'assignment-three', 2, 'crew-gamma', 'crew-delta', 'Crew delta',
+    null, now,
+  )).toThrow('Dispatch reassignment is unavailable');
+  expect(String(app.dispatchReassignmentRequest)).not.toMatch(
+    /fetch\s*\(|tenant_id|workspace_id|actor_id|employee_id|email|phone|provider|notify|latitude|longitude|gps/i,
+  );
+});
+
+test('accepts only exact request-bound crew reassignment confirmations', () => {
+  const now = Date.parse('2026-11-13T07:30:00Z');
+  const request = app.dispatchReassignmentRequest(
+    'assignment-three',
+    2,
+    'crew-gamma',
+    'crew-delta',
+    'Synthetic crew delta',
+    bytes => { bytes.fill(0x9a); return bytes; },
+    now,
+  );
+  const result = {
+    schema_version: 'tenant-dispatch-reassignment-v1',
+    assignment_ref: request.assignment_ref,
+    previous_revision: request.expected_revision,
+    revision: request.expected_revision + 1,
+    status: 'scheduled',
+    previous_crew_ref: request.current_crew_ref,
+    crew_ref: request.next_crew_ref,
+    crew_label: request.next_crew_label,
+    updated_at: request.requested_at,
+    replayed: false,
+  };
+  expect(app.validatedDispatchReassignmentResult(result, request, now))
+    .toEqual(result);
+
+  for (const value of [
+    { ...result, tenant_id: 'must-not-reach-browser' },
+    { ...result, actor_id: 'must-not-reach-browser' },
+    { ...result, provider: 'must-not-reach-browser' },
+    { ...result, assignment_ref: 'different-assignment' },
+    { ...result, previous_revision: 1 },
+    { ...result, revision: 4 },
+    { ...result, status: 'en_route' },
+    { ...result, previous_crew_ref: 'crew-other' },
+    { ...result, crew_ref: 'crew-other' },
+    { ...result, crew_label: 'Different crew' },
+    { ...result, updated_at: '2026-11-13T07:30:01Z' },
+    { ...result, replayed: 'false' },
+  ]) {
+    expect(() => app.validatedDispatchReassignmentResult(value, request, now))
+      .toThrow('Dispatch reassignment confirmation is unavailable');
+  }
+  for (const altered of [
+    { ...request, tenant_id: 'must-not-be-accepted' },
+    { ...request, idempotency_key: 'dispatch-invalid' },
+    { ...request, current_status: 'en_route' },
+    { ...request, next_crew_ref: 'CREW-GAMMA' },
+    { ...request, next_crew_label: '' },
+  ]) {
+    expect(() => app.validatedDispatchReassignmentResult(result, altered, now))
+      .toThrow('Dispatch reassignment confirmation is unavailable');
+  }
+});
+
+
 test('renders permitted schedule text without internal references', () => {
   const schedule = validSchedule();
   schedule.items[0] = {
