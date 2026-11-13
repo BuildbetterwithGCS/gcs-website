@@ -930,6 +930,56 @@
     return preview;
   }
 
+  function validatedAssistantEmailReadiness(value, preferenceValue) {
+    const fields = new Set([
+      'schema_version', 'preference_revision', 'disposition', 'checked_at',
+      'digest_key', 'duplicate_of', 'unsubscribe_ready',
+    ]);
+    if (!hasExactFields(value, fields)
+      || value.schema_version !== 'assistant-email-readiness-v1'
+      || !Number.isInteger(value.preference_revision)
+      || value.preference_revision < 0
+      || !new Set([
+        'PREVIEW_ONLY', 'SUPPRESSED_OPT_OUT', 'SUPPRESSED_DUPLICATE',
+      ]).has(value.disposition)
+      || typeof value.digest_key !== 'string'
+      || !/^[A-Za-z0-9_-]{32,128}$/.test(value.digest_key)
+      || typeof value.unsubscribe_ready !== 'boolean') {
+      throw new Error('Assistant email readiness is unavailable');
+    }
+    let preference;
+    try {
+      preference = validatedAssistantPreference(preferenceValue);
+      boundedTimestamp(value.checked_at, 'email readiness');
+    } catch (_error) {
+      throw new Error('Assistant email readiness is unavailable');
+    }
+    if (value.preference_revision !== preference.revision) {
+      throw new Error('Assistant email readiness is unavailable');
+    }
+    const active = preference.enabled
+      && preference.frequency !== 'paused'
+      && preference.topics.length > 0;
+    if (value.disposition === 'PREVIEW_ONLY') {
+      if (!active || value.duplicate_of !== null
+        || value.unsubscribe_ready !== true) {
+        throw new Error('Assistant email readiness is unavailable');
+      }
+    } else if (value.disposition === 'SUPPRESSED_OPT_OUT') {
+      if (active || value.duplicate_of !== null) {
+        throw new Error('Assistant email readiness is unavailable');
+      }
+    } else {
+      if (!active
+        || typeof value.duplicate_of !== 'string'
+        || !/^[A-Za-z0-9_-]{32,128}$/.test(value.duplicate_of)
+        || value.duplicate_of === value.digest_key) {
+        throw new Error('Assistant email readiness is unavailable');
+      }
+    }
+    return value;
+  }
+
   function init(doc) {
     if (!doc) return;
     const status = doc.getElementById('app-status');
@@ -1719,7 +1769,7 @@
     validatedAccessStatus, renderAccessStatus, clearAccessStatus,
     validatedAssetInventory, filterAssetItems,
     validatedAssistantPreference, validatedAssistantDigestPreview,
-    renderAssistantDigestPreview,
+    renderAssistantDigestPreview, validatedAssistantEmailReadiness,
     validatedPendingLeaveQueue, renderPendingLeaveQueue,
     validatedAssignedWorkQueue, renderAssignedWorkQueue,
     formatInvoiceAmount, validatedInvoiceSummaries, renderInvoiceSummaries,
