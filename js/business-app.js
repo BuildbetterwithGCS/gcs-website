@@ -1031,6 +1031,82 @@
     return value;
   }
 
+  function validatedAssistantAuditPage(value) {
+    const pageFields = new Set([
+      'schema_version', 'checked_at', 'returned', 'truncated', 'entries',
+    ]);
+    if (!hasExactFields(value, pageFields)
+      || value.schema_version !== 'assistant-delivery-audit-v1'
+      || !Array.isArray(value.entries)
+      || value.entries.length > 100
+      || value.returned !== value.entries.length
+      || typeof value.truncated !== 'boolean'
+      || (value.truncated && value.entries.length === 0)) {
+      throw new Error('Assistant audit is unavailable');
+    }
+    let checkedAt;
+    try {
+      checkedAt = Date.parse(boundedTimestamp(value.checked_at, 'audit check'));
+    } catch (_error) {
+      throw new Error('Assistant audit is unavailable');
+    }
+    const entryFields = new Set([
+      'audit_ref', 'preference_revision', 'outcome', 'digest_key',
+      'duplicate_of', 'occurred_at',
+    ]);
+    const outcomes = new Set([
+      'PREVIEW_ONLY', 'SUPPRESSED_OPT_OUT', 'SUPPRESSED_DUPLICATE',
+      'UNSUBSCRIBED',
+    ]);
+    const seen = new Set();
+    let priorOccurredAt = Infinity;
+    let priorRef = '';
+    value.entries.forEach(entry => {
+      if (!hasExactFields(entry, entryFields)
+        || typeof entry.audit_ref !== 'string'
+        || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(entry.audit_ref)
+        || !Number.isInteger(entry.preference_revision)
+        || entry.preference_revision < 0
+        || !outcomes.has(entry.outcome)) {
+        throw new Error('Assistant audit entry is unavailable');
+      }
+      let occurredAt;
+      try {
+        occurredAt = Date.parse(
+          boundedTimestamp(entry.occurred_at, 'audit event'));
+      } catch (_error) {
+        throw new Error('Assistant audit entry is unavailable');
+      }
+      const refKey = entry.audit_ref.toLocaleLowerCase();
+      if (seen.has(refKey) || occurredAt > checkedAt
+        || occurredAt > priorOccurredAt
+        || (occurredAt === priorOccurredAt
+          && entry.audit_ref.localeCompare(priorRef) <= 0)) {
+        throw new Error('Assistant audit entry is unavailable');
+      }
+      seen.add(refKey);
+      priorOccurredAt = occurredAt;
+      priorRef = entry.audit_ref;
+      const hasDigest = typeof entry.digest_key === 'string'
+        && /^[A-Za-z0-9_-]{32,128}$/.test(entry.digest_key);
+      const hasDuplicate = typeof entry.duplicate_of === 'string'
+        && /^[A-Za-z0-9_-]{32,128}$/.test(entry.duplicate_of);
+      if (entry.outcome === 'UNSUBSCRIBED') {
+        if (entry.digest_key !== null || entry.duplicate_of !== null) {
+          throw new Error('Assistant audit entry is unavailable');
+        }
+      } else if (entry.outcome === 'SUPPRESSED_DUPLICATE') {
+        if (!hasDigest || !hasDuplicate
+          || entry.digest_key === entry.duplicate_of) {
+          throw new Error('Assistant audit entry is unavailable');
+        }
+      } else if (!hasDigest || entry.duplicate_of !== null) {
+        throw new Error('Assistant audit entry is unavailable');
+      }
+    });
+    return value;
+  }
+
   function init(doc) {
     if (!doc) return;
     const status = doc.getElementById('app-status');
@@ -1822,6 +1898,7 @@
     validatedAssistantPreference, validatedAssistantDigestPreview,
     renderAssistantDigestPreview, validatedAssistantEmailReadiness,
     assistantUnsubscribeRequest, validatedAssistantUnsubscribeResult,
+    validatedAssistantAuditPage,
     validatedPendingLeaveQueue, renderPendingLeaveQueue,
     validatedAssignedWorkQueue, renderAssignedWorkQueue,
     formatInvoiceAmount, validatedInvoiceSummaries, renderInvoiceSummaries,
