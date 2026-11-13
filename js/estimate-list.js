@@ -448,6 +448,54 @@
     }).format(cents / 100);
   }
 
+  function estimateDetailPath(estimateRef) {
+    if (typeof estimateRef !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(estimateRef)) {
+      throw new Error('Estimate detail is unavailable');
+    }
+    return '/estimates/' + encodeURIComponent(estimateRef);
+  }
+
+  function renderEstimateDetail(doc, value, now = Date.now()) {
+    const container = doc && doc.getElementById('estimate-detail');
+    if (!container) throw new Error('Estimate detail container is unavailable');
+    const detail = validatedEstimateDetail(value, now);
+    container.replaceChildren();
+
+    const heading = doc.createElement('h2');
+    heading.textContent = detail.title;
+    const customer = doc.createElement('p');
+    customer.textContent = detail.customer_label;
+    const status = doc.createElement('p');
+    status.textContent = STATUS_LABELS[detail.status];
+    const scope = doc.createElement('p');
+    scope.textContent = detail.scope_summary;
+    const lines = doc.createElement('ul');
+    for (const item of detail.line_items) {
+      const row = doc.createElement('li');
+      const description = doc.createElement('span');
+      description.textContent = item.description;
+      const quantity = doc.createElement('span');
+      quantity.textContent = (item.quantity_millis / 1000).toLocaleString('en-US', {
+        maximumFractionDigits: 3,
+      });
+      const amount = doc.createElement('span');
+      amount.textContent = formatAmount(item.line_total_cents);
+      row.append(description, quantity, amount);
+      lines.append(row);
+    }
+    const subtotal = doc.createElement('p');
+    subtotal.textContent = 'Subtotal: ' + formatAmount(detail.subtotal_cents);
+    const tax = doc.createElement('p');
+    tax.textContent = 'Tax: ' + formatAmount(detail.tax_cents);
+    const total = doc.createElement('strong');
+    total.textContent = 'Total: ' + formatAmount(detail.total_cents);
+    container.append(
+      heading, customer, status, scope, lines, subtotal, tax, total,
+    );
+    return detail;
+  }
+
   function renderEstimateList(doc, value) {
     const list = doc && doc.getElementById('estimate-list');
     if (!list) throw new Error('Estimate list container is unavailable');
@@ -478,6 +526,7 @@
     validatedEstimateList, estimateListPath, validatedEstimatePageChain,
     estimateDraftRequest, validatedEstimateDraftResult,
     estimateDraftUpdateRequest, validatedEstimateDraftUpdateResult,
-    validatedEstimateDetail, renderEstimateList,
+    validatedEstimateDetail, estimateDetailPath, renderEstimateDetail,
+    renderEstimateList,
   };
 });
