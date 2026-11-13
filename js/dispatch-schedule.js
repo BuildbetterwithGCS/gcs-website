@@ -43,15 +43,19 @@
 
   function validatedDispatchSchedule(value) {
     const pageFields = [
-      'schema_version', 'checked_at', 'returned', 'truncated', 'items',
+      'schema_version', 'checked_at', 'returned', 'truncated', 'next_cursor',
+      'items',
     ];
+    const hasCursor = typeof value?.next_cursor === 'string'
+      && /^[A-Za-z0-9_-]{32,256}$/.test(value.next_cursor);
     if (!exactKeys(value, pageFields)
       || value.schema_version !== 'tenant-dispatch-schedule-v1'
       || !Array.isArray(value.items) || value.items.length > 100
       || !Number.isInteger(value.returned)
       || value.returned !== value.items.length
       || typeof value.truncated !== 'boolean'
-      || (value.truncated && value.items.length === 0)) {
+      || (value.truncated && value.items.length === 0)
+      || (value.truncated ? !hasCursor : value.next_cursor !== null)) {
       throw new Error('Dispatch schedule is unavailable');
     }
     const checkedAt = timestamp(value.checked_at);
@@ -107,6 +111,15 @@
       }
     }
     return value;
+  }
+
+  function dispatchSchedulePath(cursor) {
+    if (arguments.length === 0 || cursor === null) return '/dispatch/schedule';
+    if (typeof cursor !== 'string'
+      || !/^[A-Za-z0-9_-]{32,256}$/.test(cursor)) {
+      throw new Error('Dispatch continuation is unavailable');
+    }
+    return '/dispatch/schedule?cursor=' + encodeURIComponent(cursor);
   }
 
   const TRANSITIONS = Object.freeze({
@@ -320,7 +333,7 @@
   }
 
   return {
-    validatedDispatchSchedule, dispatchStatusRequest,
+    validatedDispatchSchedule, dispatchSchedulePath, dispatchStatusRequest,
     validatedDispatchStatusResult, dispatchRescheduleRequest,
     validatedDispatchRescheduleResult, renderDispatchSchedule,
   };
