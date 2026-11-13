@@ -2836,3 +2836,107 @@ test('assistant unsubscribe confirmation disables and pauses the exact revision'
       .toThrow('Assistant unsubscribe confirmation is unavailable');
   }
 });
+
+
+function safeAssistantAuditFixture() {
+  return {
+    schema_version: 'assistant-delivery-audit-v1',
+    checked_at: '2026-11-13T13:35:00Z',
+    returned: 3,
+    truncated: false,
+    entries: [
+      {
+        audit_ref: 'audit-unsubscribe',
+        preference_revision: 6,
+        outcome: 'UNSUBSCRIBED',
+        digest_key: null,
+        duplicate_of: null,
+        occurred_at: '2026-11-13T13:30:00Z',
+      },
+      {
+        audit_ref: 'audit-duplicate',
+        preference_revision: 5,
+        outcome: 'SUPPRESSED_DUPLICATE',
+        digest_key: 'digest_' + 'f'.repeat(32),
+        duplicate_of: 'digest_' + 'g'.repeat(32),
+        occurred_at: '2026-11-13T13:20:00Z',
+      },
+      {
+        audit_ref: 'audit-preview',
+        preference_revision: 5,
+        outcome: 'PREVIEW_ONLY',
+        digest_key: 'digest_' + 'h'.repeat(32),
+        duplicate_of: null,
+        occurred_at: '2026-11-13T13:10:00Z',
+      },
+    ],
+  };
+}
+
+test('assistant audit accepts only bounded privacy-minimized outcomes', () => {
+  const fixture = safeAssistantAuditFixture();
+  expect(app.validatedAssistantAuditPage(fixture)).toBe(fixture);
+
+  const invalidPages = [
+    { ...fixture, tenant_id: 'must-not-reach-browser' },
+    { ...fixture, returned: 2 },
+    { ...fixture, truncated: 'false' },
+    { ...fixture, checked_at: 'not-a-time' },
+    { ...fixture, returned: 0, truncated: true, entries: [] },
+  ];
+  for (const value of invalidPages) {
+    expect(() => app.validatedAssistantAuditPage(value))
+      .toThrow('Assistant audit is unavailable');
+  }
+
+  const invalidEntries = [
+    { ...fixture.entries[0], recipient: 'private@example.invalid' },
+    { ...fixture.entries[0], provider: 'private-provider' },
+    { ...fixture.entries[0], outcome: 'DELIVERED' },
+    { ...fixture.entries[0], digest_key: 'digest_' + 'a'.repeat(32) },
+    { ...fixture.entries[1], duplicate_of: null },
+    { ...fixture.entries[1], duplicate_of: fixture.entries[1].digest_key },
+    { ...fixture.entries[2], digest_key: 'short' },
+    { ...fixture.entries[2], duplicate_of: 'digest_' + 'b'.repeat(32) },
+    { ...fixture.entries[2], occurred_at: '2026-11-13T13:36:00Z' },
+    { ...fixture.entries[2], preference_revision: -1 },
+  ];
+  for (const entry of invalidEntries) {
+    expect(() => app.validatedAssistantAuditPage({
+      ...fixture, returned: 1, entries: [entry],
+    })).toThrow('Assistant audit entry is unavailable');
+  }
+});
+
+test('assistant audit rejects duplicate references and ordering breaks', () => {
+  const fixture = safeAssistantAuditFixture();
+  expect(() => app.validatedAssistantAuditPage({
+    ...fixture,
+    returned: 2,
+    entries: [
+      fixture.entries[0],
+      { ...fixture.entries[1], audit_ref: 'AUDIT-UNSUBSCRIBE' },
+    ],
+  })).toThrow('Assistant audit entry is unavailable');
+
+  expect(() => app.validatedAssistantAuditPage({
+    ...fixture,
+    returned: 2,
+    entries: [fixture.entries[1], fixture.entries[0]],
+  })).toThrow('Assistant audit entry is unavailable');
+
+  const sameTime = {
+    ...fixture.entries[1],
+    audit_ref: 'audit-alpha',
+    occurred_at: fixture.entries[0].occurred_at,
+  };
+  expect(() => app.validatedAssistantAuditPage({
+    ...fixture,
+    returned: 2,
+    entries: [fixture.entries[0], sameTime],
+  })).toThrow('Assistant audit entry is unavailable');
+
+  expect(String(app.validatedAssistantAuditPage)).not.toMatch(
+    /fetch\s*\(|recipient|email_address|provider|sent_at|delivered_at/i,
+  );
+});
