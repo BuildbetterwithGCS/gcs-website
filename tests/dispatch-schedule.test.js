@@ -95,6 +95,130 @@ test('allows an explicit truncated nonempty schedule only', () => {
   })).toThrow('Dispatch schedule is unavailable');
 });
 
+
+test('builds only allowed optimistic dispatch status transitions', () => {
+  const now = Date.parse('2026-11-13T04:40:30Z');
+  const request = app.dispatchStatusRequest(
+    'assignment-two',
+    3,
+    'scheduled',
+    'en_route',
+    bytes => { bytes.fill(0xab); return bytes; },
+    now,
+  );
+  expect(request).toEqual({
+    assignment_ref: 'assignment-two',
+    expected_revision: 3,
+    current_status: 'scheduled',
+    next_status: 'en_route',
+    occurred_at: '2026-11-13T04:40:30Z',
+    idempotency_key: 'dispatch-' + 'ab'.repeat(24),
+  });
+  for (const key of [
+    'tenant_id', 'workspace_id', 'actor_id', 'employee_id', 'location',
+    'email', 'phone', 'provider',
+  ]) {
+    expect(request).not.toHaveProperty(key);
+  }
+
+  const allowed = [
+    ['scheduled', 'en_route'],
+    ['scheduled', 'canceled'],
+    ['en_route', 'on_site'],
+    ['en_route', 'canceled'],
+    ['on_site', 'completed'],
+    ['on_site', 'canceled'],
+  ];
+  for (const [current, next] of allowed) {
+    expect(app.dispatchStatusRequest(
+      'assignment-two', 3, current, next,
+      bytes => { bytes.fill(1); return bytes; }, now,
+    ).next_status).toBe(next);
+  }
+  for (const [current, next] of [
+    ['scheduled', 'completed'],
+    ['en_route', 'completed'],
+    ['on_site', 'en_route'],
+    ['completed', 'scheduled'],
+    ['canceled', 'scheduled'],
+    ['unknown', 'canceled'],
+  ]) {
+    expect(() => app.dispatchStatusRequest(
+      'assignment-two', 3, current, next,
+      bytes => { bytes.fill(1); return bytes; }, now,
+    )).toThrow('Dispatch update is unavailable');
+  }
+});
+
+test('accepts only exact request-bound dispatch confirmations', () => {
+  const now = Date.parse('2026-11-13T04:40:30Z');
+  const request = app.dispatchStatusRequest(
+    'assignment-two',
+    3,
+    'en_route',
+    'on_site',
+    bytes => { bytes.fill(0xcd); return bytes; },
+    now,
+  );
+  const result = {
+    schema_version: 'tenant-dispatch-status-v1',
+    assignment_ref: request.assignment_ref,
+    previous_revision: request.expected_revision,
+    revision: request.expected_revision + 1,
+    previous_status: request.current_status,
+    status: request.next_status,
+    occurred_at: request.occurred_at,
+    updated_at: request.occurred_at,
+    replayed: false,
+  };
+  expect(app.validatedDispatchStatusResult(result, request, now))
+    .toEqual(result);
+  const invalidResults = [
+    { ...result, tenant_id: 'must-not-reach-browser' },
+    { ...result, actor_id: 'must-not-reach-browser' },
+    { ...result, provider: 'must-not-reach-browser' },
+    { ...result, assignment_ref: 'different-assignment' },
+    { ...result, previous_revision: 2 },
+    { ...result, revision: 5 },
+    { ...result, previous_status: 'scheduled' },
+    { ...result, status: 'completed' },
+    { ...result, occurred_at: '2026-11-13T04:40:31Z' },
+    { ...result, updated_at: '2026-11-13T04:40:31Z' },
+    { ...result, replayed: 'false' },
+  ];
+  for (const value of invalidResults) {
+    expect(() => app.validatedDispatchStatusResult(value, request, now))
+      .toThrow('Dispatch update confirmation is unavailable');
+  }
+  for (const altered of [
+    { ...request, tenant_id: 'must-not-be-accepted' },
+    { ...request, idempotency_key: 'dispatch-invalid' },
+    { ...request, expected_revision: -1 },
+    { ...request, current_status: 'scheduled', next_status: 'completed' },
+  ]) {
+    expect(() => app.validatedDispatchStatusResult(result, altered, now))
+      .toThrow('Dispatch update confirmation is unavailable');
+  }
+});
+
+test('dispatch mutation contract remains unconnected and identity-free', () => {
+  const now = Date.parse('2026-11-13T04:40:30Z');
+  for (const values of [
+    ['bad ref', 1, 'scheduled', 'en_route', bytes => bytes, now],
+    ['assignment-two', -1, 'scheduled', 'en_route', bytes => bytes, now],
+    ['assignment-two', 1.5, 'scheduled', 'en_route', bytes => bytes, now],
+    ['assignment-two', 1, 'scheduled', 'en_route', null, now],
+    ['assignment-two', 1, 'scheduled', 'en_route', bytes => bytes, NaN],
+  ]) {
+    expect(() => app.dispatchStatusRequest(...values))
+      .toThrow('Dispatch update is unavailable');
+  }
+  expect(String(app.dispatchStatusRequest)).not.toMatch(
+    /fetch\s*\(|tenant_id|workspace_id|actor_id|employee_id|email|phone|provider|notify/i,
+  );
+});
+
+
 test('renders permitted schedule text without internal references', () => {
   const schedule = validSchedule();
   schedule.items[0] = {
