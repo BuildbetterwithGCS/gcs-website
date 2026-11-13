@@ -483,6 +483,141 @@ test('accepts only exact request-bound dispatch reschedule confirmations', () =>
 });
 
 
+test('builds a bounded future dispatch assignment without identity coordinates', () => {
+  const now = Date.parse('2026-11-13T06:30:00Z');
+  const request = app.dispatchAssignmentRequest(
+    'work-order-102',
+    'crew-gamma',
+    'Synthetic garage restoration',
+    'WO-102 synthetic coating',
+    'Synthetic crew gamma',
+    'Synthetic Orlando-area site',
+    '2026-11-13T07:00:00Z',
+    '2026-11-13T15:00:00Z',
+    bytes => { bytes.fill(0x34); return bytes; },
+    now,
+  );
+  expect(request).toEqual({
+    work_order_ref: 'work-order-102',
+    crew_ref: 'crew-gamma',
+    job_label: 'Synthetic garage restoration',
+    work_order_label: 'WO-102 synthetic coating',
+    crew_label: 'Synthetic crew gamma',
+    location_label: 'Synthetic Orlando-area site',
+    starts_at: '2026-11-13T07:00:00Z',
+    ends_at: '2026-11-13T15:00:00Z',
+    requested_at: '2026-11-13T06:30:00Z',
+    idempotency_key: 'dispatch-' + '34'.repeat(24),
+  });
+  for (const key of [
+    'tenant_id', 'workspace_id', 'actor_id', 'employee_id',
+    'email', 'phone', 'provider', 'notify', 'latitude', 'longitude',
+  ]) {
+    expect(request).not.toHaveProperty(key);
+  }
+  const invalid = [
+    ['bad ref', 'crew-gamma'],
+    ['work-order-102', 'bad ref'],
+    ['work-order-102', 'crew-gamma', '', 'WO-102', 'Crew', 'Site'],
+    ['work-order-102', 'crew-gamma', 'Job', 'WO-102', 'Crew', 'Site',
+      '2026-11-13T06:29:59Z', '2026-11-13T15:00:00Z'],
+    ['work-order-102', 'crew-gamma', 'Job', 'WO-102', 'Crew', 'Site',
+      '2026-11-13T15:00:00Z', '2026-11-13T15:00:00Z'],
+    ['work-order-102', 'crew-gamma', 'Job', 'WO-102', 'Crew', 'Site',
+      '2026-11-13T07:00:00Z', '2026-11-14T07:00:01Z'],
+    ['work-order-102', 'crew-gamma', 'Job', 'WO-102', 'Crew', 'Site',
+      '2027-06-01T07:00:00Z', '2027-06-01T08:00:00Z'],
+  ];
+  for (const values of invalid) {
+    const full = [
+      values[0], values[1],
+      values.length > 2 ? values[2] : 'Job',
+      values.length > 3 ? values[3] : 'WO-102',
+      values.length > 4 ? values[4] : 'Crew',
+      values.length > 5 ? values[5] : 'Site',
+      values.length > 6 ? values[6] : '2026-11-13T07:00:00Z',
+      values.length > 7 ? values[7] : '2026-11-13T15:00:00Z',
+      bytes => { bytes.fill(1); return bytes; },
+      now,
+    ];
+    expect(() => app.dispatchAssignmentRequest(...full))
+      .toThrow('Dispatch assignment is unavailable');
+  }
+  expect(() => app.dispatchAssignmentRequest(
+    'work-order-102', 'crew-gamma', 'Job', 'WO-102', 'Crew', 'Site',
+    '2026-11-13T07:00:00Z', '2026-11-13T15:00:00Z', null, now,
+  )).toThrow('Dispatch assignment is unavailable');
+  expect(String(app.dispatchAssignmentRequest)).not.toMatch(
+    /fetch\s*\(|tenant_id|workspace_id|actor_id|employee_id|email|phone|provider|notify|latitude|longitude|gps/i,
+  );
+});
+
+test('accepts only exact request-bound dispatch assignment confirmations', () => {
+  const now = Date.parse('2026-11-13T06:30:00Z');
+  const request = app.dispatchAssignmentRequest(
+    'work-order-102',
+    'crew-gamma',
+    'Synthetic garage restoration',
+    'WO-102 synthetic coating',
+    'Synthetic crew gamma',
+    'Synthetic Orlando-area site',
+    '2026-11-13T07:00:00Z',
+    '2026-11-13T15:00:00Z',
+    bytes => { bytes.fill(0x56); return bytes; },
+    now,
+  );
+  const result = {
+    schema_version: 'tenant-dispatch-assignment-v1',
+    assignment_ref: 'assignment-three',
+    revision: 0,
+    status: 'scheduled',
+    work_order_ref: request.work_order_ref,
+    crew_ref: request.crew_ref,
+    job_label: request.job_label,
+    work_order_label: request.work_order_label,
+    crew_label: request.crew_label,
+    location_label: request.location_label,
+    starts_at: request.starts_at,
+    ends_at: request.ends_at,
+    created_at: request.requested_at,
+    updated_at: request.requested_at,
+    replayed: false,
+  };
+  expect(app.validatedDispatchAssignmentResult(result, request, now))
+    .toEqual(result);
+
+  const invalidResults = [
+    { ...result, tenant_id: 'must-not-reach-browser' },
+    { ...result, actor_id: 'must-not-reach-browser' },
+    { ...result, provider: 'must-not-reach-browser' },
+    { ...result, assignment_ref: 'bad ref' },
+    { ...result, revision: 1 },
+    { ...result, status: 'en_route' },
+    { ...result, work_order_ref: 'work-order-other' },
+    { ...result, crew_ref: 'crew-other' },
+    { ...result, job_label: 'Different job' },
+    { ...result, starts_at: '2026-11-13T07:00:01Z' },
+    { ...result, ends_at: '2026-11-13T15:00:01Z' },
+    { ...result, created_at: '2026-11-13T06:30:01Z' },
+    { ...result, updated_at: '2026-11-13T06:30:01Z' },
+    { ...result, replayed: 'false' },
+  ];
+  for (const value of invalidResults) {
+    expect(() => app.validatedDispatchAssignmentResult(value, request, now))
+      .toThrow('Dispatch assignment confirmation is unavailable');
+  }
+  for (const altered of [
+    { ...request, tenant_id: 'must-not-be-accepted' },
+    { ...request, idempotency_key: 'dispatch-invalid' },
+    { ...request, crew_ref: 'bad ref' },
+    { ...request, starts_at: '2026-11-13T06:29:59Z' },
+  ]) {
+    expect(() => app.validatedDispatchAssignmentResult(result, altered, now))
+      .toThrow('Dispatch assignment confirmation is unavailable');
+  }
+});
+
+
 test('renders permitted schedule text without internal references', () => {
   const schedule = validSchedule();
   schedule.items[0] = {
