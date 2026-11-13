@@ -263,6 +263,88 @@
     return value;
   }
 
+  function estimateDraftUpdateRequest(estimateRef, expectedRevision, title,
+    scopeSummary, amountCents, expiresOn, getRandomValues, now = Date.now()) {
+    if (typeof estimateRef !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(estimateRef)
+      || !Number.isInteger(expectedRevision) || expectedRevision < 0
+      || !Number.isFinite(Number(now))
+      || !Number.isInteger(amountCents)
+      || amountCents < 1 || amountCents > 1000000000) {
+      throw new Error('Estimate draft update is unavailable');
+    }
+    try {
+      safeText(title, 200);
+      safeText(scopeSummary, 2000);
+      calendarDate(expiresOn);
+    } catch (_error) {
+      throw new Error('Estimate draft update is unavailable');
+    }
+    const currentDate = new Date(Number(now)).toISOString().slice(0, 10);
+    const lastDate = new Date(Number(now) + (180 * 24 * 60 * 60 * 1000))
+      .toISOString().slice(0, 10);
+    if (expiresOn < currentDate || expiresOn > lastDate) {
+      throw new Error('Estimate draft update is unavailable');
+    }
+    return {
+      estimate_ref: estimateRef,
+      expected_revision: expectedRevision,
+      title,
+      scope_summary: scopeSummary,
+      amount_cents: amountCents,
+      expires_on: expiresOn,
+      idempotency_key: estimateIdempotencyKey(getRandomValues),
+    };
+  }
+
+  function validatedEstimateDraftUpdateResult(value, request, now = Date.now()) {
+    const resultFields = [
+      'schema_version', 'estimate_ref', 'previous_revision', 'revision',
+      'status', 'title', 'scope_summary', 'amount_cents', 'expires_on',
+      'updated_at', 'replayed',
+    ];
+    const requestFields = [
+      'estimate_ref', 'expected_revision', 'title', 'scope_summary',
+      'amount_cents', 'expires_on', 'idempotency_key',
+    ];
+    if (!exactKeys(value, resultFields)
+      || !exactKeys(request, requestFields)
+      || value.schema_version !== 'tenant-estimate-draft-update-v1'
+      || typeof request.estimate_ref !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(request.estimate_ref)
+      || value.estimate_ref !== request.estimate_ref
+      || !Number.isInteger(request.expected_revision)
+      || request.expected_revision < 0
+      || value.previous_revision !== request.expected_revision
+      || value.revision !== request.expected_revision + 1
+      || value.status !== 'draft'
+      || value.title !== request.title
+      || value.scope_summary !== request.scope_summary
+      || value.amount_cents !== request.amount_cents
+      || value.expires_on !== request.expires_on
+      || typeof request.idempotency_key !== 'string'
+      || !/^estimate-[a-f0-9]{48}$/.test(request.idempotency_key)
+      || typeof value.replayed !== 'boolean'
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Estimate draft update confirmation is unavailable');
+    }
+    let updatedAt;
+    try {
+      safeText(request.title, 200);
+      safeText(request.scope_summary, 2000);
+      calendarDate(request.expires_on);
+      updatedAt = Date.parse(canonicalTimestamp(value.updated_at));
+    } catch (_error) {
+      throw new Error('Estimate draft update confirmation is unavailable');
+    }
+    if (!Number.isInteger(request.amount_cents)
+      || request.amount_cents < 1 || request.amount_cents > 1000000000
+      || updatedAt > Number(now) + (5 * 60 * 1000)) {
+      throw new Error('Estimate draft update confirmation is unavailable');
+    }
+    return value;
+  }
+
   function formatAmount(cents) {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -298,6 +380,8 @@
 
   return {
     validatedEstimateList, estimateListPath, validatedEstimatePageChain,
-    estimateDraftRequest, validatedEstimateDraftResult, renderEstimateList,
+    estimateDraftRequest, validatedEstimateDraftResult,
+    estimateDraftUpdateRequest, validatedEstimateDraftUpdateResult,
+    renderEstimateList,
   };
 });
