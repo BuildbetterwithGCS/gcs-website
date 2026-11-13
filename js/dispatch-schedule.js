@@ -98,6 +98,95 @@
     return value;
   }
 
+  const TRANSITIONS = Object.freeze({
+    scheduled: new Set(['en_route', 'canceled']),
+    en_route: new Set(['on_site', 'canceled']),
+    on_site: new Set(['completed', 'canceled']),
+  });
+
+  function dispatchIdempotencyKey(getRandomValues) {
+    if (typeof getRandomValues !== 'function') {
+      throw new Error('Dispatch update is unavailable');
+    }
+    const bytes = new Uint8Array(24);
+    getRandomValues(bytes);
+    return 'dispatch-' + Array.from(
+      bytes,
+      value => value.toString(16).padStart(2, '0'),
+    ).join('');
+  }
+
+  function dispatchStatusRequest(assignmentRef, expectedRevision,
+    currentStatus, nextStatus, getRandomValues, now = Date.now()) {
+    if (typeof assignmentRef !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(assignmentRef)
+      || !Number.isInteger(expectedRevision) || expectedRevision < 0
+      || !TRANSITIONS[currentStatus]
+      || !TRANSITIONS[currentStatus].has(nextStatus)
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Dispatch update is unavailable');
+    }
+    let idempotencyKey;
+    try {
+      idempotencyKey = dispatchIdempotencyKey(getRandomValues);
+    } catch (_error) {
+      throw new Error('Dispatch update is unavailable');
+    }
+    const occurredAt = new Date(Math.floor(Number(now) / 1000) * 1000)
+      .toISOString().replace('.000Z', 'Z');
+    return {
+      assignment_ref: assignmentRef,
+      expected_revision: expectedRevision,
+      current_status: currentStatus,
+      next_status: nextStatus,
+      occurred_at: occurredAt,
+      idempotency_key: idempotencyKey,
+    };
+  }
+
+  function validatedDispatchStatusResult(value, request, now = Date.now()) {
+    const resultFields = [
+      'schema_version', 'assignment_ref', 'previous_revision', 'revision',
+      'previous_status', 'status', 'occurred_at', 'updated_at', 'replayed',
+    ];
+    const requestFields = [
+      'assignment_ref', 'expected_revision', 'current_status', 'next_status',
+      'occurred_at', 'idempotency_key',
+    ];
+    if (!exactKeys(value, resultFields)
+      || !exactKeys(request, requestFields)
+      || value.schema_version !== 'tenant-dispatch-status-v1'
+      || typeof request.assignment_ref !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(request.assignment_ref)
+      || value.assignment_ref !== request.assignment_ref
+      || !Number.isInteger(request.expected_revision)
+      || request.expected_revision < 0
+      || value.previous_revision !== request.expected_revision
+      || value.revision !== request.expected_revision + 1
+      || !TRANSITIONS[request.current_status]
+      || !TRANSITIONS[request.current_status].has(request.next_status)
+      || value.previous_status !== request.current_status
+      || value.status !== request.next_status
+      || value.occurred_at !== request.occurred_at
+      || value.updated_at !== request.occurred_at
+      || typeof request.idempotency_key !== 'string'
+      || !/^dispatch-[a-f0-9]{48}$/.test(request.idempotency_key)
+      || typeof value.replayed !== 'boolean'
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Dispatch update confirmation is unavailable');
+    }
+    let occurredAt;
+    try {
+      occurredAt = timestamp(value.occurred_at);
+    } catch (_error) {
+      throw new Error('Dispatch update confirmation is unavailable');
+    }
+    if (occurredAt > Number(now) + 5 * 60 * 1000) {
+      throw new Error('Dispatch update confirmation is unavailable');
+    }
+    return value;
+  }
+
   function renderDispatchSchedule(doc, value) {
     const list = doc && doc.getElementById('dispatch-schedule');
     if (!list) throw new Error('Dispatch schedule container is unavailable');
@@ -130,5 +219,8 @@
     return page;
   }
 
-  return { validatedDispatchSchedule, renderDispatchSchedule };
+  return {
+    validatedDispatchSchedule, dispatchStatusRequest,
+    validatedDispatchStatusResult, renderDispatchSchedule,
+  };
 });
