@@ -351,6 +351,96 @@
     return value;
   }
 
+  function validatedEstimateDetail(value, now = Date.now()) {
+    const detailFields = [
+      'schema_version', 'estimate_ref', 'revision', 'customer_label', 'title',
+      'status', 'scope_summary', 'line_items', 'subtotal_cents', 'tax_cents',
+      'total_cents', 'expires_on', 'sent_at', 'updated_at',
+    ];
+    if (!exactKeys(value, detailFields)
+      || value.schema_version !== 'tenant-estimate-detail-v1'
+      || typeof value.estimate_ref !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(value.estimate_ref)
+      || !Number.isInteger(value.revision) || value.revision < 0
+      || !ESTIMATE_STATUSES.has(value.status)
+      || !Array.isArray(value.line_items)
+      || value.line_items.length < 1 || value.line_items.length > 50
+      || !Number.isInteger(value.subtotal_cents)
+      || !Number.isInteger(value.tax_cents)
+      || !Number.isInteger(value.total_cents)
+      || value.subtotal_cents < 0 || value.tax_cents < 0
+      || value.total_cents < 0 || value.total_cents > 1000000000
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Estimate detail is unavailable');
+    }
+    try {
+      safeText(value.customer_label, 160);
+      safeText(value.title, 200);
+      safeText(value.scope_summary, 2000);
+    } catch (_error) {
+      throw new Error('Estimate detail is unavailable');
+    }
+    const itemFields = [
+      'line_ref', 'description', 'quantity_millis', 'unit_amount_cents',
+      'line_total_cents',
+    ];
+    const seen = new Set();
+    let subtotal = 0;
+    for (const item of value.line_items) {
+      if (!exactKeys(item, itemFields)
+        || typeof item.line_ref !== 'string'
+        || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(item.line_ref)
+        || !Number.isInteger(item.quantity_millis)
+        || item.quantity_millis < 1 || item.quantity_millis > 10000000
+        || !Number.isInteger(item.unit_amount_cents)
+        || item.unit_amount_cents < 0 || item.unit_amount_cents > 100000000
+        || !Number.isInteger(item.line_total_cents)
+        || item.line_total_cents < 0 || item.line_total_cents > 1000000000
+        || !Number.isSafeInteger(item.quantity_millis * item.unit_amount_cents)
+        || item.line_total_cents
+          !== Math.round(item.quantity_millis * item.unit_amount_cents / 1000)) {
+        throw new Error('Estimate detail is unavailable');
+      }
+      try {
+        safeText(item.description, 300);
+      } catch (_error) {
+        throw new Error('Estimate detail is unavailable');
+      }
+      const key = item.line_ref.toLocaleLowerCase();
+      if (seen.has(key)) throw new Error('Estimate detail is unavailable');
+      seen.add(key);
+      subtotal += item.line_total_cents;
+      if (!Number.isSafeInteger(subtotal) || subtotal > 1000000000) {
+        throw new Error('Estimate detail is unavailable');
+      }
+    }
+    if (subtotal !== value.subtotal_cents
+      || value.subtotal_cents + value.tax_cents !== value.total_cents) {
+      throw new Error('Estimate detail is unavailable');
+    }
+    let sentAt = null;
+    let expiresOn = null;
+    let updatedAt;
+    try {
+      if (value.sent_at !== null) sentAt = canonicalTimestamp(value.sent_at);
+      if (value.expires_on !== null) expiresOn = calendarDate(value.expires_on);
+      updatedAt = Date.parse(canonicalTimestamp(value.updated_at));
+    } catch (_error) {
+      throw new Error('Estimate detail is unavailable');
+    }
+    const currentDate = new Date(Number(now)).toISOString().slice(0, 10);
+    if (updatedAt > Number(now) + (5 * 60 * 1000)
+      || (value.status === 'draft' && sentAt !== null)
+      || (value.status !== 'draft' && sentAt === null)
+      || (expiresOn !== null && sentAt !== null
+        && expiresOn < sentAt.slice(0, 10))
+      || (value.status === 'expired'
+        && (expiresOn === null || expiresOn > currentDate))) {
+      throw new Error('Estimate detail is unavailable');
+    }
+    return value;
+  }
+
   function formatAmount(cents) {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -388,6 +478,6 @@
     validatedEstimateList, estimateListPath, validatedEstimatePageChain,
     estimateDraftRequest, validatedEstimateDraftResult,
     estimateDraftUpdateRequest, validatedEstimateDraftUpdateResult,
-    renderEstimateList,
+    validatedEstimateDetail, renderEstimateList,
   };
 });
