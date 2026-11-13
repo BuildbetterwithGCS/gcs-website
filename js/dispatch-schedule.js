@@ -122,6 +122,79 @@
     return '/dispatch/schedule?cursor=' + encodeURIComponent(cursor);
   }
 
+  function validatedDispatchPageChain(entries) {
+    if (!Array.isArray(entries) || entries.length < 1 || entries.length > 20) {
+      throw new Error('Dispatch continuation is unavailable');
+    }
+    const items = [];
+    const seenRefs = new Set();
+    const consumedCursors = new Set();
+    const crewEnds = new Map();
+    let expectedCursor = null;
+    let checkedAt = null;
+    let priorStart = -Infinity;
+    let priorRef = '';
+    let complete = false;
+    for (const entry of entries) {
+      if (!exactKeys(entry, ['requested_cursor', 'page'])
+        || entry.requested_cursor !== expectedCursor
+        || complete) {
+        throw new Error('Dispatch continuation is unavailable');
+      }
+      if (entry.requested_cursor !== null) {
+        if (typeof entry.requested_cursor !== 'string'
+          || !/^[A-Za-z0-9_-]{32,256}$/.test(entry.requested_cursor)
+          || consumedCursors.has(entry.requested_cursor)) {
+          throw new Error('Dispatch continuation is unavailable');
+        }
+        consumedCursors.add(entry.requested_cursor);
+      }
+      const page = validatedDispatchSchedule(entry.page);
+      if (checkedAt === null) checkedAt = page.checked_at;
+      if (page.checked_at !== checkedAt) {
+        throw new Error('Dispatch continuation is unavailable');
+      }
+      for (const item of page.items) {
+        const refKey = item.assignment_ref.toLocaleLowerCase();
+        if (seenRefs.has(refKey)) {
+          throw new Error('Dispatch continuation is unavailable');
+        }
+        seenRefs.add(refKey);
+        const startsAt = timestamp(item.starts_at);
+        const endsAt = timestamp(item.ends_at);
+        if (startsAt < priorStart
+          || (startsAt === priorStart
+            && item.assignment_ref.localeCompare(priorRef) <= 0)) {
+          throw new Error('Dispatch continuation is unavailable');
+        }
+        priorStart = startsAt;
+        priorRef = item.assignment_ref;
+        if (item.status !== 'canceled') {
+          const crewKey = item.crew_ref.toLocaleLowerCase();
+          const priorEnd = crewEnds.get(crewKey);
+          if (priorEnd !== undefined && startsAt < priorEnd) {
+            throw new Error('Dispatch continuation is unavailable');
+          }
+          crewEnds.set(crewKey, endsAt);
+        }
+        items.push(item);
+      }
+      if (page.next_cursor !== null
+        && (page.next_cursor === entry.requested_cursor
+          || consumedCursors.has(page.next_cursor))) {
+        throw new Error('Dispatch continuation is unavailable');
+      }
+      expectedCursor = page.next_cursor;
+      complete = !page.truncated;
+    }
+    return {
+      checked_at: checkedAt,
+      items,
+      next_cursor: expectedCursor,
+      complete,
+    };
+  }
+
   const TRANSITIONS = Object.freeze({
     scheduled: new Set(['en_route', 'canceled']),
     en_route: new Set(['on_site', 'canceled']),
@@ -333,7 +406,8 @@
   }
 
   return {
-    validatedDispatchSchedule, dispatchSchedulePath, dispatchStatusRequest,
+    validatedDispatchSchedule, dispatchSchedulePath,
+    validatedDispatchPageChain, dispatchStatusRequest,
     validatedDispatchStatusResult, dispatchRescheduleRequest,
     validatedDispatchRescheduleResult, renderDispatchSchedule,
   };
