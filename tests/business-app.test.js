@@ -2771,3 +2771,68 @@ test('assistant email readiness records opt-out and duplicate suppression only',
     /fetch\s*\(|recipient|provider|send\s*\(|delivered|sent_at/i,
   );
 });
+
+
+test('assistant unsubscribe request carries only an opaque token and exact revision', () => {
+  const token = 'u'.repeat(43);
+  expect(app.assistantUnsubscribeRequest(token, 4)).toEqual({
+    unsubscribe_token: token,
+    expected_revision: 4,
+  });
+  for (const values of [
+    ['', 4],
+    ['short', 4],
+    ['tenant/email/token', 4],
+    ['x'.repeat(257), 4],
+    [token, -1],
+    [token, 1.5],
+  ]) {
+    expect(() => app.assistantUnsubscribeRequest(...values))
+      .toThrow('Assistant unsubscribe is unavailable');
+  }
+  expect(String(app.assistantUnsubscribeRequest)).not.toMatch(
+    /fetch\s*\(|tenant_id|workspace_id|recipient|email_address|provider|send\s*\(/i,
+  );
+});
+
+test('assistant unsubscribe confirmation disables and pauses the exact revision', () => {
+  const now = Date.parse('2026-11-13T12:35:00Z');
+  const request = app.assistantUnsubscribeRequest('v'.repeat(43), 4);
+  const result = {
+    schema_version: 'assistant-unsubscribe-v1',
+    status: 'UNSUBSCRIBED',
+    previous_revision: 4,
+    revision: 5,
+    enabled: false,
+    frequency: 'paused',
+    unsubscribed_at: '2026-11-13T12:35:00Z',
+    replayed: false,
+  };
+  expect(app.validatedAssistantUnsubscribeResult(result, request, now))
+    .toBe(result);
+  for (const value of [
+    { ...result, tenant_id: 'must-not-reach-browser' },
+    { ...result, recipient: 'private@example.invalid' },
+    { ...result, provider: 'private-provider' },
+    { ...result, status: 'DELIVERED' },
+    { ...result, previous_revision: 3 },
+    { ...result, revision: 6 },
+    { ...result, enabled: true },
+    { ...result, frequency: 'daily' },
+    { ...result, unsubscribed_at: 'not-a-time' },
+    { ...result, unsubscribed_at: '2026-11-13T12:40:01Z' },
+    { ...result, replayed: 'false' },
+    { ...result, unsubscribe_token: request.unsubscribe_token },
+  ]) {
+    expect(() => app.validatedAssistantUnsubscribeResult(value, request, now))
+      .toThrow('Assistant unsubscribe confirmation is unavailable');
+  }
+  for (const altered of [
+    { ...request, tenant_id: 'must-not-be-accepted' },
+    { ...request, unsubscribe_token: 'short' },
+    { ...request, expected_revision: -1 },
+  ]) {
+    expect(() => app.validatedAssistantUnsubscribeResult(result, altered, now))
+      .toThrow('Assistant unsubscribe confirmation is unavailable');
+  }
+});
