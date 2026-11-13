@@ -7,6 +7,7 @@ function validSchedule() {
     checked_at: '2026-11-13T03:30:00Z',
     returned: 2,
     truncated: false,
+    next_cursor: null,
     items: [
       {
         assignment_ref: 'assignment-one',
@@ -115,11 +116,13 @@ test('rejects overlapping non-canceled assignments for the same crew', () => {
 
 test('allows an explicit truncated nonempty schedule only', () => {
   const schedule = validSchedule();
+  const cursor = 'a'.repeat(32);
   expect(app.validatedDispatchSchedule({
-    ...schedule, truncated: true,
-  }).truncated).toBe(true);
+    ...schedule, truncated: true, next_cursor: cursor,
+  }).next_cursor).toBe(cursor);
   expect(() => app.validatedDispatchSchedule({
     ...schedule, returned: 0, items: [], truncated: true,
+    next_cursor: 'a'.repeat(32),
   })).toThrow('Dispatch schedule is unavailable');
   expect(() => app.validatedDispatchSchedule({
     ...schedule,
@@ -133,6 +136,41 @@ test('allows an explicit truncated nonempty schedule only', () => {
         .toISOString().replace('.000Z', 'Z'),
     })),
   })).toThrow('Dispatch schedule is unavailable');
+});
+
+
+
+test('dispatch continuation carries only a bounded opaque cursor', () => {
+  const cursor = 'c'.repeat(32);
+  expect(app.dispatchSchedulePath()).toBe('/dispatch/schedule');
+  expect(app.dispatchSchedulePath(null)).toBe('/dispatch/schedule');
+  expect(app.dispatchSchedulePath(cursor))
+    .toBe('/dispatch/schedule?cursor=' + cursor);
+  for (const invalid of [
+    undefined,
+    '',
+    'short',
+    'tenant=synthetic-a',
+    'crew/synthetic-a',
+    'x'.repeat(257),
+  ]) {
+    expect(() => app.dispatchSchedulePath(invalid))
+      .toThrow('Dispatch continuation is unavailable');
+  }
+  expect(String(app.dispatchSchedulePath)).not.toMatch(
+    /tenant|workspace|actor|employee|crew_ref|location|email|phone|provider/i,
+  );
+
+  const schedule = validSchedule();
+  for (const invalid of [
+    { ...schedule, truncated: true, next_cursor: null },
+    { ...schedule, truncated: true, next_cursor: 'short' },
+    { ...schedule, truncated: true, next_cursor: 'tenant/workspace/crew' },
+    { ...schedule, truncated: false, next_cursor: cursor },
+  ]) {
+    expect(() => app.validatedDispatchSchedule(invalid))
+      .toThrow('Dispatch schedule is unavailable');
+  }
 });
 
 
@@ -367,6 +405,7 @@ test('renders permitted schedule text without internal references', () => {
     location_label: '<svg onload=alert(1)>',
   };
   schedule.truncated = true;
+  schedule.next_cursor = 'b'.repeat(32);
   document.body.innerHTML = '<ul id="dispatch-schedule"></ul>';
   expect(app.renderDispatchSchedule(document, schedule)).toEqual(schedule);
   expect(document.querySelector('img')).toBeNull();
