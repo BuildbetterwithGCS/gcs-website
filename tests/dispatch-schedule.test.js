@@ -13,6 +13,7 @@ function validSchedule() {
         revision: 2,
         job_label: 'Synthetic pool deck restoration',
         work_order_label: 'WO-100 synthetic preparation',
+        crew_ref: 'crew-alpha',
         crew_label: 'Synthetic crew alpha',
         location_label: 'Synthetic Orlando-area site',
         starts_at: '2026-11-13T01:00:00Z',
@@ -25,6 +26,7 @@ function validSchedule() {
         revision: 0,
         job_label: 'Synthetic concrete repair',
         work_order_label: 'WO-101 synthetic repair',
+        crew_ref: 'crew-beta',
         crew_label: 'Synthetic crew beta',
         location_label: 'Synthetic Central Florida site',
         starts_at: '2026-11-13T04:00:00Z',
@@ -49,6 +51,7 @@ test('accepts only the exact bounded dispatch schedule contract', () => {
     { ...schedule, items: [{ ...schedule.items[0], provider: 'private' }] },
     { ...schedule, items: [{ ...schedule.items[0], status: 'paid' }] },
     { ...schedule, items: [{ ...schedule.items[0], revision: -1 }] },
+    { ...schedule, items: [{ ...schedule.items[0], crew_ref: 'bad ref' }] },
     { ...schedule, items: [{ ...schedule.items[0], ends_at: schedule.items[0].starts_at }] },
     { ...schedule, items: [{
       ...schedule.items[0],
@@ -72,6 +75,43 @@ test('accepts only the exact bounded dispatch schedule contract', () => {
       .toThrow('Dispatch schedule is unavailable');
   }
 });
+
+
+test('rejects overlapping non-canceled assignments for the same crew', () => {
+  const schedule = validSchedule();
+  const overlapping = {
+    ...schedule.items[1],
+    assignment_ref: 'assignment-overlap',
+    crew_ref: 'CREW-ALPHA',
+    starts_at: '2026-11-13T01:30:00Z',
+    ends_at: '2026-11-13T02:30:00Z',
+    status: 'scheduled',
+  };
+  expect(() => app.validatedDispatchSchedule({
+    ...schedule,
+    returned: 2,
+    items: [schedule.items[0], overlapping],
+  })).toThrow('Dispatch schedule is unavailable');
+
+  expect(app.validatedDispatchSchedule({
+    ...schedule,
+    returned: 2,
+    items: [
+      schedule.items[0],
+      { ...overlapping, crew_ref: 'crew-gamma' },
+    ],
+  }).returned).toBe(2);
+
+  expect(app.validatedDispatchSchedule({
+    ...schedule,
+    returned: 2,
+    items: [
+      schedule.items[0],
+      { ...overlapping, status: 'canceled' },
+    ],
+  }).returned).toBe(2);
+});
+
 
 test('allows an explicit truncated nonempty schedule only', () => {
   const schedule = validSchedule();
@@ -337,6 +377,7 @@ test('renders permitted schedule text without internal references', () => {
   expect(document.body.textContent).toContain('Completed');
   expect(document.body.textContent).toContain('schedule is incomplete');
   expect(document.body.textContent).not.toContain('assignment-one');
+  expect(document.body.textContent).not.toContain('crew-alpha');
   expect(document.body.textContent).not.toContain('revision');
 });
 
