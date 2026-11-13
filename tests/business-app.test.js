@@ -2690,3 +2690,84 @@ test('assistant digest preview enforces item count and period consistency', () =
   expect(() => app.validatedAssistantDigestPreview(tooMany))
     .toThrow('Assistant preview is unavailable');
 });
+
+
+test('assistant email readiness permits preview only with active opt-in and unsubscribe', () => {
+  const preference = safeAssistantPreferenceFixture();
+  const readiness = {
+    schema_version: 'assistant-email-readiness-v1',
+    preference_revision: preference.revision,
+    disposition: 'PREVIEW_ONLY',
+    checked_at: '2026-11-11T14:02:00Z',
+    digest_key: 'digest_' + 'a'.repeat(32),
+    duplicate_of: null,
+    unsubscribe_ready: true,
+  };
+  expect(app.validatedAssistantEmailReadiness(readiness, preference))
+    .toBe(readiness);
+
+  for (const value of [
+    { ...readiness, tenant_id: 'must-not-reach-browser' },
+    { ...readiness, recipient: 'private@example.invalid' },
+    { ...readiness, provider: 'private-provider' },
+    { ...readiness, disposition: 'DELIVERED' },
+    { ...readiness, preference_revision: 3 },
+    { ...readiness, digest_key: 'short' },
+    { ...readiness, duplicate_of: 'digest_' + 'b'.repeat(32) },
+    { ...readiness, unsubscribe_ready: false },
+    { ...readiness, checked_at: 'not-a-time' },
+  ]) {
+    expect(() => app.validatedAssistantEmailReadiness(value, preference))
+      .toThrow('Assistant email readiness is unavailable');
+  }
+  for (const altered of [
+    { ...preference, enabled: false },
+    { ...preference, frequency: 'paused' },
+    { ...preference, topics: [] },
+    { ...preference, revision: 3 },
+  ]) {
+    expect(() => app.validatedAssistantEmailReadiness(readiness, altered))
+      .toThrow('Assistant email readiness is unavailable');
+  }
+});
+
+test('assistant email readiness records opt-out and duplicate suppression only', () => {
+  const optedOut = safeAssistantPreferenceFixture();
+  optedOut.enabled = false;
+  const suppressed = {
+    schema_version: 'assistant-email-readiness-v1',
+    preference_revision: optedOut.revision,
+    disposition: 'SUPPRESSED_OPT_OUT',
+    checked_at: '2026-11-11T14:02:00Z',
+    digest_key: 'digest_' + 'c'.repeat(32),
+    duplicate_of: null,
+    unsubscribe_ready: true,
+  };
+  expect(app.validatedAssistantEmailReadiness(suppressed, optedOut))
+    .toBe(suppressed);
+  expect(() => app.validatedAssistantEmailReadiness(
+    suppressed, safeAssistantPreferenceFixture()))
+    .toThrow('Assistant email readiness is unavailable');
+
+  const active = safeAssistantPreferenceFixture();
+  const duplicate = {
+    ...suppressed,
+    preference_revision: active.revision,
+    disposition: 'SUPPRESSED_DUPLICATE',
+    digest_key: 'digest_' + 'd'.repeat(32),
+    duplicate_of: 'digest_' + 'e'.repeat(32),
+  };
+  expect(app.validatedAssistantEmailReadiness(duplicate, active))
+    .toBe(duplicate);
+  for (const value of [
+    { ...duplicate, duplicate_of: null },
+    { ...duplicate, duplicate_of: 'short' },
+    { ...duplicate, duplicate_of: duplicate.digest_key },
+  ]) {
+    expect(() => app.validatedAssistantEmailReadiness(value, active))
+      .toThrow('Assistant email readiness is unavailable');
+  }
+  expect(String(app.validatedAssistantEmailReadiness)).not.toMatch(
+    /fetch\s*\(|recipient|provider|send\s*\(|delivered|sent_at/i,
+  );
+});
