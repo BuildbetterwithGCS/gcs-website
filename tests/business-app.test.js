@@ -2468,3 +2468,475 @@ test('assistant help supports direct links, multi-word search, and keyboard acce
     .toBe(guideTotal + ' of ' + guideTotal + ' guides shown');
   expect(empty.hidden).toBe(true);
 });
+
+
+function safeAssistantPreviewFixture() {
+  return {
+    schema_version: 'assistant-digest-preview-v1',
+    period_start: '2026-11-10T14:00:00Z',
+    period_end: '2026-11-11T14:00:00Z',
+    preference_revision: 4,
+    checked_at: '2026-11-11T14:01:00Z',
+    returned: 1,
+    truncated: false,
+    items: [{
+      topic: 'bid_opportunities',
+      title: 'Review Orlando concrete restoration bid',
+      action_label: 'Review opportunity',
+      deadline_at: null,
+      evidence: {
+        freshness_status: 'CURRENT',
+        observed_at: '2026-11-11T13:55:00Z',
+        source_updated_at: '2026-11-11T12:30:00Z',
+        is_synthetic: false,
+        source_url: 'https://example.gov/opportunity/',
+        location_known: true,
+        within_radius: true,
+      },
+    }],
+  };
+}
+
+test('assistant digest preview accepts only the exact safe response contract', () => {
+  const fixture = safeAssistantPreviewFixture();
+  expect(app.validatedAssistantDigestPreview(fixture)).toBe(fixture);
+
+  const forbiddenTopLevel = safeAssistantPreviewFixture();
+  forbiddenTopLevel.tenant_id = 'other-tenant';
+  expect(() => app.validatedAssistantDigestPreview(forbiddenTopLevel))
+    .toThrow('Assistant preview is unavailable');
+
+  const forbiddenItem = safeAssistantPreviewFixture();
+  forbiddenItem.items[0].record_id = 'bid-secret';
+  expect(() => app.validatedAssistantDigestPreview(forbiddenItem))
+    .toThrow('Assistant preview item is unavailable');
+
+  const unsafeSource = safeAssistantPreviewFixture();
+  unsafeSource.items[0].evidence.source_url = 'javascript:alert(1)';
+  expect(() => app.validatedAssistantDigestPreview(unsafeSource))
+    .toThrow('Assistant preview evidence is unavailable');
+
+  const synthetic = safeAssistantPreviewFixture();
+  synthetic.items[0].evidence.is_synthetic = true;
+  expect(() => app.validatedAssistantDigestPreview(synthetic))
+    .toThrow('Assistant preview evidence is unavailable');
+});
+
+test('assistant bid preview requires in-radius source evidence and valid chronology', () => {
+  const missingSource = safeAssistantPreviewFixture();
+  missingSource.items[0].evidence.source_url = null;
+  expect(() => app.validatedAssistantDigestPreview(missingSource))
+    .toThrow('Assistant preview evidence is unavailable');
+
+  const unknownLocation = safeAssistantPreviewFixture();
+  unknownLocation.items[0].evidence.location_known = null;
+  expect(() => app.validatedAssistantDigestPreview(unknownLocation))
+    .toThrow('Assistant preview evidence is unavailable');
+
+  const outsideRadius = safeAssistantPreviewFixture();
+  outsideRadius.items[0].evidence.within_radius = false;
+  expect(() => app.validatedAssistantDigestPreview(outsideRadius))
+    .toThrow('Assistant preview evidence is unavailable');
+
+  const futureSource = safeAssistantPreviewFixture();
+  futureSource.items[0].evidence.source_updated_at = '2026-11-11T13:56:00Z';
+  expect(() => app.validatedAssistantDigestPreview(futureSource))
+    .toThrow('Assistant preview evidence is unavailable');
+
+  const futureObservation = safeAssistantPreviewFixture();
+  futureObservation.items[0].evidence.observed_at = '2026-11-11T14:02:00Z';
+  expect(() => app.validatedAssistantDigestPreview(futureObservation))
+    .toThrow('Assistant preview evidence is unavailable');
+});
+
+test('assistant digest preview rejects exact duplicate items', () => {
+  const duplicate = safeAssistantPreviewFixture();
+  duplicate.items.push(JSON.parse(JSON.stringify(duplicate.items[0])));
+  duplicate.returned = 2;
+  expect(() => app.validatedAssistantDigestPreview(duplicate))
+    .toThrow('Assistant preview item is unavailable');
+
+  const distinctSource = safeAssistantPreviewFixture();
+  const second = JSON.parse(JSON.stringify(distinctSource.items[0]));
+  second.evidence.source_url = 'https://example.gov/opportunity/second';
+  distinctSource.items.push(second);
+  distinctSource.returned = 2;
+  expect(app.validatedAssistantDigestPreview(distinctSource)).toBe(distinctSource);
+});
+
+function safeAssistantPreferenceFixture() {
+  return {
+    revision: 4,
+    enabled: true,
+    frequency: 'daily',
+    timezone: 'America/New_York',
+    topics: ['bid_opportunities'],
+  };
+}
+
+test('assistant renderer requires active current preferences and selected topics', () => {
+  document.body.innerHTML = '<ul id="assistant-preview-items"></ul>';
+  const fixture = safeAssistantPreviewFixture();
+  const preference = safeAssistantPreferenceFixture();
+  expect(app.renderAssistantDigestPreview(document, fixture, preference)).toBe(fixture);
+
+  const disabled = safeAssistantPreferenceFixture();
+  disabled.enabled = false;
+  expect(() => app.renderAssistantDigestPreview(document, fixture, disabled))
+    .toThrow('Assistant preview is unavailable');
+
+  const paused = safeAssistantPreferenceFixture();
+  paused.frequency = 'paused';
+  expect(() => app.renderAssistantDigestPreview(document, fixture, paused))
+    .toThrow('Assistant preview is unavailable');
+
+  const stale = safeAssistantPreferenceFixture();
+  stale.revision = 3;
+  expect(() => app.renderAssistantDigestPreview(document, fixture, stale))
+    .toThrow('Assistant preview is unavailable');
+
+  const unselected = safeAssistantPreferenceFixture();
+  unselected.topics = ['assigned_work'];
+  expect(() => app.renderAssistantDigestPreview(document, fixture, unselected))
+    .toThrow('Assistant preview is unavailable');
+
+  expect(() => app.renderAssistantDigestPreview(document, fixture))
+    .toThrow('Assistant preview is unavailable');
+});
+
+test('assistant renderer binds preview period to daily or weekly frequency', () => {
+  document.body.innerHTML = '<ul id="assistant-preview-items"></ul>';
+
+  const longDaily = safeAssistantPreviewFixture();
+  longDaily.period_start = '2026-11-09T14:00:00Z';
+  expect(() => app.renderAssistantDigestPreview(
+    document, longDaily, safeAssistantPreferenceFixture()))
+    .toThrow('Assistant preview period is unavailable');
+
+  const shortWeekly = safeAssistantPreviewFixture();
+  const weeklyPreference = safeAssistantPreferenceFixture();
+  weeklyPreference.frequency = 'weekly';
+  expect(() => app.renderAssistantDigestPreview(
+    document, shortWeekly, weeklyPreference))
+    .toThrow('Assistant preview period is unavailable');
+
+  const weekly = safeAssistantPreviewFixture();
+  weekly.period_start = '2026-11-04T14:00:00Z';
+  expect(app.renderAssistantDigestPreview(
+    document, weekly, weeklyPreference)).toBe(weekly);
+});
+
+test('assistant digest renderer uses text-only content and hardened source links', () => {
+  document.body.innerHTML = '<ul id="assistant-preview-items"></ul>';
+  const fixture = safeAssistantPreviewFixture();
+  fixture.items[0].title = '<img src=x onerror=alert(1)>';
+
+  app.renderAssistantDigestPreview(
+    document, fixture, safeAssistantPreferenceFixture());
+
+  const row = document.querySelector('#assistant-preview-items li');
+  expect(row.querySelector('strong').textContent)
+    .toBe('<img src=x onerror=alert(1)>');
+  expect(row.querySelector('img')).toBeNull();
+  const source = row.querySelector('a');
+  expect(source.href).toBe('https://example.gov/opportunity/');
+  expect(source.target).toBe('_blank');
+  expect(source.rel).toBe('nofollow noopener noreferrer');
+  expect(row.textContent).not.toContain('tenant');
+  expect(row.textContent).not.toContain('record_id');
+});
+
+test('assistant digest renderer discloses an incomplete bounded preview', () => {
+  document.body.innerHTML = '<ul id="assistant-preview-items"></ul>';
+  const fixture = safeAssistantPreviewFixture();
+  fixture.truncated = true;
+
+  app.renderAssistantDigestPreview(
+    document, fixture, safeAssistantPreferenceFixture());
+
+  const notice = document.querySelector('.assistant-preview-truncated');
+  expect(notice).not.toBeNull();
+  expect(notice.textContent)
+    .toBe('More permitted updates are available; this preview is incomplete.');
+  expect(document.querySelectorAll('#assistant-preview-items > li')).toHaveLength(2);
+});
+
+test('assistant digest preview enforces item count and period consistency', () => {
+  const wrongCount = safeAssistantPreviewFixture();
+  wrongCount.returned = 2;
+  expect(() => app.validatedAssistantDigestPreview(wrongCount))
+    .toThrow('Assistant preview is unavailable');
+
+  const emptyTruncated = safeAssistantPreviewFixture();
+  emptyTruncated.items = [];
+  emptyTruncated.returned = 0;
+  emptyTruncated.truncated = true;
+  expect(() => app.validatedAssistantDigestPreview(emptyTruncated))
+    .toThrow('Assistant preview is unavailable');
+
+  const reversedPeriod = safeAssistantPreviewFixture();
+  reversedPeriod.period_start = reversedPeriod.period_end;
+  expect(() => app.validatedAssistantDigestPreview(reversedPeriod))
+    .toThrow('Assistant preview period is unavailable');
+
+  const futurePeriod = safeAssistantPreviewFixture();
+  futurePeriod.period_end = '2026-11-11T14:02:00Z';
+  expect(() => app.validatedAssistantDigestPreview(futurePeriod))
+    .toThrow('Assistant preview period is unavailable');
+
+  const tooMany = safeAssistantPreviewFixture();
+  tooMany.items = Array.from({ length: 101 }, () => safeAssistantPreviewFixture().items[0]);
+  tooMany.returned = 101;
+  expect(() => app.validatedAssistantDigestPreview(tooMany))
+    .toThrow('Assistant preview is unavailable');
+});
+
+
+test('assistant email readiness permits preview only with active opt-in and unsubscribe', () => {
+  const preference = safeAssistantPreferenceFixture();
+  const readiness = {
+    schema_version: 'assistant-email-readiness-v1',
+    preference_revision: preference.revision,
+    disposition: 'PREVIEW_ONLY',
+    checked_at: '2026-11-11T14:02:00Z',
+    digest_key: 'digest_' + 'a'.repeat(32),
+    duplicate_of: null,
+    unsubscribe_ready: true,
+  };
+  expect(app.validatedAssistantEmailReadiness(readiness, preference))
+    .toBe(readiness);
+
+  for (const value of [
+    { ...readiness, tenant_id: 'must-not-reach-browser' },
+    { ...readiness, recipient: 'private@example.invalid' },
+    { ...readiness, provider: 'private-provider' },
+    { ...readiness, disposition: 'DELIVERED' },
+    { ...readiness, preference_revision: 3 },
+    { ...readiness, digest_key: 'short' },
+    { ...readiness, duplicate_of: 'digest_' + 'b'.repeat(32) },
+    { ...readiness, unsubscribe_ready: false },
+    { ...readiness, checked_at: 'not-a-time' },
+  ]) {
+    expect(() => app.validatedAssistantEmailReadiness(value, preference))
+      .toThrow('Assistant email readiness is unavailable');
+  }
+  for (const altered of [
+    { ...preference, enabled: false },
+    { ...preference, frequency: 'paused' },
+    { ...preference, topics: [] },
+    { ...preference, revision: 3 },
+  ]) {
+    expect(() => app.validatedAssistantEmailReadiness(readiness, altered))
+      .toThrow('Assistant email readiness is unavailable');
+  }
+});
+
+test('assistant email readiness records opt-out and duplicate suppression only', () => {
+  const optedOut = safeAssistantPreferenceFixture();
+  optedOut.enabled = false;
+  const suppressed = {
+    schema_version: 'assistant-email-readiness-v1',
+    preference_revision: optedOut.revision,
+    disposition: 'SUPPRESSED_OPT_OUT',
+    checked_at: '2026-11-11T14:02:00Z',
+    digest_key: 'digest_' + 'c'.repeat(32),
+    duplicate_of: null,
+    unsubscribe_ready: true,
+  };
+  expect(app.validatedAssistantEmailReadiness(suppressed, optedOut))
+    .toBe(suppressed);
+  expect(() => app.validatedAssistantEmailReadiness(
+    suppressed, safeAssistantPreferenceFixture()))
+    .toThrow('Assistant email readiness is unavailable');
+
+  const active = safeAssistantPreferenceFixture();
+  const duplicate = {
+    ...suppressed,
+    preference_revision: active.revision,
+    disposition: 'SUPPRESSED_DUPLICATE',
+    digest_key: 'digest_' + 'd'.repeat(32),
+    duplicate_of: 'digest_' + 'e'.repeat(32),
+  };
+  expect(app.validatedAssistantEmailReadiness(duplicate, active))
+    .toBe(duplicate);
+  for (const value of [
+    { ...duplicate, duplicate_of: null },
+    { ...duplicate, duplicate_of: 'short' },
+    { ...duplicate, duplicate_of: duplicate.digest_key },
+  ]) {
+    expect(() => app.validatedAssistantEmailReadiness(value, active))
+      .toThrow('Assistant email readiness is unavailable');
+  }
+  expect(String(app.validatedAssistantEmailReadiness)).not.toMatch(
+    /fetch\s*\(|recipient|provider|send\s*\(|delivered|sent_at/i,
+  );
+});
+
+
+test('assistant unsubscribe request carries only an opaque token and exact revision', () => {
+  const token = 'u'.repeat(43);
+  expect(app.assistantUnsubscribeRequest(token, 4)).toEqual({
+    unsubscribe_token: token,
+    expected_revision: 4,
+  });
+  for (const values of [
+    ['', 4],
+    ['short', 4],
+    ['tenant/email/token', 4],
+    ['x'.repeat(257), 4],
+    [token, -1],
+    [token, 1.5],
+  ]) {
+    expect(() => app.assistantUnsubscribeRequest(...values))
+      .toThrow('Assistant unsubscribe is unavailable');
+  }
+  expect(String(app.assistantUnsubscribeRequest)).not.toMatch(
+    /fetch\s*\(|tenant_id|workspace_id|recipient|email_address|provider|send\s*\(/i,
+  );
+});
+
+test('assistant unsubscribe confirmation disables and pauses the exact revision', () => {
+  const now = Date.parse('2026-11-13T12:35:00Z');
+  const request = app.assistantUnsubscribeRequest('v'.repeat(43), 4);
+  const result = {
+    schema_version: 'assistant-unsubscribe-v1',
+    status: 'UNSUBSCRIBED',
+    previous_revision: 4,
+    revision: 5,
+    enabled: false,
+    frequency: 'paused',
+    unsubscribed_at: '2026-11-13T12:35:00Z',
+    replayed: false,
+  };
+  expect(app.validatedAssistantUnsubscribeResult(result, request, now))
+    .toBe(result);
+  for (const value of [
+    { ...result, tenant_id: 'must-not-reach-browser' },
+    { ...result, recipient: 'private@example.invalid' },
+    { ...result, provider: 'private-provider' },
+    { ...result, status: 'DELIVERED' },
+    { ...result, previous_revision: 3 },
+    { ...result, revision: 6 },
+    { ...result, enabled: true },
+    { ...result, frequency: 'daily' },
+    { ...result, unsubscribed_at: 'not-a-time' },
+    { ...result, unsubscribed_at: '2026-11-13T12:40:01Z' },
+    { ...result, replayed: 'false' },
+    { ...result, unsubscribe_token: request.unsubscribe_token },
+  ]) {
+    expect(() => app.validatedAssistantUnsubscribeResult(value, request, now))
+      .toThrow('Assistant unsubscribe confirmation is unavailable');
+  }
+  for (const altered of [
+    { ...request, tenant_id: 'must-not-be-accepted' },
+    { ...request, unsubscribe_token: 'short' },
+    { ...request, expected_revision: -1 },
+  ]) {
+    expect(() => app.validatedAssistantUnsubscribeResult(result, altered, now))
+      .toThrow('Assistant unsubscribe confirmation is unavailable');
+  }
+});
+
+
+function safeAssistantAuditFixture() {
+  return {
+    schema_version: 'assistant-delivery-audit-v1',
+    checked_at: '2026-11-13T13:35:00Z',
+    returned: 3,
+    truncated: false,
+    entries: [
+      {
+        audit_ref: 'audit-unsubscribe',
+        preference_revision: 6,
+        outcome: 'UNSUBSCRIBED',
+        digest_key: null,
+        duplicate_of: null,
+        occurred_at: '2026-11-13T13:30:00Z',
+      },
+      {
+        audit_ref: 'audit-duplicate',
+        preference_revision: 5,
+        outcome: 'SUPPRESSED_DUPLICATE',
+        digest_key: 'digest_' + 'f'.repeat(32),
+        duplicate_of: 'digest_' + 'g'.repeat(32),
+        occurred_at: '2026-11-13T13:20:00Z',
+      },
+      {
+        audit_ref: 'audit-preview',
+        preference_revision: 5,
+        outcome: 'PREVIEW_ONLY',
+        digest_key: 'digest_' + 'h'.repeat(32),
+        duplicate_of: null,
+        occurred_at: '2026-11-13T13:10:00Z',
+      },
+    ],
+  };
+}
+
+test('assistant audit accepts only bounded privacy-minimized outcomes', () => {
+  const fixture = safeAssistantAuditFixture();
+  expect(app.validatedAssistantAuditPage(fixture)).toBe(fixture);
+
+  const invalidPages = [
+    { ...fixture, tenant_id: 'must-not-reach-browser' },
+    { ...fixture, returned: 2 },
+    { ...fixture, truncated: 'false' },
+    { ...fixture, checked_at: 'not-a-time' },
+    { ...fixture, returned: 0, truncated: true, entries: [] },
+  ];
+  for (const value of invalidPages) {
+    expect(() => app.validatedAssistantAuditPage(value))
+      .toThrow('Assistant audit is unavailable');
+  }
+
+  const invalidEntries = [
+    { ...fixture.entries[0], recipient: 'private@example.invalid' },
+    { ...fixture.entries[0], provider: 'private-provider' },
+    { ...fixture.entries[0], outcome: 'DELIVERED' },
+    { ...fixture.entries[0], digest_key: 'digest_' + 'a'.repeat(32) },
+    { ...fixture.entries[1], duplicate_of: null },
+    { ...fixture.entries[1], duplicate_of: fixture.entries[1].digest_key },
+    { ...fixture.entries[2], digest_key: 'short' },
+    { ...fixture.entries[2], duplicate_of: 'digest_' + 'b'.repeat(32) },
+    { ...fixture.entries[2], occurred_at: '2026-11-13T13:36:00Z' },
+    { ...fixture.entries[2], preference_revision: -1 },
+  ];
+  for (const entry of invalidEntries) {
+    expect(() => app.validatedAssistantAuditPage({
+      ...fixture, returned: 1, entries: [entry],
+    })).toThrow('Assistant audit entry is unavailable');
+  }
+});
+
+test('assistant audit rejects duplicate references and ordering breaks', () => {
+  const fixture = safeAssistantAuditFixture();
+  expect(() => app.validatedAssistantAuditPage({
+    ...fixture,
+    returned: 2,
+    entries: [
+      fixture.entries[0],
+      { ...fixture.entries[1], audit_ref: 'AUDIT-UNSUBSCRIBE' },
+    ],
+  })).toThrow('Assistant audit entry is unavailable');
+
+  expect(() => app.validatedAssistantAuditPage({
+    ...fixture,
+    returned: 2,
+    entries: [fixture.entries[1], fixture.entries[0]],
+  })).toThrow('Assistant audit entry is unavailable');
+
+  const sameTime = {
+    ...fixture.entries[1],
+    audit_ref: 'audit-alpha',
+    occurred_at: fixture.entries[0].occurred_at,
+  };
+  expect(() => app.validatedAssistantAuditPage({
+    ...fixture,
+    returned: 2,
+    entries: [fixture.entries[0], sameTime],
+  })).toThrow('Assistant audit entry is unavailable');
+
+  expect(String(app.validatedAssistantAuditPage)).not.toMatch(
+    /fetch\s*\(|recipient|email_address|provider|sent_at|delivered_at/i,
+  );
+});

@@ -775,6 +775,338 @@
     return value;
   }
 
+
+  function hasExactFields(value, fields) {
+    return value && typeof value === 'object' && !Array.isArray(value)
+      && Object.keys(value).length === fields.size
+      && Object.keys(value).every(key => fields.has(key));
+  }
+
+  function boundedTimestamp(value, field) {
+    if (typeof value !== 'string' || value.length < 20 || value.length > 40
+      || !Number.isFinite(Date.parse(value))) {
+      throw new Error('Assistant preview ' + field + ' is unavailable');
+    }
+    return value;
+  }
+
+  function safeEvidenceUrl(value) {
+    if (value === null) return null;
+    if (typeof value !== 'string' || value.length > 2048) {
+      throw new Error('Assistant preview evidence is unavailable');
+    }
+    let url;
+    try { url = new URL(value); } catch (_error) {
+      throw new Error('Assistant preview evidence is unavailable');
+    }
+    if (url.protocol !== 'https:' || url.username || url.password
+      || url.hash || url.toString() !== value) {
+      throw new Error('Assistant preview evidence is unavailable');
+    }
+    return value;
+  }
+
+  function validatedAssistantDigestPreview(value) {
+    const previewFields = new Set([
+      'schema_version', 'period_start', 'period_end', 'preference_revision',
+      'checked_at', 'items', 'returned', 'truncated',
+    ]);
+    if (!hasExactFields(value, previewFields)
+      || value.schema_version !== 'assistant-digest-preview-v1'
+      || !Number.isInteger(value.preference_revision) || value.preference_revision < 0
+      || !Array.isArray(value.items) || value.items.length > 100
+      || value.returned !== value.items.length
+      || typeof value.truncated !== 'boolean'
+      || (value.truncated && value.items.length === 0)) {
+      throw new Error('Assistant preview is unavailable');
+    }
+    const periodStart = boundedTimestamp(value.period_start, 'period');
+    const periodEnd = boundedTimestamp(value.period_end, 'period');
+    const checkedAt = Date.parse(boundedTimestamp(value.checked_at, 'check time'));
+    if (Date.parse(periodStart) >= Date.parse(periodEnd)
+      || Date.parse(periodEnd) > checkedAt) {
+      throw new Error('Assistant preview period is unavailable');
+    }
+    const itemFields = new Set([
+      'topic', 'title', 'action_label', 'deadline_at', 'evidence',
+    ]);
+    const evidenceFields = new Set([
+      'freshness_status', 'observed_at', 'source_updated_at', 'is_synthetic',
+      'source_url', 'location_known', 'within_radius',
+    ]);
+    const seenItems = new Set();
+    value.items.forEach(item => {
+      if (!hasExactFields(item, itemFields)
+        || !ASSISTANT_TOPICS.has(item.topic)
+        || typeof item.title !== 'string' || item.title.length < 1
+        || item.title.length > 200
+        || typeof item.action_label !== 'string' || item.action_label.length < 1
+        || item.action_label.length > 120
+        || (item.deadline_at !== null
+          && (typeof item.deadline_at !== 'string'
+            || !Number.isFinite(Date.parse(item.deadline_at))))) {
+        throw new Error('Assistant preview item is unavailable');
+      }
+      const evidence = item.evidence;
+      if (!hasExactFields(evidence, evidenceFields)
+        || evidence.freshness_status !== 'CURRENT'
+        || evidence.is_synthetic !== false
+        || ![null, true, false].includes(evidence.location_known)
+        || ![null, true, false].includes(evidence.within_radius)) {
+        throw new Error('Assistant preview evidence is unavailable');
+      }
+      const observedAt = Date.parse(
+        boundedTimestamp(evidence.observed_at, 'evidence time'));
+      const sourceUpdatedAt = Date.parse(
+        boundedTimestamp(evidence.source_updated_at, 'source time'));
+      const sourceUrl = safeEvidenceUrl(evidence.source_url);
+      if (sourceUpdatedAt > observedAt || observedAt > checkedAt
+        || (item.topic === 'bid_opportunities'
+          && (sourceUrl === null || evidence.location_known !== true
+            || evidence.within_radius !== true))) {
+        throw new Error('Assistant preview evidence is unavailable');
+      }
+      const itemKey = JSON.stringify([
+        item.topic, item.title, item.action_label, item.deadline_at, sourceUrl,
+      ]);
+      if (seenItems.has(itemKey)) {
+        throw new Error('Assistant preview item is unavailable');
+      }
+      seenItems.add(itemKey);
+    });
+    return value;
+  }
+
+  function renderAssistantDigestPreview(doc, value, preferenceValue) {
+    const preview = validatedAssistantDigestPreview(value);
+    let preference;
+    try {
+      preference = validatedAssistantPreference(preferenceValue);
+    } catch (_error) {
+      throw new Error('Assistant preview is unavailable');
+    }
+    if (!preference.enabled || preference.frequency === 'paused'
+      || preview.preference_revision !== preference.revision
+      || preview.items.some(item => !preference.topics.includes(item.topic))) {
+      throw new Error('Assistant preview is unavailable');
+    }
+    const periodMs = Date.parse(preview.period_end) - Date.parse(preview.period_start);
+    const dayMs = 24 * 60 * 60 * 1000;
+    if ((preference.frequency === 'daily'
+        && (periodMs < 22 * 60 * 60 * 1000 || periodMs > 26 * 60 * 60 * 1000))
+      || (preference.frequency === 'weekly'
+        && (periodMs < 6 * dayMs || periodMs > 8 * dayMs))) {
+      throw new Error('Assistant preview period is unavailable');
+    }
+    const list = doc.getElementById('assistant-preview-items');
+    if (!list) throw new Error('Assistant preview container is unavailable');
+    list.replaceChildren();
+    preview.items.forEach(item => {
+      const row = doc.createElement('li');
+      const title = doc.createElement('strong');
+      title.textContent = item.title;
+      const action = doc.createElement('span');
+      action.textContent = item.action_label;
+      const evidence = doc.createElement('small');
+      evidence.textContent = 'Source checked ' + item.evidence.observed_at;
+      row.append(title, action, evidence);
+      if (item.evidence.source_url) {
+        const source = doc.createElement('a');
+        source.href = item.evidence.source_url;
+        source.textContent = 'Open source evidence';
+        source.target = '_blank';
+        source.rel = 'nofollow noopener noreferrer';
+        row.append(source);
+      }
+      list.append(row);
+    });
+    if (preview.truncated) {
+      const notice = doc.createElement('li');
+      notice.className = 'assistant-preview-truncated';
+      notice.textContent =
+        'More permitted updates are available; this preview is incomplete.';
+      list.append(notice);
+    }
+    return preview;
+  }
+
+  function validatedAssistantEmailReadiness(value, preferenceValue) {
+    const fields = new Set([
+      'schema_version', 'preference_revision', 'disposition', 'checked_at',
+      'digest_key', 'duplicate_of', 'unsubscribe_ready',
+    ]);
+    if (!hasExactFields(value, fields)
+      || value.schema_version !== 'assistant-email-readiness-v1'
+      || !Number.isInteger(value.preference_revision)
+      || value.preference_revision < 0
+      || !new Set([
+        'PREVIEW_ONLY', 'SUPPRESSED_OPT_OUT', 'SUPPRESSED_DUPLICATE',
+      ]).has(value.disposition)
+      || typeof value.digest_key !== 'string'
+      || !/^[A-Za-z0-9_-]{32,128}$/.test(value.digest_key)
+      || typeof value.unsubscribe_ready !== 'boolean') {
+      throw new Error('Assistant email readiness is unavailable');
+    }
+    let preference;
+    try {
+      preference = validatedAssistantPreference(preferenceValue);
+      boundedTimestamp(value.checked_at, 'email readiness');
+    } catch (_error) {
+      throw new Error('Assistant email readiness is unavailable');
+    }
+    if (value.preference_revision !== preference.revision) {
+      throw new Error('Assistant email readiness is unavailable');
+    }
+    const active = preference.enabled
+      && preference.frequency !== 'paused'
+      && preference.topics.length > 0;
+    if (value.disposition === 'PREVIEW_ONLY') {
+      if (!active || value.duplicate_of !== null
+        || value.unsubscribe_ready !== true) {
+        throw new Error('Assistant email readiness is unavailable');
+      }
+    } else if (value.disposition === 'SUPPRESSED_OPT_OUT') {
+      if (active || value.duplicate_of !== null) {
+        throw new Error('Assistant email readiness is unavailable');
+      }
+    } else {
+      if (!active
+        || typeof value.duplicate_of !== 'string'
+        || !/^[A-Za-z0-9_-]{32,128}$/.test(value.duplicate_of)
+        || value.duplicate_of === value.digest_key) {
+        throw new Error('Assistant email readiness is unavailable');
+      }
+    }
+    return value;
+  }
+
+  function assistantUnsubscribeRequest(token, expectedRevision) {
+    if (typeof token !== 'string'
+      || !/^[A-Za-z0-9_-]{43,256}$/.test(token)
+      || !Number.isInteger(expectedRevision)
+      || expectedRevision < 0) {
+      throw new Error('Assistant unsubscribe is unavailable');
+    }
+    return {
+      unsubscribe_token: token,
+      expected_revision: expectedRevision,
+    };
+  }
+
+  function validatedAssistantUnsubscribeResult(value, request,
+    now = Date.now()) {
+    const resultFields = new Set([
+      'schema_version', 'status', 'previous_revision', 'revision', 'enabled',
+      'frequency', 'unsubscribed_at', 'replayed',
+    ]);
+    const requestFields = new Set([
+      'unsubscribe_token', 'expected_revision',
+    ]);
+    if (!hasExactFields(value, resultFields)
+      || !hasExactFields(request, requestFields)
+      || value.schema_version !== 'assistant-unsubscribe-v1'
+      || value.status !== 'UNSUBSCRIBED'
+      || typeof request.unsubscribe_token !== 'string'
+      || !/^[A-Za-z0-9_-]{43,256}$/.test(request.unsubscribe_token)
+      || !Number.isInteger(request.expected_revision)
+      || request.expected_revision < 0
+      || value.previous_revision !== request.expected_revision
+      || value.revision !== request.expected_revision + 1
+      || value.enabled !== false
+      || value.frequency !== 'paused'
+      || typeof value.replayed !== 'boolean'
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Assistant unsubscribe confirmation is unavailable');
+    }
+    let unsubscribedAt;
+    try {
+      unsubscribedAt = Date.parse(
+        boundedTimestamp(value.unsubscribed_at, 'unsubscribe time'));
+    } catch (_error) {
+      throw new Error('Assistant unsubscribe confirmation is unavailable');
+    }
+    if (unsubscribedAt > Number(now) + 5 * 60 * 1000) {
+      throw new Error('Assistant unsubscribe confirmation is unavailable');
+    }
+    return value;
+  }
+
+  function validatedAssistantAuditPage(value) {
+    const pageFields = new Set([
+      'schema_version', 'checked_at', 'returned', 'truncated', 'entries',
+    ]);
+    if (!hasExactFields(value, pageFields)
+      || value.schema_version !== 'assistant-delivery-audit-v1'
+      || !Array.isArray(value.entries)
+      || value.entries.length > 100
+      || value.returned !== value.entries.length
+      || typeof value.truncated !== 'boolean'
+      || (value.truncated && value.entries.length === 0)) {
+      throw new Error('Assistant audit is unavailable');
+    }
+    let checkedAt;
+    try {
+      checkedAt = Date.parse(boundedTimestamp(value.checked_at, 'audit check'));
+    } catch (_error) {
+      throw new Error('Assistant audit is unavailable');
+    }
+    const entryFields = new Set([
+      'audit_ref', 'preference_revision', 'outcome', 'digest_key',
+      'duplicate_of', 'occurred_at',
+    ]);
+    const outcomes = new Set([
+      'PREVIEW_ONLY', 'SUPPRESSED_OPT_OUT', 'SUPPRESSED_DUPLICATE',
+      'UNSUBSCRIBED',
+    ]);
+    const seen = new Set();
+    let priorOccurredAt = Infinity;
+    let priorRef = '';
+    value.entries.forEach(entry => {
+      if (!hasExactFields(entry, entryFields)
+        || typeof entry.audit_ref !== 'string'
+        || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(entry.audit_ref)
+        || !Number.isInteger(entry.preference_revision)
+        || entry.preference_revision < 0
+        || !outcomes.has(entry.outcome)) {
+        throw new Error('Assistant audit entry is unavailable');
+      }
+      let occurredAt;
+      try {
+        occurredAt = Date.parse(
+          boundedTimestamp(entry.occurred_at, 'audit event'));
+      } catch (_error) {
+        throw new Error('Assistant audit entry is unavailable');
+      }
+      const refKey = entry.audit_ref.toLocaleLowerCase();
+      if (seen.has(refKey) || occurredAt > checkedAt
+        || occurredAt > priorOccurredAt
+        || (occurredAt === priorOccurredAt
+          && entry.audit_ref.localeCompare(priorRef) <= 0)) {
+        throw new Error('Assistant audit entry is unavailable');
+      }
+      seen.add(refKey);
+      priorOccurredAt = occurredAt;
+      priorRef = entry.audit_ref;
+      const hasDigest = typeof entry.digest_key === 'string'
+        && /^[A-Za-z0-9_-]{32,128}$/.test(entry.digest_key);
+      const hasDuplicate = typeof entry.duplicate_of === 'string'
+        && /^[A-Za-z0-9_-]{32,128}$/.test(entry.duplicate_of);
+      if (entry.outcome === 'UNSUBSCRIBED') {
+        if (entry.digest_key !== null || entry.duplicate_of !== null) {
+          throw new Error('Assistant audit entry is unavailable');
+        }
+      } else if (entry.outcome === 'SUPPRESSED_DUPLICATE') {
+        if (!hasDigest || !hasDuplicate
+          || entry.digest_key === entry.duplicate_of) {
+          throw new Error('Assistant audit entry is unavailable');
+        }
+      } else if (!hasDigest || entry.duplicate_of !== null) {
+        throw new Error('Assistant audit entry is unavailable');
+      }
+    });
+    return value;
+  }
+
   function init(doc) {
     if (!doc) return;
     const status = doc.getElementById('app-status');
@@ -1563,7 +1895,10 @@
     dashboardSummaryValues, clearDashboardSummary,
     validatedAccessStatus, renderAccessStatus, clearAccessStatus,
     validatedAssetInventory, filterAssetItems,
-    validatedAssistantPreference,
+    validatedAssistantPreference, validatedAssistantDigestPreview,
+    renderAssistantDigestPreview, validatedAssistantEmailReadiness,
+    assistantUnsubscribeRequest, validatedAssistantUnsubscribeResult,
+    validatedAssistantAuditPage,
     validatedPendingLeaveQueue, renderPendingLeaveQueue,
     validatedAssignedWorkQueue, renderAssignedWorkQueue,
     formatInvoiceAmount, validatedInvoiceSummaries, renderInvoiceSummaries,
