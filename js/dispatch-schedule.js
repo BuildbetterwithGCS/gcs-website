@@ -187,6 +187,95 @@
     return value;
   }
 
+  function dispatchRescheduleRequest(assignmentRef, expectedRevision,
+    startsAtValue, endsAtValue, getRandomValues, now = Date.now()) {
+    if (typeof assignmentRef !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(assignmentRef)
+      || !Number.isInteger(expectedRevision) || expectedRevision < 0
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Dispatch reschedule is unavailable');
+    }
+    let startsAt;
+    let endsAt;
+    try {
+      startsAt = timestamp(startsAtValue);
+      endsAt = timestamp(endsAtValue);
+    } catch (_error) {
+      throw new Error('Dispatch reschedule is unavailable');
+    }
+    if (startsAt < Number(now)
+      || startsAt >= endsAt
+      || endsAt - startsAt > 24 * 60 * 60 * 1000
+      || endsAt > Number(now) + 180 * 24 * 60 * 60 * 1000) {
+      throw new Error('Dispatch reschedule is unavailable');
+    }
+    let idempotencyKey;
+    try {
+      idempotencyKey = dispatchIdempotencyKey(getRandomValues);
+    } catch (_error) {
+      throw new Error('Dispatch reschedule is unavailable');
+    }
+    const requestedAt = new Date(Math.floor(Number(now) / 1000) * 1000)
+      .toISOString().replace('.000Z', 'Z');
+    return {
+      assignment_ref: assignmentRef,
+      expected_revision: expectedRevision,
+      starts_at: startsAtValue,
+      ends_at: endsAtValue,
+      requested_at: requestedAt,
+      idempotency_key: idempotencyKey,
+    };
+  }
+
+  function validatedDispatchRescheduleResult(value, request, now = Date.now()) {
+    const resultFields = [
+      'schema_version', 'assignment_ref', 'previous_revision', 'revision',
+      'status', 'starts_at', 'ends_at', 'updated_at', 'replayed',
+    ];
+    const requestFields = [
+      'assignment_ref', 'expected_revision', 'starts_at', 'ends_at',
+      'requested_at', 'idempotency_key',
+    ];
+    if (!exactKeys(value, resultFields)
+      || !exactKeys(request, requestFields)
+      || value.schema_version !== 'tenant-dispatch-reschedule-v1'
+      || typeof request.assignment_ref !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(request.assignment_ref)
+      || value.assignment_ref !== request.assignment_ref
+      || !Number.isInteger(request.expected_revision)
+      || request.expected_revision < 0
+      || value.previous_revision !== request.expected_revision
+      || value.revision !== request.expected_revision + 1
+      || value.status !== 'scheduled'
+      || value.starts_at !== request.starts_at
+      || value.ends_at !== request.ends_at
+      || value.updated_at !== request.requested_at
+      || typeof request.idempotency_key !== 'string'
+      || !/^dispatch-[a-f0-9]{48}$/.test(request.idempotency_key)
+      || typeof value.replayed !== 'boolean'
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Dispatch reschedule confirmation is unavailable');
+    }
+    let startsAt;
+    let endsAt;
+    let updatedAt;
+    try {
+      startsAt = timestamp(value.starts_at);
+      endsAt = timestamp(value.ends_at);
+      updatedAt = timestamp(value.updated_at);
+    } catch (_error) {
+      throw new Error('Dispatch reschedule confirmation is unavailable');
+    }
+    if (startsAt < updatedAt
+      || startsAt >= endsAt
+      || endsAt - startsAt > 24 * 60 * 60 * 1000
+      || endsAt > updatedAt + 180 * 24 * 60 * 60 * 1000
+      || updatedAt > Number(now) + 5 * 60 * 1000) {
+      throw new Error('Dispatch reschedule confirmation is unavailable');
+    }
+    return value;
+  }
+
   function renderDispatchSchedule(doc, value) {
     const list = doc && doc.getElementById('dispatch-schedule');
     if (!list) throw new Error('Dispatch schedule container is unavailable');
@@ -221,6 +310,7 @@
 
   return {
     validatedDispatchSchedule, dispatchStatusRequest,
-    validatedDispatchStatusResult, renderDispatchSchedule,
+    validatedDispatchStatusResult, dispatchRescheduleRequest,
+    validatedDispatchRescheduleResult, renderDispatchSchedule,
   };
 });
