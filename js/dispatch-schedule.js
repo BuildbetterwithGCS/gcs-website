@@ -487,6 +487,98 @@
     return value;
   }
 
+  function dispatchReassignmentRequest(assignmentRef, expectedRevision,
+    currentCrewRef, nextCrewRef, nextCrewLabel, getRandomValues,
+    now = Date.now()) {
+    if (typeof assignmentRef !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(assignmentRef)
+      || !Number.isInteger(expectedRevision) || expectedRevision < 0
+      || typeof currentCrewRef !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(currentCrewRef)
+      || typeof nextCrewRef !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(nextCrewRef)
+      || currentCrewRef.toLocaleLowerCase() === nextCrewRef.toLocaleLowerCase()
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Dispatch reassignment is unavailable');
+    }
+    try {
+      safeText(nextCrewLabel, 120);
+    } catch (_error) {
+      throw new Error('Dispatch reassignment is unavailable');
+    }
+    let idempotencyKey;
+    try {
+      idempotencyKey = dispatchIdempotencyKey(getRandomValues);
+    } catch (_error) {
+      throw new Error('Dispatch reassignment is unavailable');
+    }
+    const requestedAt = new Date(Math.floor(Number(now) / 1000) * 1000)
+      .toISOString().replace('.000Z', 'Z');
+    return {
+      assignment_ref: assignmentRef,
+      expected_revision: expectedRevision,
+      current_status: 'scheduled',
+      current_crew_ref: currentCrewRef,
+      next_crew_ref: nextCrewRef,
+      next_crew_label: nextCrewLabel,
+      requested_at: requestedAt,
+      idempotency_key: idempotencyKey,
+    };
+  }
+
+  function validatedDispatchReassignmentResult(value, request,
+    now = Date.now()) {
+    const resultFields = [
+      'schema_version', 'assignment_ref', 'previous_revision', 'revision',
+      'status', 'previous_crew_ref', 'crew_ref', 'crew_label', 'updated_at',
+      'replayed',
+    ];
+    const requestFields = [
+      'assignment_ref', 'expected_revision', 'current_status',
+      'current_crew_ref', 'next_crew_ref', 'next_crew_label', 'requested_at',
+      'idempotency_key',
+    ];
+    if (!exactKeys(value, resultFields)
+      || !exactKeys(request, requestFields)
+      || value.schema_version !== 'tenant-dispatch-reassignment-v1'
+      || typeof request.assignment_ref !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(request.assignment_ref)
+      || value.assignment_ref !== request.assignment_ref
+      || !Number.isInteger(request.expected_revision)
+      || request.expected_revision < 0
+      || value.previous_revision !== request.expected_revision
+      || value.revision !== request.expected_revision + 1
+      || request.current_status !== 'scheduled'
+      || value.status !== 'scheduled'
+      || typeof request.current_crew_ref !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(request.current_crew_ref)
+      || typeof request.next_crew_ref !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(request.next_crew_ref)
+      || request.current_crew_ref.toLocaleLowerCase()
+        === request.next_crew_ref.toLocaleLowerCase()
+      || value.previous_crew_ref !== request.current_crew_ref
+      || value.crew_ref !== request.next_crew_ref
+      || value.crew_label !== request.next_crew_label
+      || value.updated_at !== request.requested_at
+      || typeof request.idempotency_key !== 'string'
+      || !/^dispatch-[a-f0-9]{48}$/.test(request.idempotency_key)
+      || typeof value.replayed !== 'boolean'
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Dispatch reassignment confirmation is unavailable');
+    }
+    let updatedAt;
+    try {
+      safeText(request.next_crew_label, 120);
+      updatedAt = timestamp(value.updated_at);
+    } catch (_error) {
+      throw new Error('Dispatch reassignment confirmation is unavailable');
+    }
+    if (updatedAt > Number(now) + 5 * 60 * 1000) {
+      throw new Error('Dispatch reassignment confirmation is unavailable');
+    }
+    return value;
+  }
+
   function renderDispatchSchedule(doc, value) {
     const list = doc && doc.getElementById('dispatch-schedule');
     if (!list) throw new Error('Dispatch schedule container is unavailable');
@@ -524,6 +616,7 @@
     validatedDispatchPageChain, dispatchStatusRequest,
     validatedDispatchStatusResult, dispatchRescheduleRequest,
     validatedDispatchRescheduleResult, dispatchAssignmentRequest,
-    validatedDispatchAssignmentResult, renderDispatchSchedule,
+    validatedDispatchAssignmentResult, dispatchReassignmentRequest,
+    validatedDispatchReassignmentResult, renderDispatchSchedule,
   };
 });
