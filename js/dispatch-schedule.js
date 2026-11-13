@@ -57,10 +57,11 @@
     const checkedAt = timestamp(value.checked_at);
     const fields = [
       'assignment_ref', 'revision', 'job_label', 'work_order_label',
-      'crew_label', 'location_label', 'starts_at', 'ends_at', 'status',
+      'crew_ref', 'crew_label', 'location_label', 'starts_at', 'ends_at', 'status',
       'updated_at',
     ];
     const seen = new Set();
+    const crewEnds = new Map();
     let priorStart = -Infinity;
     let priorRef = '';
     for (const item of value.items) {
@@ -68,6 +69,8 @@
         || typeof item.assignment_ref !== 'string'
         || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(item.assignment_ref)
         || !Number.isInteger(item.revision) || item.revision < 0
+        || typeof item.crew_ref !== 'string'
+        || !/^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/.test(item.crew_ref)
         || !STATUSES.has(item.status)) {
         throw new Error('Dispatch schedule is unavailable');
       }
@@ -94,6 +97,14 @@
       }
       priorStart = startsAt;
       priorRef = item.assignment_ref;
+      if (item.status !== 'canceled') {
+        const crewKey = item.crew_ref.toLocaleLowerCase();
+        const priorEnd = crewEnds.get(crewKey);
+        if (priorEnd !== undefined && startsAt < priorEnd) {
+          throw new Error('Dispatch schedule is unavailable');
+        }
+        crewEnds.set(crewKey, endsAt);
+      }
     }
     return value;
   }
