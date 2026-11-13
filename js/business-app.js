@@ -980,6 +980,57 @@
     return value;
   }
 
+  function assistantUnsubscribeRequest(token, expectedRevision) {
+    if (typeof token !== 'string'
+      || !/^[A-Za-z0-9_-]{43,256}$/.test(token)
+      || !Number.isInteger(expectedRevision)
+      || expectedRevision < 0) {
+      throw new Error('Assistant unsubscribe is unavailable');
+    }
+    return {
+      unsubscribe_token: token,
+      expected_revision: expectedRevision,
+    };
+  }
+
+  function validatedAssistantUnsubscribeResult(value, request,
+    now = Date.now()) {
+    const resultFields = new Set([
+      'schema_version', 'status', 'previous_revision', 'revision', 'enabled',
+      'frequency', 'unsubscribed_at', 'replayed',
+    ]);
+    const requestFields = new Set([
+      'unsubscribe_token', 'expected_revision',
+    ]);
+    if (!hasExactFields(value, resultFields)
+      || !hasExactFields(request, requestFields)
+      || value.schema_version !== 'assistant-unsubscribe-v1'
+      || value.status !== 'UNSUBSCRIBED'
+      || typeof request.unsubscribe_token !== 'string'
+      || !/^[A-Za-z0-9_-]{43,256}$/.test(request.unsubscribe_token)
+      || !Number.isInteger(request.expected_revision)
+      || request.expected_revision < 0
+      || value.previous_revision !== request.expected_revision
+      || value.revision !== request.expected_revision + 1
+      || value.enabled !== false
+      || value.frequency !== 'paused'
+      || typeof value.replayed !== 'boolean'
+      || !Number.isFinite(Number(now))) {
+      throw new Error('Assistant unsubscribe confirmation is unavailable');
+    }
+    let unsubscribedAt;
+    try {
+      unsubscribedAt = Date.parse(
+        boundedTimestamp(value.unsubscribed_at, 'unsubscribe time'));
+    } catch (_error) {
+      throw new Error('Assistant unsubscribe confirmation is unavailable');
+    }
+    if (unsubscribedAt > Number(now) + 5 * 60 * 1000) {
+      throw new Error('Assistant unsubscribe confirmation is unavailable');
+    }
+    return value;
+  }
+
   function init(doc) {
     if (!doc) return;
     const status = doc.getElementById('app-status');
@@ -1770,6 +1821,7 @@
     validatedAssetInventory, filterAssetItems,
     validatedAssistantPreference, validatedAssistantDigestPreview,
     renderAssistantDigestPreview, validatedAssistantEmailReadiness,
+    assistantUnsubscribeRequest, validatedAssistantUnsubscribeResult,
     validatedPendingLeaveQueue, renderPendingLeaveQueue,
     validatedAssignedWorkQueue, renderAssignedWorkQueue,
     formatInvoiceAmount, validatedInvoiceSummaries, renderInvoiceSummaries,
