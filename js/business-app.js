@@ -1033,7 +1033,8 @@
 
   function validatedAssistantAuditPage(value) {
     const pageFields = new Set([
-      'schema_version', 'checked_at', 'returned', 'truncated', 'entries',
+      'schema_version', 'checked_at', 'returned', 'truncated', 'next_cursor',
+      'entries',
     ]);
     if (!hasExactFields(value, pageFields)
       || value.schema_version !== 'assistant-delivery-audit-v1'
@@ -1041,7 +1042,10 @@
       || value.entries.length > 100
       || value.returned !== value.entries.length
       || typeof value.truncated !== 'boolean'
-      || (value.truncated && value.entries.length === 0)) {
+      || (value.truncated && (value.entries.length === 0
+        || typeof value.next_cursor !== 'string'
+        || !/^[A-Za-z0-9_-]{32,256}$/.test(value.next_cursor)))
+      || (!value.truncated && value.next_cursor !== null)) {
       throw new Error('Assistant audit is unavailable');
     }
     let checkedAt;
@@ -1105,6 +1109,15 @@
       }
     });
     return value;
+  }
+
+  function assistantAuditPath(cursor) {
+    if (arguments.length === 0 || cursor === null) return '/assistant/audit';
+    if (typeof cursor !== 'string'
+      || !/^[A-Za-z0-9_-]{32,256}$/.test(cursor)) {
+      throw new Error('Assistant audit continuation is unavailable');
+    }
+    return '/assistant/audit?cursor=' + encodeURIComponent(cursor);
   }
 
   function init(doc) {
@@ -1898,7 +1911,7 @@
     validatedAssistantPreference, validatedAssistantDigestPreview,
     renderAssistantDigestPreview, validatedAssistantEmailReadiness,
     assistantUnsubscribeRequest, validatedAssistantUnsubscribeResult,
-    validatedAssistantAuditPage,
+    validatedAssistantAuditPage, assistantAuditPath,
     validatedPendingLeaveQueue, renderPendingLeaveQueue,
     validatedAssignedWorkQueue, renderAssignedWorkQueue,
     formatInvoiceAmount, validatedInvoiceSummaries, renderInvoiceSummaries,
