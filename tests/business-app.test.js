@@ -2844,6 +2844,7 @@ function safeAssistantAuditFixture() {
     checked_at: '2026-11-13T13:35:00Z',
     returned: 3,
     truncated: false,
+    next_cursor: null,
     entries: [
       {
         audit_ref: 'audit-unsubscribe',
@@ -2938,5 +2939,44 @@ test('assistant audit rejects duplicate references and ordering breaks', () => {
 
   expect(String(app.validatedAssistantAuditPage)).not.toMatch(
     /fetch\s*\(|recipient|email_address|provider|sent_at|delivered_at/i,
+  );
+});
+
+
+test('assistant audit continuation carries only a bounded opaque cursor', () => {
+  const fixture = safeAssistantAuditFixture();
+  const cursor = 'audit_' + 'z'.repeat(32);
+  const truncated = {
+    ...fixture,
+    truncated: true,
+    next_cursor: cursor,
+  };
+  expect(app.validatedAssistantAuditPage(truncated)).toBe(truncated);
+  expect(app.assistantAuditPath()).toBe('/assistant/audit');
+  expect(app.assistantAuditPath(null)).toBe('/assistant/audit');
+  expect(app.assistantAuditPath(cursor))
+    .toBe('/assistant/audit?cursor=' + cursor);
+
+  for (const invalid of [
+    undefined,
+    '',
+    'short',
+    'tenant=synthetic-a',
+    'recipient/private@example.invalid',
+    'x'.repeat(257),
+  ]) {
+    expect(() => app.assistantAuditPath(invalid))
+      .toThrow('Assistant audit continuation is unavailable');
+  }
+  for (const value of [
+    { ...fixture, truncated: true, next_cursor: null },
+    { ...fixture, truncated: true, next_cursor: 'short' },
+    { ...fixture, truncated: false, next_cursor: cursor },
+  ]) {
+    expect(() => app.validatedAssistantAuditPage(value))
+      .toThrow('Assistant audit is unavailable');
+  }
+  expect(String(app.assistantAuditPath)).not.toMatch(
+    /tenant|workspace|recipient|email|provider|digest_key|audit_ref/i,
   );
 });
