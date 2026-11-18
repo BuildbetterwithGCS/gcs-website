@@ -1111,6 +1111,67 @@
     return value;
   }
 
+  function validatedAssistantAuditPageChain(entries) {
+    if (!Array.isArray(entries) || entries.length < 1 || entries.length > 20) {
+      throw new Error('Assistant audit continuation is unavailable');
+    }
+    const auditEntries = [];
+    const seenRefs = new Set();
+    const consumedCursors = new Set();
+    let expectedCursor = null;
+    let checkedAt = null;
+    let priorOccurredAt = Infinity;
+    let priorRef = '';
+    let complete = false;
+    entries.forEach(entry => {
+      if (!hasExactFields(entry, new Set(['requested_cursor', 'page']))
+        || entry.requested_cursor !== expectedCursor
+        || complete) {
+        throw new Error('Assistant audit continuation is unavailable');
+      }
+      if (entry.requested_cursor !== null) {
+        if (typeof entry.requested_cursor !== 'string'
+          || !/^[A-Za-z0-9_-]{32,256}$/.test(entry.requested_cursor)
+          || consumedCursors.has(entry.requested_cursor)) {
+          throw new Error('Assistant audit continuation is unavailable');
+        }
+        consumedCursors.add(entry.requested_cursor);
+      }
+      const page = validatedAssistantAuditPage(entry.page);
+      if (checkedAt === null) checkedAt = page.checked_at;
+      if (page.checked_at !== checkedAt) {
+        throw new Error('Assistant audit continuation is unavailable');
+      }
+      page.entries.forEach(auditEntry => {
+        const refKey = auditEntry.audit_ref.toLocaleLowerCase();
+        const occurredAt = Date.parse(auditEntry.occurred_at);
+        if (seenRefs.has(refKey)
+          || occurredAt > priorOccurredAt
+          || (occurredAt === priorOccurredAt
+            && auditEntry.audit_ref.localeCompare(priorRef) <= 0)) {
+          throw new Error('Assistant audit continuation is unavailable');
+        }
+        seenRefs.add(refKey);
+        priorOccurredAt = occurredAt;
+        priorRef = auditEntry.audit_ref;
+        auditEntries.push(auditEntry);
+      });
+      if (page.next_cursor !== null
+        && (page.next_cursor === entry.requested_cursor
+          || consumedCursors.has(page.next_cursor))) {
+        throw new Error('Assistant audit continuation is unavailable');
+      }
+      expectedCursor = page.next_cursor;
+      complete = !page.truncated;
+    });
+    return {
+      checked_at: checkedAt,
+      entries: auditEntries,
+      next_cursor: expectedCursor,
+      complete,
+    };
+  }
+
   function assistantAuditPath(cursor) {
     if (arguments.length === 0 || cursor === null) return '/assistant/audit';
     if (typeof cursor !== 'string'
@@ -1911,7 +1972,8 @@
     validatedAssistantPreference, validatedAssistantDigestPreview,
     renderAssistantDigestPreview, validatedAssistantEmailReadiness,
     assistantUnsubscribeRequest, validatedAssistantUnsubscribeResult,
-    validatedAssistantAuditPage, assistantAuditPath,
+    validatedAssistantAuditPage, validatedAssistantAuditPageChain,
+    assistantAuditPath,
     validatedPendingLeaveQueue, renderPendingLeaveQueue,
     validatedAssignedWorkQueue, renderAssignedWorkQueue,
     formatInvoiceAmount, validatedInvoiceSummaries, renderInvoiceSummaries,
