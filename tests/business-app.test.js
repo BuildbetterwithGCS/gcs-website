@@ -2980,3 +2980,90 @@ test('assistant audit continuation carries only a bounded opaque cursor', () => 
     /tenant|workspace|recipient|email|provider|digest_key|audit_ref/i,
   );
 });
+
+
+test('assistant audit page chains preserve one snapshot and fail closed', () => {
+  const fixture = safeAssistantAuditFixture();
+  const cursor = 'chain_' + 'q'.repeat(32);
+  const first = {
+    ...fixture,
+    returned: 2,
+    truncated: true,
+    next_cursor: cursor,
+    entries: fixture.entries.slice(0, 2),
+  };
+  const second = {
+    ...fixture,
+    returned: 1,
+    truncated: false,
+    next_cursor: null,
+    entries: fixture.entries.slice(2),
+  };
+  expect(app.validatedAssistantAuditPageChain([
+    { requested_cursor: null, page: first },
+    { requested_cursor: cursor, page: second },
+  ])).toEqual({
+    checked_at: fixture.checked_at,
+    entries: fixture.entries,
+    next_cursor: null,
+    complete: true,
+  });
+
+  const invalidChains = [
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: 'wrong_' + 'r'.repeat(32), page: second },
+    ],
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: cursor, page: {
+        ...second,
+        entries: [{ ...fixture.entries[0] }],
+      } },
+    ],
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: cursor, page: {
+        ...second,
+        checked_at: '2026-11-13T13:36:00Z',
+      } },
+    ],
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: cursor, page: {
+        ...second,
+        entries: [{
+          ...fixture.entries[0],
+          audit_ref: 'audit-newer-on-second-page',
+        }],
+      } },
+    ],
+    [
+      { requested_cursor: null, page: first },
+      { requested_cursor: cursor, page: {
+        ...second,
+        truncated: true,
+        next_cursor: cursor,
+      } },
+    ],
+    [
+      { requested_cursor: null, page: {
+        ...first, truncated: false, next_cursor: null,
+      } },
+      { requested_cursor: null, page: second },
+    ],
+    [
+      { requested_cursor: null, page: first, tenant_id: 'not-allowed' },
+    ],
+  ];
+  for (const chain of invalidChains) {
+    expect(() => app.validatedAssistantAuditPageChain(chain))
+      .toThrow('Assistant audit continuation is unavailable');
+  }
+  expect(() => app.validatedAssistantAuditPageChain([]))
+    .toThrow('Assistant audit continuation is unavailable');
+  expect(() => app.validatedAssistantAuditPageChain(Array.from(
+    { length: 21 },
+    () => ({ requested_cursor: null, page: second }),
+  ))).toThrow('Assistant audit continuation is unavailable');
+});
