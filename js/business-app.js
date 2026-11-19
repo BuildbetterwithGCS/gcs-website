@@ -930,6 +930,115 @@
     return preview;
   }
 
+  function validatedAssistantSyntheticReviewPreview(value) {
+    const fields = new Set([
+      'schema_version', 'classification', 'checked_at',
+      'preference_revision', 'items', 'returned', 'truncated',
+    ]);
+    if (!hasExactFields(value, fields)
+      || value.schema_version !== 'assistant-synthetic-review-preview-v1'
+      || value.classification !== 'TEST_DATA_NOT_DELIVERABLE'
+      || !Number.isInteger(value.preference_revision)
+      || value.preference_revision < 0
+      || !Array.isArray(value.items) || value.items.length > 100
+      || value.returned !== value.items.length
+      || typeof value.truncated !== 'boolean'
+      || (value.truncated && value.items.length === 0)) {
+      throw new Error('Assistant test preview is unavailable');
+    }
+    const checkedAt = Date.parse(
+      boundedTimestamp(value.checked_at, 'test preview time'));
+    const itemFields = new Set([
+      'topic', 'title', 'action_label', 'deadline_at', 'evidence',
+    ]);
+    const evidenceFields = new Set([
+      'freshness_status', 'observed_at', 'source_updated_at', 'is_synthetic',
+      'source_url', 'location_known', 'within_radius',
+    ]);
+    const freshness = new Set(['CURRENT', 'STALE', 'UNKNOWN']);
+    const seenItems = new Set();
+    value.items.forEach(item => {
+      if (!hasExactFields(item, itemFields)
+        || !ASSISTANT_TOPICS.has(item.topic)
+        || typeof item.title !== 'string' || item.title.length < 1
+        || item.title.length > 240
+        || typeof item.action_label !== 'string'
+        || item.action_label.length < 1 || item.action_label.length > 120
+        || (item.deadline_at !== null
+          && (typeof item.deadline_at !== 'string'
+            || !Number.isFinite(Date.parse(item.deadline_at))))) {
+        throw new Error('Assistant test preview item is unavailable');
+      }
+      const evidence = item.evidence;
+      if (!hasExactFields(evidence, evidenceFields)
+        || !freshness.has(evidence.freshness_status)
+        || evidence.is_synthetic !== true
+        || ![null, true, false].includes(evidence.location_known)
+        || ![null, true, false].includes(evidence.within_radius)) {
+        throw new Error('Assistant test preview evidence is unavailable');
+      }
+      const observedAt = Date.parse(
+        boundedTimestamp(evidence.observed_at, 'test evidence time'));
+      const sourceUpdatedAt = Date.parse(
+        boundedTimestamp(evidence.source_updated_at, 'test source time'));
+      const sourceUrl = safeEvidenceUrl(evidence.source_url);
+      if (sourceUpdatedAt > observedAt
+        || observedAt > checkedAt + (5 * 60 * 1000)
+        || (item.topic === 'bid_opportunities'
+          && (sourceUrl === null || evidence.location_known !== true
+            || evidence.within_radius !== true))) {
+        throw new Error('Assistant test preview evidence is unavailable');
+      }
+      const itemKey = JSON.stringify([
+        item.topic, item.title, item.action_label, item.deadline_at, sourceUrl,
+      ]);
+      if (seenItems.has(itemKey)) {
+        throw new Error('Assistant test preview item is unavailable');
+      }
+      seenItems.add(itemKey);
+    });
+    return value;
+  }
+
+  function renderAssistantSyntheticReviewPreview(doc, value, container) {
+    const preview = validatedAssistantSyntheticReviewPreview(value);
+    if (!doc || !container || typeof container.replaceChildren !== 'function') {
+      throw new Error('Assistant test preview container is unavailable');
+    }
+    container.replaceChildren();
+    const warning = doc.createElement('li');
+    warning.className = 'assistant-test-preview-label';
+    warning.textContent = 'TEST DATA — NOT DELIVERABLE';
+    container.append(warning);
+    preview.items.forEach(item => {
+      const row = doc.createElement('li');
+      const title = doc.createElement('strong');
+      title.textContent = item.title;
+      const action = doc.createElement('span');
+      action.textContent = item.action_label;
+      const evidence = doc.createElement('small');
+      evidence.textContent = item.evidence.freshness_status
+        + ' synthetic evidence checked ' + item.evidence.observed_at;
+      row.append(title, action, evidence);
+      if (item.evidence.source_url) {
+        const source = doc.createElement('a');
+        source.href = item.evidence.source_url;
+        source.textContent = 'Open synthetic source evidence';
+        source.target = '_blank';
+        source.rel = 'nofollow noopener noreferrer';
+        row.append(source);
+      }
+      container.append(row);
+    });
+    if (preview.truncated) {
+      const notice = doc.createElement('li');
+      notice.className = 'assistant-test-preview-truncated';
+      notice.textContent = 'More synthetic test updates are not shown.';
+      container.append(notice);
+    }
+    return preview;
+  }
+
   function validatedAssistantEmailReadiness(value, preferenceValue) {
     const fields = new Set([
       'schema_version', 'preference_revision', 'disposition', 'checked_at',
@@ -1970,7 +2079,8 @@
     validatedAccessStatus, renderAccessStatus, clearAccessStatus,
     validatedAssetInventory, filterAssetItems,
     validatedAssistantPreference, validatedAssistantDigestPreview,
-    renderAssistantDigestPreview, validatedAssistantEmailReadiness,
+    renderAssistantDigestPreview, validatedAssistantSyntheticReviewPreview,
+    renderAssistantSyntheticReviewPreview, validatedAssistantEmailReadiness,
     assistantUnsubscribeRequest, validatedAssistantUnsubscribeResult,
     validatedAssistantAuditPage, validatedAssistantAuditPageChain,
     assistantAuditPath,
