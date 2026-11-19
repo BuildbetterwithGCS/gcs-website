@@ -70,7 +70,7 @@ test('accepts only the exact labeled synthetic review schema', () => {
   ];
   for (const candidate of invalid) {
     expect(() => app.validatedAssistantSyntheticReviewPreview(candidate))
-      .toThrow('Assistant test preview');
+      .toThrow('unavailable');
   }
 });
 
