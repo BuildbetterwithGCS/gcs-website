@@ -927,11 +927,17 @@ test('How To center bounds manager time review and compliance claims', () => {
     path.join(__dirname, '..', 'business', 'app', 'index.html'), 'utf8');
   expect(portal).toContain('href="../help/#manager-time-review-guide"');
   expect(help).toContain('id="manager-time-review-guide"');
-  expect(help).toContain('When an authorized manager review queue is available');
+  expect(help).toContain(
+    'The current customer preview does not expose a punch-approval panel.');
+  expect(help).toContain(
+    'A dashboard count or assistant reminder is a prompt to review;');
   expect(help).toContain(
     'Do not approve a record with a missing time or unresolved discrepancy.');
+  expect(help).toContain('Never approve your own punch.');
   expect(help).toContain(
-    'does not calculate pay, establish legal compliance, or prove where the employee worked.');
+    'A dashboard count or assistant reminder does not approve time.');
+  expect(help).toContain(
+    'will not calculate pay, establish legal compliance, send email,');
 });
 
 test('contextual time-clock help opens directly and remains keyboard accessible', () => {
