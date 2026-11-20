@@ -3082,3 +3082,16 @@ test('assistant audit page chains preserve one snapshot and fail closed', () => 
     () => ({ requested_cursor: null, page: second }),
   ))).toThrow('Assistant audit continuation is unavailable');
 });
+
+
+test('How To center separates synthetic assistant review from delivery and actions', () => {
+  const help = fs.readFileSync(path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  expect(help).toContain('id="assistant-review-preview-guide"');
+  expect(help).toContain('The current customer app does not expose this review screen.');
+  expect(help).toContain('labels the result as synthetic or test data and not deliverable');
+  expect(help).toContain('Treat every item as evidence to review, not an instruction or completed action.');
+  expect(help).toContain('Do not use a preview to send email, approve time or leave, submit a bid, contact a lead, issue an invoice, collect payment, or activate access.');
+  expect(help).toContain('Review only—nothing is sent or approved:');
+  expect(help).toContain('tenant-isolation evidence');
+  expect(help).toContain('end-to-end delivery verification');
+});
