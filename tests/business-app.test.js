@@ -631,6 +631,15 @@ test('How To center gives searchable, truthful asset import recovery steps', () 
   expect(help).toContain('Import new assets');
   expect(help).toContain('Existing assets are not updated or deleted.');
   expect(help).toContain('Do not upload real customer data');
+  expect(help).toContain(
+    'The current customer preview does not expose a punch-approval panel.');
+  expect(help).toContain(
+    'A dashboard count or assistant reminder is a prompt to review;');
+  expect(help).toContain('Never approve your own punch.');
+  expect(help).toContain(
+    'A dashboard count or assistant reminder does not approve time.');
+  expect(help).toContain(
+    'will not calculate pay, establish legal compliance, send email,');
   expect(help).toContain("split(/\\s+/).filter(Boolean)");
   expect(help).toContain("terms.some(term=>!haystack.includes(term))");
 });
