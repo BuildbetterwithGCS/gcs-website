@@ -2467,7 +2467,7 @@ test('assistant help supports direct links, multi-word search, and keyboard acce
   expect([...document.querySelectorAll('#guides details')]
     .filter(item => !item.hidden)).toEqual([guide]);
 
-  input.value = 'live email delivery';
+  input.value = 'settings daily weekly';
   input.dispatchEvent(new Event('input'));
   expect(guide.hidden).toBe(false);
   expect(count.textContent).toBe('1 of ' + guideTotal + ' guides shown');
