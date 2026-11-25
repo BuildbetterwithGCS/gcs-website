@@ -28,12 +28,24 @@ This bounded website increment mirrors the versioned founder acceptance contract
   - rejects unsupported affirmative live claims and contact details
   - commit `be46662bb4f519ac4413249bb451cc8028f94329`
 
+## Verification evidence
+
+Exact implementation head `607bb9b7562eb25efe0bc2d6bcc5f5d691acb8e1` passed website CI #356 (run `45723569382`):
+
+- 9 of 9 Jest suites passed
+- 186 of 186 Jest tests passed
+- contractor pilot acceptance How To suite passed
+- public-exposure guard passed across 32 deployable files
+- internal-link check passed across 21 HTML pages
+
+The documentation-only follow-up records that evidence and requires a fresh exact-head CI result before release consideration.
+
 ## Release boundary
 
 This increment does not modify production content and must remain unexposed. It does not establish provider verification, hosted-runtime readiness, billing activation, delivery, customer onboarding, payroll, or bid submission.
 
-No merge or deployment is permitted from this checkpoint without exact-head green CI and the required independent frontend/security/privacy review. The existing production deployment remains unchanged.
+PR #60 remains draft, open, unmerged, and without independent review. Founder PR #130 remains open, unmerged, and without independent review. No merge or deployment was performed. Netlify production remains deploy `6af4b56535ac62fbe639b2c6` in ready state.
 
 ## Exact next action
 
-Wait for exact-head website PR #60 CI. If green, record the run and request independent frontend/security/privacy review. Keep this fixture unmerged and unexposed until review clears the material release gates; otherwise fix only the failing bounded check.
+Confirm the documentation-only exact head is green, then obtain independent frontend/security/privacy review for website PR #60 and the required review set for founder PR #130. Keep the fixture unmerged and unexposed until those gates clear. If review remains unavailable, the next unblocked increment is an automated contract-drift check between the founder acceptance manifest and this website fixture.
