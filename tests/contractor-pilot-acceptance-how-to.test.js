@@ -25,11 +25,11 @@ test('acceptance How To is inactive, noindex, and contract-versioned', () => {
     .toBe('gcs-contractor-pilot-acceptance-snapshot-v1');
   expect(snapshot.source).toEqual({
     repository: 'BuildbetterwithGCS/gcs-founder',
-    commit: 'f10dc7609cec781426fd6a779fb80c509a5428ae',
+    commit: 'd656355da9ce04ce85b0e033b732554ceec3dc3b',
     path: 'reports/gcs-contractor-pilot-acceptance-v1.json',
     captured_on: '2026-11-25',
-    payload_sha256: '169a5db462fe256dd7f3aa6913715db498a441bf1b3f87a3a09a7b36460a70e3',
-    payload_bytes: 6171,
+    payload_sha256: '88150d16612056f75f54f806f0555cebd335b4d890161272c7fde9df51f0598d',
+    payload_bytes: 6614,
   });
   expect(page.querySelector('meta[name="robots"]').content)
     .toBe('noindex,nofollow');
@@ -78,6 +78,10 @@ test('How To step contract cannot drift from the founder snapshot', () => {
   expect(text).toContain('without contacting a customer');
   expect(text).toContain('no GPS tracking');
   expect(text).toContain('perform no payment');
+  expect(text).toContain('trusted document-receipt metadata');
+  expect(text).toContain('Deny cross-tenant cost or receipt linkage');
+  expect(text).toContain('manager-audited restart evidence');
+  expect(text).toContain('store no document bytes, filename, path, URL, vendor, bank, or payment data');
   expect(text).toContain('TEST_DATA_NOT_DELIVERABLE');
   expect(text).toContain('allowlisted synthetic source');
   expect(text).toContain('viewer exclusion');
