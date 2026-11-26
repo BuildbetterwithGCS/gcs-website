@@ -2,11 +2,11 @@
   "snapshot_schema_version": "gcs-contractor-pilot-acceptance-snapshot-v1",
   "source": {
     "repository": "BuildbetterwithGCS/gcs-founder",
-    "commit": "f10dc7609cec781426fd6a779fb80c509a5428ae",
+    "commit": "d656355da9ce04ce85b0e033b732554ceec3dc3b",
     "path": "reports/gcs-contractor-pilot-acceptance-v1.json",
-    "captured_on": "2026-11-25",
-    "payload_sha256": "169a5db462fe256dd7f3aa6913715db498a441bf1b3f87a3a09a7b36460a70e3",
-    "payload_bytes": 6171
+    "captured_on": "2026-11-26",
+    "payload_sha256": "88150d16612056f75f54f806f0555cebd335b4d890161272c7fde9df51f0598d",
+    "payload_bytes": 6614
   },
   "contract": {
     "schema_version": "gcs-contractor-pilot-acceptance-v1",
@@ -73,7 +73,11 @@
           "draft can be voided without delivery claim",
           "macro-free XLSX is inspected in memory",
           "invalid upload bytes are rejected",
-          "no payment or external storage"
+          "no payment or external storage",
+          "trusted document receipt metadata links only to a visible cost",
+          "cross-tenant cost or document receipt linkage is denied",
+          "cost document linkage survives restart with manager audit evidence",
+          "cost document link stores no bytes, filename, path, URL, vendor, bank, or payment data"
         ]
       },
       {
