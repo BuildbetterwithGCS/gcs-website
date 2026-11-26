@@ -13,7 +13,7 @@
     data-classification="INTERNAL_SYNTHETIC_NONPRODUCTION"
     data-runner-status="PASS_INTERNAL_STEPS"
     data-external-stage-status="BLOCKED_EXTERNAL"
-    data-source-contract-commit="9f17202899cee04a2127ecc6ac90a06d3573a3d9"
+    data-source-contract-commit="cce95c7b92d416949c2ace80aa60dbcab2dc1c3c"
     data-source-contract-path="reports/gcs-contractor-pilot-acceptance-v1.json"
   >
     <h1>Internal synthetic contractor pilot acceptance How To</h1>
@@ -27,7 +27,7 @@
       <li data-step-id="sales_operations" data-status="PASS" data-acceptance="[&quot;synthetic lead is qualified&quot;,&quot;employee drafts estimate&quot;,&quot;manager approves internal snapshot&quot;,&quot;proposal is not delivered&quot;,&quot;customer is not contacted&quot;]"><strong>Sales operations:</strong> qualify a synthetic lead, draft an estimate, and approve an internal snapshot without contacting a customer or delivering a proposal.</li>
       <li data-step-id="field_operations" data-status="PASS" data-acceptance="[&quot;manager schedules and revises dispatch&quot;,&quot;employee visibility is scoped&quot;,&quot;cancellation audit survives restart&quot;,&quot;no GPS, notification, or external delivery&quot;]"><strong>Field operations:</strong> revise synthetic dispatch, confirm employee-scoped visibility and restart-safe cancellation audit, and perform no GPS tracking, notification, or external delivery.</li>
       <li data-step-id="finance_and_documents" data-status="PASS" data-acceptance="[&quot;invoice tracking is manager-only&quot;,&quot;draft can be voided without delivery claim&quot;,&quot;macro-free XLSX is inspected in memory&quot;,&quot;invalid upload bytes are rejected&quot;,&quot;no payment or external storage&quot;]"><strong>Finance and documents:</strong> keep invoice tracking manager-only, inspect a macro-free synthetic workbook in memory, reject invalid bytes, and perform no payment or external storage action.</li>
-      <li data-step-id="dashboard_and_assistant" data-status="PASS" data-acceptance="[&quot;manager dashboard is tenant-scoped&quot;,&quot;employee dashboard is self-scoped&quot;,&quot;preferences and opt-out persist&quot;,&quot;candidates include freshness evidence and deduplication&quot;,&quot;preview is TEST_DATA_NOT_DELIVERABLE&quot;,&quot;no email or provider delivery&quot;]"><strong>Dashboard and assistant:</strong> confirm tenant- and self-scoped dashboards, durable preferences and opt-out, freshness evidence and deduplication, and a TEST_DATA_NOT_DELIVERABLE preview with no email or provider delivery.</li>
+      <li data-step-id="dashboard_and_assistant" data-status="PASS" data-acceptance="[&quot;manager dashboard is tenant-scoped&quot;,&quot;employee dashboard is self-scoped&quot;,&quot;preferences and opt-out persist&quot;,&quot;synthetic bid candidates require allowlisted source evidence&quot;,&quot;radius, source, deadline, and freshness evidence are preserved&quot;,&quot;viewer receives no bid preview&quot;,&quot;cross-tenant bid access is denied&quot;,&quot;bid preview survives durable restart&quot;,&quot;preview is TEST_DATA_NOT_DELIVERABLE&quot;,&quot;no email, provider delivery, customer contact, or bid submission&quot;]"><strong>Dashboard, assistant, and synthetic radius bids:</strong> confirm tenant- and self-scoped dashboards, durable preferences and opt-out, allowlisted synthetic source plus radius, deadline, and freshness evidence, viewer exclusion, cross-tenant denial, restart-safe deduplication, and a TEST_DATA_NOT_DELIVERABLE preview with no email, provider delivery, customer contact, or bid submission.</li>
     </ol>
 
     <section id="external-prerequisites" aria-labelledby="external-prerequisites-heading">
@@ -37,7 +37,7 @@
         <li data-prerequisite-id="hosted_runtime" data-status="BLOCKED">Protected hosted-runtime access control, HTTPS and headers, persistence, backup, and restore evidence.</li>
         <li data-prerequisite-id="billing_provider" data-status="BLOCKED">Official sandbox checkout, signed webhook, settlement-state, cancellation, revocation, and rollback evidence.</li>
         <li data-prerequisite-id="email_delivery" data-status="BLOCKED">Verified provider credentials plus real delivery, suppression, unsubscribe, audit, and deduplication evidence.</li>
-        <li data-prerequisite-id="radius_bid_discovery" data-status="BLOCKED">Authorized sources, radius logic, freshness timestamps, tenant scoping, and no-fabrication review.</li>
+        <li data-prerequisite-id="radius_bid_discovery" data-status="BLOCKED">Independent review plus authorized live sources, real-source provenance, runtime/provider validation, radius and freshness verification, tenant isolation, and no-fabrication evidence.</li>
         <li data-prerequisite-id="coastal_onboarding" data-status="BLOCKED">Explicit contact and configuration details plus approval before invitation, access, data use, or charging.</li>
       </ul>
     </section>
