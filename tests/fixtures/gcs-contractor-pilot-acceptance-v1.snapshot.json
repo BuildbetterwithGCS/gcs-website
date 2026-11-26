@@ -1,0 +1,160 @@
+{
+  "snapshot_schema_version": "gcs-contractor-pilot-acceptance-snapshot-v1",
+  "source": {
+    "repository": "BuildbetterwithGCS/gcs-founder",
+    "commit": "3262bd24db57cfb08e722be6fdca9ceda615df1f",
+    "path": "reports/gcs-contractor-pilot-acceptance-v1.json",
+    "captured_on": "2026-11-26",
+    "payload_sha256": "0af89e3986151f96f7b1b2957af54b2239d8b8a8f8498deb1429f6ccf70a0ddb",
+    "payload_bytes": 7107
+  },
+  "contract": {
+    "schema_version": "gcs-contractor-pilot-acceptance-v1",
+    "classification": "INTERNAL_SYNTHETIC_NONPRODUCTION",
+    "runner_status": "PASS_INTERNAL_STEPS",
+    "external_stage_status": "BLOCKED_EXTERNAL",
+    "customer_action_required": false,
+    "internal_steps": [
+      {
+        "step_id": "access_and_roles",
+        "status": "PASS",
+        "acceptance": [
+          "manager role is session-derived",
+          "employee role is session-derived",
+          "cross-tenant session is denied"
+        ]
+      },
+      {
+        "step_id": "subscription_test_mode",
+        "status": "PASS",
+        "acceptance": [
+          "exact module selection revision persists",
+          "entitlement remains unverified PENDING",
+          "module access is not granted"
+        ]
+      },
+      {
+        "step_id": "workforce_setup",
+        "status": "PASS",
+        "acceptance": [
+          "manager assigns work",
+          "employee clocks in and out",
+          "manager reviews punch and PTO",
+          "cleared queues survive restart",
+          "no payroll calculation"
+        ]
+      },
+      {
+        "step_id": "sales_operations",
+        "status": "PASS",
+        "acceptance": [
+          "synthetic lead is qualified",
+          "employee drafts estimate",
+          "manager approves internal snapshot",
+          "proposal is not delivered",
+          "customer is not contacted"
+        ]
+      },
+      {
+        "step_id": "field_operations",
+        "status": "PASS",
+        "acceptance": [
+          "manager schedules and revises dispatch",
+          "employee visibility is scoped",
+          "cancellation audit survives restart",
+          "no GPS, notification, or external delivery"
+        ]
+      },
+      {
+        "step_id": "finance_and_documents",
+        "status": "PASS",
+        "acceptance": [
+          "invoice tracking is manager-only",
+          "draft can be voided without delivery claim",
+          "macro-free XLSX is inspected in memory",
+          "invalid upload bytes are rejected",
+          "no payment or external storage",
+          "trusted document receipt metadata links only to a visible cost",
+          "cross-tenant cost or document receipt linkage is denied",
+          "cost document linkage survives restart with manager audit evidence",
+          "cost document link stores no bytes, filename, path, URL, vendor, bank, or payment data"
+        ]
+      },
+      {
+        "step_id": "dashboard_and_assistant",
+        "status": "PASS",
+        "acceptance": [
+          "manager dashboard is tenant-scoped",
+          "employee dashboard is self-scoped",
+          "preferences and opt-out persist",
+          "synthetic bid candidates require allowlisted source evidence",
+          "radius, source, deadline, and freshness evidence are preserved",
+          "viewer receives no bid preview",
+          "cross-tenant bid access is denied",
+          "bid preview survives durable restart",
+          "preview is TEST_DATA_NOT_DELIVERABLE",
+          "no email, provider delivery, customer contact, or bid submission",
+          "manager dashboard splits bounded cost counts by MATERIAL and EXPENSE",
+          "employee cost dashboard remains self-scoped",
+          "invalid PAYMENT cost type fails closed",
+          "cost dashboard exposes no amounts or descriptions",
+          "manager dashboard includes tenant-scoped linked-document counts",
+          "employee linked-document dashboard remains self-scoped",
+          "document dashboard exposes only total and PDF, JPEG, and PNG counts",
+          "invalid or unbounded document summary data fails closed",
+          "document dashboard exposes no IDs, hashes, bytes, actors, amounts, descriptions, vendor, or payment data"
+        ]
+      }
+    ],
+    "blocked_prerequisites": [
+      {
+        "id": "independent_reviews",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "hosted_runtime",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "billing_provider",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "email_delivery",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "radius_bid_discovery",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "coastal_onboarding",
+        "status": "BLOCKED"
+      }
+    ],
+    "onboarding_phases": [
+      {
+        "phase": "synthetic_rehearsal",
+        "status": "PASS"
+      },
+      {
+        "phase": "review_and_provider_preflight",
+        "status": "BLOCKED"
+      },
+      {
+        "phase": "volunteer_pilot_onboarding",
+        "status": "BLOCKED"
+      }
+    ],
+    "prohibited_claims": [
+      "live subscription",
+      "payment collected",
+      "payroll calculated",
+      "email delivered",
+      "customer onboarded",
+      "bid submitted",
+      "provider verified",
+      "production ready"
+    ]
+  }
+}
