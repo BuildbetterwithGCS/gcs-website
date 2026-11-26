@@ -27,7 +27,7 @@ test('acceptance How To is inactive, noindex, and contract-versioned', () => {
     repository: 'BuildbetterwithGCS/gcs-founder',
     commit: 'd656355da9ce04ce85b0e033b732554ceec3dc3b',
     path: 'reports/gcs-contractor-pilot-acceptance-v1.json',
-    captured_on: '2026-11-25',
+    captured_on: '2026-11-26',
     payload_sha256: '88150d16612056f75f54f806f0555cebd335b4d890161272c7fde9df51f0598d',
     payload_bytes: 6614,
   });
