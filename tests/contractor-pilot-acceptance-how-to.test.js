@@ -25,11 +25,11 @@ test('acceptance How To is inactive, noindex, and contract-versioned', () => {
     .toBe('gcs-contractor-pilot-acceptance-snapshot-v1');
   expect(snapshot.source).toEqual({
     repository: 'BuildbetterwithGCS/gcs-founder',
-    commit: 'd656355da9ce04ce85b0e033b732554ceec3dc3b',
+    commit: '3262bd24db57cfb08e722be6fdca9ceda615df1f',
     path: 'reports/gcs-contractor-pilot-acceptance-v1.json',
     captured_on: '2026-11-26',
-    payload_sha256: '88150d16612056f75f54f806f0555cebd335b4d890161272c7fde9df51f0598d',
-    payload_bytes: 6614,
+    payload_sha256: '0af89e3986151f96f7b1b2957af54b2239d8b8a8f8498deb1429f6ccf70a0ddb',
+    payload_bytes: 7107,
   });
   expect(page.querySelector('meta[name="robots"]').content)
     .toBe('noindex,nofollow');
@@ -90,6 +90,10 @@ test('How To step contract cannot drift from the founder snapshot', () => {
   expect(text).toContain('bounded MATERIAL and EXPENSE counts');
   expect(text).toContain('invalid PAYMENT denial');
   expect(text).toContain('without amounts or descriptions');
+  expect(text).toContain('privacy-minimized linked-document totals');
+  expect(text).toContain('fixed PDF, JPEG, and PNG counts');
+  expect(text).toContain('invalid media, and unbounded document sources fail closed');
+  expect(text).toContain('no document IDs, hashes, bytes, actors, amounts, descriptions, vendor, or payment data');
   expect(text).toContain('no email, provider delivery, customer contact, or bid submission');
 });
 
