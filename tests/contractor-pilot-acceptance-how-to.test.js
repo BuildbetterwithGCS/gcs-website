@@ -25,11 +25,11 @@ test('acceptance How To is inactive, noindex, and contract-versioned', () => {
     .toBe('gcs-contractor-pilot-acceptance-snapshot-v1');
   expect(snapshot.source).toEqual({
     repository: 'BuildbetterwithGCS/gcs-founder',
-    commit: 'cce95c7b92d416949c2ace80aa60dbcab2dc1c3c',
+    commit: 'f10dc7609cec781426fd6a779fb80c509a5428ae',
     path: 'reports/gcs-contractor-pilot-acceptance-v1.json',
     captured_on: '2026-11-25',
-    payload_sha256: '2443c0a8579f6d520bc0425c6a7e7221b023107565ddfc6cd92cd3103a0ff623',
-    payload_bytes: 5834,
+    payload_sha256: '169a5db462fe256dd7f3aa6913715db498a441bf1b3f87a3a09a7b36460a70e3',
+    payload_bytes: 6171,
   });
   expect(page.querySelector('meta[name="robots"]').content)
     .toBe('noindex,nofollow');
@@ -83,6 +83,9 @@ test('How To step contract cannot drift from the founder snapshot', () => {
   expect(text).toContain('viewer exclusion');
   expect(text).toContain('cross-tenant denial');
   expect(text).toContain('restart-safe deduplication');
+  expect(text).toContain('bounded MATERIAL and EXPENSE counts');
+  expect(text).toContain('invalid PAYMENT denial');
+  expect(text).toContain('without amounts or descriptions');
   expect(text).toContain('no email, provider delivery, customer contact, or bid submission');
 });
 
