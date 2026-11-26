@@ -80,6 +80,22 @@ This increment does not modify production content and must remain unexposed. It 
 
 PR #60 remains draft, open, unmerged, and without independent review. Founder PR #130 remains open, unmerged, and without independent review. No merge or deployment was performed. Netlify production remains deploy `6af4b56535ac62fbe639b2c6` in ready state.
 
+## Contractor cost acceptance synchronization — 2026-11-26
+
+- verified founder source head: `f10dc7609cec781426fd6a779fb80c509a5428ae`
+- verified founder Genesis Tests #1564: passed (run `45776953724`)
+- exact UTF-8 source payload: `6,171` bytes
+- exact source SHA-256: `169a5db462fe256dd7f3aa6913715db498a441bf1b3f87a3a09a7b36460a70e3`
+- snapshot update commit: `8215f9c6c6f57f9573fe979b9d7acc5c30c3895f`
+- inactive noindex How To update commit: `825823a3491feeefecf8de417de80a9f2cc821d7`
+- drift-test update commit: `59f3548eac2d21cefbc952e9f8261cacd5d550b8`
+- exact website branch head verified: `825823a3491feeefecf8de417de80a9f2cc821d7`
+- website CI #366 passed on that exact head (run `45785299186`)
+- mirrored acceptance now verifies tenant-scoped manager counts, employee self-scoping, bounded MATERIAL/EXPENSE counts, invalid PAYMENT rejection, and no amount/description exposure
+- fixture remains noindex, script-free, form-free, network-free, unlinked, and nonproduction
+
+No customer contact, Coastal data, email delivery, payment, banking action, bid submission, merge, or production deployment occurred. PR #60 and founder PR #130 remain unreviewed and unmerged. Netlify production remains deploy `6af4b56535ac62fbe639b2c6` in ready state.
+
 ## Exact next action
 
-Confirm this documentation-only exact head is green. With independent review still unavailable, inventory the founder branch's existing materials, expenses, and subcontractor boundaries, then implement the smallest missing tenant-scoped synthetic materials/expense approval increment. It must derive actor and role from the authenticated session, preserve cross-tenant denial and audit/restart evidence, and perform no payment, reimbursement, payroll, banking, supplier contact, or customer-data action. Keep both PRs unmerged and production unchanged until required review is recorded.
+Confirm this documentation-only head is green. With independent review still unavailable, inventory existing document-upload and contractor-cost boundaries on founder PR #130 and identify the smallest synthetic receipt/document metadata linkage that can be tested without external storage, payment, reimbursement, payroll, banking, supplier contact, customer data, or production exposure. Keep both PRs unmerged and production unchanged until required review is recorded.
