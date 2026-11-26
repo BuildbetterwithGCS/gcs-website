@@ -25,7 +25,7 @@ test('acceptance How To is inactive, noindex, and contract-versioned', () => {
     .toBe('gcs-contractor-pilot-acceptance-snapshot-v1');
   expect(snapshot.source).toEqual({
     repository: 'BuildbetterwithGCS/gcs-founder',
-    commit: '9f17202899cee04a2127ecc6ac90a06d3573a3d9',
+    commit: 'cce95c7b92d416949c2ace80aa60dbcab2dc1c3c',
     path: 'reports/gcs-contractor-pilot-acceptance-v1.json',
     captured_on: '2026-11-25',
   });
@@ -73,7 +73,11 @@ test('How To step contract cannot drift from the founder snapshot', () => {
   expect(text).toContain('no GPS tracking');
   expect(text).toContain('perform no payment');
   expect(text).toContain('TEST_DATA_NOT_DELIVERABLE');
-  expect(text).toContain('no email or provider delivery');
+  expect(text).toContain('allowlisted synthetic source');
+  expect(text).toContain('viewer exclusion');
+  expect(text).toContain('cross-tenant denial');
+  expect(text).toContain('restart-safe deduplication');
+  expect(text).toContain('no email, provider delivery, customer contact, or bid submission');
 });
 
 test('How To prerequisite contract cannot drift from the founder snapshot', () => {
@@ -93,6 +97,8 @@ test('How To prerequisite contract cannot drift from the founder snapshot', () =
     { phase: 'volunteer_pilot_onboarding', status: 'BLOCKED' },
   ]);
   expect(page.body.textContent).toContain('No customer action is requested');
+  expect(page.body.textContent).toContain('authorized live sources');
+  expect(page.body.textContent).toContain('no-fabrication evidence');
 });
 
 test('acceptance How To contains no unsupported affirmative live claim', () => {
