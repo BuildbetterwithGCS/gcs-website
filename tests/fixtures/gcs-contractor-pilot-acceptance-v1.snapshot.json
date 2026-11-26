@@ -2,7 +2,7 @@
   "snapshot_schema_version": "gcs-contractor-pilot-acceptance-snapshot-v1",
   "source": {
     "repository": "BuildbetterwithGCS/gcs-founder",
-    "commit": "9f17202899cee04a2127ecc6ac90a06d3573a3d9",
+    "commit": "cce95c7b92d416949c2ace80aa60dbcab2dc1c3c",
     "path": "reports/gcs-contractor-pilot-acceptance-v1.json",
     "captured_on": "2026-11-25"
   },
@@ -81,24 +81,55 @@
           "manager dashboard is tenant-scoped",
           "employee dashboard is self-scoped",
           "preferences and opt-out persist",
-          "candidates include freshness evidence and deduplication",
+          "synthetic bid candidates require allowlisted source evidence",
+          "radius, source, deadline, and freshness evidence are preserved",
+          "viewer receives no bid preview",
+          "cross-tenant bid access is denied",
+          "bid preview survives durable restart",
           "preview is TEST_DATA_NOT_DELIVERABLE",
-          "no email or provider delivery"
+          "no email, provider delivery, customer contact, or bid submission"
         ]
       }
     ],
     "blocked_prerequisites": [
-      { "id": "independent_reviews", "status": "BLOCKED" },
-      { "id": "hosted_runtime", "status": "BLOCKED" },
-      { "id": "billing_provider", "status": "BLOCKED" },
-      { "id": "email_delivery", "status": "BLOCKED" },
-      { "id": "radius_bid_discovery", "status": "BLOCKED" },
-      { "id": "coastal_onboarding", "status": "BLOCKED" }
+      {
+        "id": "independent_reviews",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "hosted_runtime",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "billing_provider",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "email_delivery",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "radius_bid_discovery",
+        "status": "BLOCKED"
+      },
+      {
+        "id": "coastal_onboarding",
+        "status": "BLOCKED"
+      }
     ],
     "onboarding_phases": [
-      { "phase": "synthetic_rehearsal", "status": "PASS" },
-      { "phase": "review_and_provider_preflight", "status": "BLOCKED" },
-      { "phase": "volunteer_pilot_onboarding", "status": "BLOCKED" }
+      {
+        "phase": "synthetic_rehearsal",
+        "status": "PASS"
+      },
+      {
+        "phase": "review_and_provider_preflight",
+        "status": "BLOCKED"
+      },
+      {
+        "phase": "volunteer_pilot_onboarding",
+        "status": "BLOCKED"
+      }
     ],
     "prohibited_claims": [
       "live subscription",
