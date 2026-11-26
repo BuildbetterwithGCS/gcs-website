@@ -28,6 +28,8 @@ test('acceptance How To is inactive, noindex, and contract-versioned', () => {
     commit: 'cce95c7b92d416949c2ace80aa60dbcab2dc1c3c',
     path: 'reports/gcs-contractor-pilot-acceptance-v1.json',
     captured_on: '2026-11-25',
+    payload_sha256: '2443c0a8579f6d520bc0425c6a7e7221b023107565ddfc6cd92cd3103a0ff623',
+    payload_bytes: 5834,
   });
   expect(page.querySelector('meta[name="robots"]').content)
     .toBe('noindex,nofollow');
@@ -38,7 +40,11 @@ test('acceptance How To is inactive, noindex, and contract-versioned', () => {
     externalStageStatus: contract.external_stage_status,
     sourceContractCommit: snapshot.source.commit,
     sourceContractPath: snapshot.source.path,
+    sourceContractSha256: snapshot.source.payload_sha256,
+    sourceContractBytes: String(snapshot.source.payload_bytes),
   });
+  expect(snapshot.source.payload_sha256).toMatch(/^[a-f0-9]{64}$/);
+  expect(snapshot.source.payload_bytes).toBeGreaterThan(0);
   expect(contract.customer_action_required).toBe(false);
   expect(page.querySelectorAll('a, button, input, select, textarea, form'))
     .toHaveLength(0);
