@@ -3095,3 +3095,35 @@ test('How To center separates synthetic assistant review from delivery and actio
   expect(help).toContain('tenant-isolation evidence');
   expect(help).toContain('end-to-end delivery verification');
 });
+
+
+test('cost and receipt How To is low-literacy, privacy-minimized, and inactive', () => {
+  const html = fs.readFileSync(
+    path.join(__dirname, '..', 'business', 'help', 'index.html'), 'utf8');
+  const page = new DOMParser().parseFromString(html, 'text/html');
+  const guide = page.getElementById('cost-receipt-guide');
+  const text = guide.textContent.replace(/\s+/g, ' ').trim();
+
+  expect(page.querySelector('meta[name="robots"]').content)
+    .toBe('noindex,nofollow');
+  expect(guide).not.toBeNull();
+  expect(guide.querySelectorAll('a, button, input, select, textarea, form'))
+    .toHaveLength(0);
+  for (const required of [
+    'Material',
+    'Expense',
+    'tenant-wide MATERIAL and EXPENSE counts',
+    'only their own counts',
+    'fixed PDF, JPEG, and PNG counts',
+    'It does not show or open a document',
+    'A removed manager role must remove tenant-wide visibility',
+    'Do not treat an aggregate count as an accounting record',
+    'Customer receipt upload, document storage, reimbursement, payment, payroll, accounting posting, email delivery, and customer use are not live',
+    'Do not enter or upload real customer, employee, banking, or receipt data',
+  ]) {
+    expect(text).toContain(required);
+  }
+  expect(text).not.toMatch(
+    /receipt upload is live|payment is confirmed|payroll is calculated|reimbursement is approved|accounting entry is posted/i,
+  );
+});
