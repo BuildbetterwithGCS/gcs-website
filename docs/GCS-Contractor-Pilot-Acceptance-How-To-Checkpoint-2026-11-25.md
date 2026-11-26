@@ -9,7 +9,7 @@ This bounded website increment mirrors the versioned founder acceptance contract
 - Pull request: #60
 - Source contract: `gcs-contractor-pilot-acceptance-v1`
 - Source repository: `BuildbetterwithGCS/gcs-founder`
-- Source commit: `9f17202899cee04a2127ecc6ac90a06d3573a3d9`
+- Source commit: `cce95c7b92d416949c2ace80aa60dbcab2dc1c3c`
 - Classification: `INTERNAL_SYNTHETIC_NONPRODUCTION`
 - Internal runner status mirrored: `PASS_INTERNAL_STEPS`
 - External stage status mirrored: `BLOCKED_EXTERNAL`
@@ -20,6 +20,7 @@ This bounded website increment mirrors the versioned founder acceptance contract
   - `noindex,nofollow`
   - no links, form controls, scripts, or network path
   - seven exact internal step identifiers and acceptance arrays
+  - explicit allowlisted synthetic-source, radius/freshness/deadline, viewer-exclusion, tenant-denial, restart, deduplication, no-contact, and no-submission criteria
   - six exact blocked prerequisite identifiers
   - source commit and path provenance
   - synthetic-only and no-customer-action boundary
@@ -35,6 +36,18 @@ This bounded website increment mirrors the versioned founder acceptance contract
   - verifies tenant, payroll, billing, email, bid, and onboarding boundaries
   - rejects unsupported affirmative live claims and contact details
   - drift-guard commit `9bb129726ff8e8292576f7a2709469f903987a0c`
+
+## Radius-bid contract synchronization
+
+- snapshot commit: `6806e94bf50c6285fa79d5128c946d7eb9ad346e`
+- inactive noindex How To commit: `f11de9851bd07165b92d3ec82be4a26ae3ac0160`
+- drift-guard commit: `63a89ef63fe29671a991b1b58eaf6c16dbe88f4d`
+- exact founder source head: `cce95c7b92d416949c2ace80aa60dbcab2dc1c3c`
+- founder Genesis Tests #1551 passed before capture
+- website CI #362 (run `45756716674`) passed on the exact drift-guard head
+- fixture remains noindex, script-free, form-free, network-free, unlinked, and nonproduction
+- live source/provider/runtime validation remains blocked
+- no customer contact, Coastal data, email, payment, or bid submission occurred
 
 ## Verification evidence
 
@@ -55,4 +68,4 @@ PR #60 remains draft, open, unmerged, and without independent review. Founder PR
 
 ## Exact next action
 
-Confirm this documentation-only exact head is green, then obtain independent frontend/security/privacy review for website PR #60 and the required review set for founder PR #130. Keep the fixture unmerged and unexposed until those gates clear. If review remains unavailable, advance the next isolated workstream: add a tested synthetic radius-qualification contract that requires authorized-source, distance, freshness, and tenant evidence and cannot submit or fabricate a bid.
+Confirm this documentation-only exact head is green. Then add a canonical source-contract digest to the website snapshot and drift test so a reviewer can verify the captured founder acceptance payload byte-for-byte against founder head `cce95c7b92d416949c2ace80aa60dbcab2dc1c3c`. Keep both PRs unmerged and production unchanged until independent frontend/security/privacy review is recorded.
