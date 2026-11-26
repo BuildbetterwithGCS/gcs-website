@@ -113,6 +113,23 @@ No customer contact, Coastal data, email delivery, payment, banking action, bid 
 
 No customer contact, Coastal data, upload, storage-provider action, email, payment, banking action, bid submission, merge, or production deployment occurred.
 
+## Document-dashboard acceptance synchronization — 2026-11-26
+
+- verified founder source head: `3262bd24db57cfb08e722be6fdca9ceda615df1f`
+- verified founder Genesis Tests #1592: passed (run `45813070860`)
+- exact UTF-8 source payload: `7,107` bytes
+- exact source SHA-256: `0af89e3986151f96f7b1b2957af54b2239d8b8a8f8498deb1429f6ccf70a0ddb`
+- snapshot update commit: `7fd5facb125529327d595d7ee1eaf68b9d7b793b`
+- inactive noindex How To update commit: `b110fb4c7de7676401b1e61018b24720362a8b43`
+- drift-guard update commit: `07c14f965531e68d7ab1d85afecc3a14cb69a051`
+- CI #371 correctly failed on an exact wording regression: the prior “invalid PAYMENT denial” phrase had been combined with new denial text
+- wording repair commit: `21b5d53ad1d51dcf53121a5ca242ed8552ea1f89`
+- website CI #372 passed on the exact repaired head (run `45813327977`)
+- mirrored acceptance covers manager tenant scope, employee self scope, total plus PDF/JPEG/PNG counts only, invalid/unbounded source denial, and absence of IDs, hashes, bytes, actors, amounts, descriptions, vendor, or payment data
+- fixture remains noindex, script-free, form-free, network-free, unlinked, and nonproduction
+
+No customer contact, Coastal data, upload, storage-provider action, email, payment, banking action, bid submission, merge, or production deployment occurred.
+
 ## Exact next action
 
-Compose the founder cost-document service in an integrated synthetic test with the real tenant contractor-cost ledger and a bounded trusted document-receipt fixture. Prove self-visible operator linkage, same-tenant manager review, other-operator and cross-tenant denial, and restart reconstruction. Keep the seam unexposed and production unchanged pending independent security/privacy/data review.
+Inject the real contractor-cost and cost-document ledgers into the full authenticated synthetic pilot dashboard fixture. Prove saved manager tenant-wide MATERIAL/EXPENSE and document-media counts, employee self-scoping, role-change removal of manager visibility, cross-tenant denial, and full service reconstruction. Keep all routes unexposed and production unchanged pending independent review.
