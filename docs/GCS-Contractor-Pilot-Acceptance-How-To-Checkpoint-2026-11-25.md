@@ -130,6 +130,16 @@ No customer contact, Coastal data, upload, storage-provider action, email, payme
 
 No customer contact, Coastal data, upload, storage-provider action, email, payment, banking action, bid submission, merge, or production deployment occurred.
 
+## Low-literacy cost and receipt How To — 2026-11-26
+
+- `bec5d8ad2abd89dc431b605ec432677c1e11e714` — add a noindex preview guide explaining manager tenant-wide and employee self-scoped MATERIAL/EXPENSE counts, fixed PDF/JPEG/PNG receipt counts, role-change visibility loss, and the difference between aggregate counts and source records.
+- The guide contains no action control and states that receipt upload, document storage, reimbursement, payment, payroll, accounting posting, email delivery, and customer use are not live.
+- It instructs readers not to enter or upload real customer, employee, banking, or receipt data from the guide.
+- `edc3823b1d7b49dca962da5a6de0b316f0fbaa3e` — add deterministic content, noindex, no-control, privacy, and unsupported-live-claim tests.
+- Website CI #374 (run `45860360285`) passed on the exact test head: 9 of 9 suites and 187 of 187 tests passed; public-exposure guard and internal-link check also passed.
+
+This is preview guidance only. It does not expose a receipt upload, source record, reimbursement, payment, payroll, accounting, delivery, customer-data, provider, or production capability.
+
 ## Exact next action
 
-Inject the real contractor-cost and cost-document ledgers into the full authenticated synthetic pilot dashboard fixture. Prove saved manager tenant-wide MATERIAL/EXPENSE and document-media counts, employee self-scoping, role-change removal of manager visibility, cross-tenant denial, and full service reconstruction. Keep all routes unexposed and production unchanged pending independent review.
+Return to founder PR #130 and inventory the next missing synthetic Coastal-like contractor operation after materials/expenses. Implement the highest-impact bounded tenant-scoped gap—prefer a subcontractor directory with manager-only write access and employee-safe read boundaries—only if existing services do not already cover it. Require cross-tenant denial, restart persistence, privacy-minimized fields, and explicit no-invitation/no-payment/no-customer-contact evidence before composing it into the pilot.
