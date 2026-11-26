@@ -5,7 +5,12 @@ const path = require('path');
 const fixturePath = path.join(
   __dirname, 'fixtures', 'contractor-pilot-acceptance-how-to.html',
 );
+const snapshotPath = path.join(
+  __dirname, 'fixtures', 'gcs-contractor-pilot-acceptance-v1.snapshot.json',
+);
 const html = fs.readFileSync(fixturePath, 'utf8');
+const snapshot = JSON.parse(fs.readFileSync(snapshotPath, 'utf8'));
+const contract = snapshot.contract;
 
 function parsedFixture() {
   const parser = new DOMParser();
@@ -16,33 +21,49 @@ test('acceptance How To is inactive, noindex, and contract-versioned', () => {
   const page = parsedFixture();
   const root = page.getElementById('contractor-pilot-acceptance');
 
+  expect(snapshot.snapshot_schema_version)
+    .toBe('gcs-contractor-pilot-acceptance-snapshot-v1');
+  expect(snapshot.source).toEqual({
+    repository: 'BuildbetterwithGCS/gcs-founder',
+    commit: '9f17202899cee04a2127ecc6ac90a06d3573a3d9',
+    path: 'reports/gcs-contractor-pilot-acceptance-v1.json',
+    captured_on: '2026-11-25',
+  });
   expect(page.querySelector('meta[name="robots"]').content)
     .toBe('noindex,nofollow');
   expect(root.dataset).toMatchObject({
-    schemaVersion: 'gcs-contractor-pilot-acceptance-v1',
-    classification: 'INTERNAL_SYNTHETIC_NONPRODUCTION',
-    runnerStatus: 'PASS_INTERNAL_STEPS',
-    externalStageStatus: 'BLOCKED_EXTERNAL',
+    schemaVersion: contract.schema_version,
+    classification: contract.classification,
+    runnerStatus: contract.runner_status,
+    externalStageStatus: contract.external_stage_status,
+    sourceContractCommit: snapshot.source.commit,
+    sourceContractPath: snapshot.source.path,
   });
+  expect(contract.customer_action_required).toBe(false);
   expect(page.querySelectorAll('a, button, input, select, textarea, form'))
     .toHaveLength(0);
-  expect(html).not.toMatch(/<script\b|\bfetch\s*\(|XMLHttpRequest|sendBeacon|WebSocket/i);
+  expect(html).not.toMatch(
+    /<script\b|\bfetch\s*\(|XMLHttpRequest|sendBeacon|WebSocket/i,
+  );
 });
 
-test('acceptance How To mirrors all seven bounded internal steps', () => {
+test('How To step contract cannot drift from the founder snapshot', () => {
   const page = parsedFixture();
-  const steps = [...page.querySelectorAll('#internal-steps [data-step-id]')];
+  const rendered = [...page.querySelectorAll(
+    '#internal-steps [data-step-id]',
+  )].map(step => ({
+    step_id: step.dataset.stepId,
+    status: step.dataset.status,
+    acceptance: JSON.parse(step.dataset.acceptance),
+  }));
+  const expected = contract.internal_steps.map(step => ({
+    step_id: step.step_id,
+    status: step.status,
+    acceptance: step.acceptance,
+  }));
 
-  expect(steps.map(step => step.dataset.stepId)).toEqual([
-    'access_and_roles',
-    'subscription_test_mode',
-    'workforce_setup',
-    'sales_operations',
-    'field_operations',
-    'finance_and_documents',
-    'dashboard_and_assistant',
-  ]);
-  expect(steps.every(step => step.dataset.status === 'PASS')).toBe(true);
+  expect(rendered).toEqual(expected);
+  expect(rendered).toHaveLength(7);
 
   const text = page.body.textContent;
   expect(text).toContain('cross-tenant session is denied');
@@ -55,27 +76,38 @@ test('acceptance How To mirrors all seven bounded internal steps', () => {
   expect(text).toContain('no email or provider delivery');
 });
 
-test('acceptance How To keeps all external gates blocked', () => {
+test('How To prerequisite contract cannot drift from the founder snapshot', () => {
   const page = parsedFixture();
-  const gates = [...page.querySelectorAll(
+  const rendered = [...page.querySelectorAll(
     '#external-prerequisites [data-prerequisite-id]',
-  )];
+  )].map(gate => ({
+    id: gate.dataset.prerequisiteId,
+    status: gate.dataset.status,
+  }));
 
-  expect(gates.map(gate => gate.dataset.prerequisiteId)).toEqual([
-    'independent_reviews',
-    'hosted_runtime',
-    'billing_provider',
-    'email_delivery',
-    'radius_bid_discovery',
-    'coastal_onboarding',
+  expect(rendered).toEqual(contract.blocked_prerequisites);
+  expect(rendered).toHaveLength(6);
+  expect(contract.onboarding_phases).toEqual([
+    { phase: 'synthetic_rehearsal', status: 'PASS' },
+    { phase: 'review_and_provider_preflight', status: 'BLOCKED' },
+    { phase: 'volunteer_pilot_onboarding', status: 'BLOCKED' },
   ]);
-  expect(gates.every(gate => gate.dataset.status === 'BLOCKED')).toBe(true);
   expect(page.body.textContent).toContain('No customer action is requested');
 });
 
 test('acceptance How To contains no unsupported affirmative live claim', () => {
   const text = parsedFixture().body.textContent.replace(/\s+/g, ' ').trim();
 
+  expect(contract.prohibited_claims).toEqual([
+    'live subscription',
+    'payment collected',
+    'payroll calculated',
+    'email delivered',
+    'customer onboarded',
+    'bid submitted',
+    'provider verified',
+    'production ready',
+  ]);
   for (const claim of [
     /subscription is live/i,
     /payment (?:was|is) collected/i,
@@ -91,5 +123,7 @@ test('acceptance How To contains no unsupported affirmative live claim', () => {
 
   expect(text).toContain('Do not represent a live subscription');
   expect(text).toContain('Do not contact, invite, charge, or access');
-  expect(text).not.toMatch(/@[a-z0-9.-]+|\b\d{3}[-.)\s]+\d{3}[-.\s]+\d{4}\b/i);
+  expect(text).not.toMatch(
+    /@[a-z0-9.-]+|\b\d{3}[-.)\s]+\d{3}[-.\s]+\d{4}\b/i,
+  );
 });
