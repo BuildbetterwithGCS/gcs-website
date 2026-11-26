@@ -2,11 +2,11 @@
   "snapshot_schema_version": "gcs-contractor-pilot-acceptance-snapshot-v1",
   "source": {
     "repository": "BuildbetterwithGCS/gcs-founder",
-    "commit": "cce95c7b92d416949c2ace80aa60dbcab2dc1c3c",
+    "commit": "f10dc7609cec781426fd6a779fb80c509a5428ae",
     "path": "reports/gcs-contractor-pilot-acceptance-v1.json",
     "captured_on": "2026-11-25",
-    "payload_sha256": "2443c0a8579f6d520bc0425c6a7e7221b023107565ddfc6cd92cd3103a0ff623",
-    "payload_bytes": 5834
+    "payload_sha256": "169a5db462fe256dd7f3aa6913715db498a441bf1b3f87a3a09a7b36460a70e3",
+    "payload_bytes": 6171
   },
   "contract": {
     "schema_version": "gcs-contractor-pilot-acceptance-v1",
@@ -89,7 +89,11 @@
           "cross-tenant bid access is denied",
           "bid preview survives durable restart",
           "preview is TEST_DATA_NOT_DELIVERABLE",
-          "no email, provider delivery, customer contact, or bid submission"
+          "no email, provider delivery, customer contact, or bid submission",
+          "manager dashboard splits bounded cost counts by MATERIAL and EXPENSE",
+          "employee cost dashboard remains self-scoped",
+          "invalid PAYMENT cost type fails closed",
+          "cost dashboard exposes no amounts or descriptions"
         ]
       }
     ],
