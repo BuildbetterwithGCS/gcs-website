@@ -49,6 +49,20 @@ This bounded website increment mirrors the versioned founder acceptance contract
 - live source/provider/runtime validation remains blocked
 - no customer contact, Coastal data, email, payment, or bid submission occurred
 
+## Byte-for-byte source provenance
+
+The website snapshot now pins the exact founder acceptance payload from commit `cce95c7b92d416949c2ace80aa60dbcab2dc1c3c`:
+
+- source path: `reports/gcs-contractor-pilot-acceptance-v1.json`
+- exact UTF-8 payload size: `5,834` bytes
+- SHA-256: `2443c0a8579f6d520bc0425c6a7e7221b023107565ddfc6cd92cd3103a0ff623`
+- snapshot commit: `bc136d9ec8012ade2693f35fc5d4f7cd7a45260b`
+- inactive HTML provenance commit: `09649aadbd5362d8a6d91a793090c37936212cd4`
+- drift-test commit: `97e45a3213544030f4c571bc2305fcae5945d606`
+- website CI #364 (run `45762784311`) passed on the exact test head
+
+This pin is reviewer evidence only. It does not fetch the founder repository at runtime, expose a route, authorize a live source, or convert synthetic acceptance into production readiness.
+
 ## Verification evidence
 
 Exact drift-guard head `9bb129726ff8e8292576f7a2709469f903987a0c` passed website CI #360 (run `45730680295`):
@@ -68,4 +82,4 @@ PR #60 remains draft, open, unmerged, and without independent review. Founder PR
 
 ## Exact next action
 
-Confirm this documentation-only exact head is green. Then add a canonical source-contract digest to the website snapshot and drift test so a reviewer can verify the captured founder acceptance payload byte-for-byte against founder head `cce95c7b92d416949c2ace80aa60dbcab2dc1c3c`. Keep both PRs unmerged and production unchanged until independent frontend/security/privacy review is recorded.
+Confirm this documentation-only exact head is green. With independent review still unavailable, inventory the founder branch's existing materials, expenses, and subcontractor boundaries, then implement the smallest missing tenant-scoped synthetic materials/expense approval increment. It must derive actor and role from the authenticated session, preserve cross-tenant denial and audit/restart evidence, and perform no payment, reimbursement, payroll, banking, supplier contact, or customer-data action. Keep both PRs unmerged and production unchanged until required review is recorded.
