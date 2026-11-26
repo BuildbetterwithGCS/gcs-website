@@ -96,6 +96,23 @@ PR #60 remains draft, open, unmerged, and without independent review. Founder PR
 
 No customer contact, Coastal data, email delivery, payment, banking action, bid submission, merge, or production deployment occurred. PR #60 and founder PR #130 remain unreviewed and unmerged. Netlify production remains deploy `6af4b56535ac62fbe639b2c6` in ready state.
 
+## Cost-document acceptance synchronization — 2026-11-26
+
+- verified founder source head: `d656355da9ce04ce85b0e033b732554ceec3dc3b`
+- verified founder Genesis Tests #1576: passed (run `45793928068`)
+- exact UTF-8 source payload: `6,614` bytes
+- exact source SHA-256: `88150d16612056f75f54f806f0555cebd335b4d890161272c7fde9df51f0598d`
+- snapshot update commit: `e89086060fba9842bfd566e930fb3f752e3660f5`
+- inactive noindex How To update commit: `62cf85735da48574d13b8693a1f740df1017ea08`
+- initial drift-test commit: `f544f5979a119446eeb92f4169708ddb7e80b14a`
+- CI #368 correctly failed on the stale expected capture date only; no acceptance or release gate was weakened
+- capture-date repair commit: `a3052b8a78e074c2105502ae8b64eb6524778e74`
+- website CI #369 passed on the exact repaired head (run `45794365499`)
+- mirrored acceptance covers visible-cost binding, cross-tenant cost/receipt denial, restart-safe manager audit, and absence of bytes, filename, path, URL, vendor, bank, or payment data
+- fixture remains noindex, script-free, form-free, network-free, unlinked, and nonproduction
+
+No customer contact, Coastal data, upload, storage-provider action, email, payment, banking action, bid submission, merge, or production deployment occurred.
+
 ## Exact next action
 
-Confirm this documentation-only head is green. With independent review still unavailable, inventory existing document-upload and contractor-cost boundaries on founder PR #130 and identify the smallest synthetic receipt/document metadata linkage that can be tested without external storage, payment, reimbursement, payroll, banking, supplier contact, customer data, or production exposure. Keep both PRs unmerged and production unchanged until required review is recorded.
+Compose the founder cost-document service in an integrated synthetic test with the real tenant contractor-cost ledger and a bounded trusted document-receipt fixture. Prove self-visible operator linkage, same-tenant manager review, other-operator and cross-tenant denial, and restart reconstruction. Keep the seam unexposed and production unchanged pending independent security/privacy/data review.
