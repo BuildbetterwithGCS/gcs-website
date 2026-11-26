@@ -2,11 +2,11 @@
   "snapshot_schema_version": "gcs-contractor-pilot-acceptance-snapshot-v1",
   "source": {
     "repository": "BuildbetterwithGCS/gcs-founder",
-    "commit": "d656355da9ce04ce85b0e033b732554ceec3dc3b",
+    "commit": "3262bd24db57cfb08e722be6fdca9ceda615df1f",
     "path": "reports/gcs-contractor-pilot-acceptance-v1.json",
     "captured_on": "2026-11-26",
-    "payload_sha256": "88150d16612056f75f54f806f0555cebd335b4d890161272c7fde9df51f0598d",
-    "payload_bytes": 6614
+    "payload_sha256": "0af89e3986151f96f7b1b2957af54b2239d8b8a8f8498deb1429f6ccf70a0ddb",
+    "payload_bytes": 7107
   },
   "contract": {
     "schema_version": "gcs-contractor-pilot-acceptance-v1",
@@ -97,7 +97,12 @@
           "manager dashboard splits bounded cost counts by MATERIAL and EXPENSE",
           "employee cost dashboard remains self-scoped",
           "invalid PAYMENT cost type fails closed",
-          "cost dashboard exposes no amounts or descriptions"
+          "cost dashboard exposes no amounts or descriptions",
+          "manager dashboard includes tenant-scoped linked-document counts",
+          "employee linked-document dashboard remains self-scoped",
+          "document dashboard exposes only total and PDF, JPEG, and PNG counts",
+          "invalid or unbounded document summary data fails closed",
+          "document dashboard exposes no IDs, hashes, bytes, actors, amounts, descriptions, vendor, or payment data"
         ]
       }
     ],
